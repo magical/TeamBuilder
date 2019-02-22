@@ -6,15 +6,23 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends AppCompatActivity
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public class MainActivity extends AppCompatActivity implements OnPokemonClickListener
 {
 	private static final String TAG = MainActivity.class.getSimpleName();
 
 	private PokeAPIViewModel mViewModel;
+	private RecyclerView rv;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -41,6 +49,17 @@ public class MainActivity extends AppCompatActivity
 			}
 		});
 
+		List<Pokemon> tempPokemon = Arrays.asList(
+			new Pokemon("bulbasaur"),
+			new Pokemon("squirtle")
+		);
+
+		PokemonListAdapter adapter = new PokemonListAdapter(tempPokemon, this);
+		rv = findViewById(R.id.pokemon_list);
+		rv.setAdapter(adapter);
+		rv.setLayoutManager(new LinearLayoutManager(this));
+		rv.setItemAnimator(new DefaultItemAnimator());
+
 		loadPokemonList();
 	}
 
@@ -50,6 +69,11 @@ public class MainActivity extends AppCompatActivity
 		Log.d(TAG, "URL: " + pokemonListURL);
 
 		mViewModel.loadPokemonListJSON(pokemonListURL);
+	}
+
+	@Override
+	public void onPokemonClicked(int position) {
+		// TODO
 	}
 
     @Override
