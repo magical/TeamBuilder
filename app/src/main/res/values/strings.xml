@@ -1,3 +1,20 @@
 <resources>
     <string name="app_name">Team Builder</string>
+    <string name="action_settings">Settings</string>
+    <string name="pref_title">Settings</string>
+
+    <!-- sort order -->
+    <string name="pref_sort_key" translatable="false">pref_sort</string>
+    <string name="pref_sort_title">Sort By</string>
+    <string name="pref_sort_entry_id">Pokémon ID Number</string>
+    <string name="pref_sort_value_id" translatable="false">id</string>
+    <string name="pref_sort_entry_name">Name</string>
+    <string name="pref_sort_value_name" translatable="false">name</string>
+    <string name="pref_sort_default">@string/pref_sort_value_id</string>
+
+    <!-- if showing images -->
+    <string name="pref_image_key" translatable="false">pref_image</string>
+    <string name="pref_image_title">Show Images</string>
+    <string name="pref_image_summary">Download and show sprites</string>
+
 </resources>
