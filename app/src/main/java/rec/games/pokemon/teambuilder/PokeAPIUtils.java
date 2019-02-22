@@ -1,6 +1,7 @@
 package rec.games.pokemon.teambuilder;
 
 import android.net.Uri;
+import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -104,5 +105,15 @@ public class PokeAPIUtils
 	{
 		Gson gson = new Gson();
 		return gson.fromJson(pokemonListJSON, NamedAPIResourceList.class);
+	}
+
+	static String getPokeId(String url)
+	{
+		if(url != null)
+		{
+			return Uri.parse(url).getLastPathSegment();
+		}
+		else
+			return "0";
 	}
 }

@@ -53,6 +53,7 @@ class PokemonViewHolder extends RecyclerView.ViewHolder
 {
 	private OnPokemonClickListener mListener;
 	private TextView mName;
+	private TextView mId;
 	private ImageView mIcon;
 
 	public PokemonViewHolder(View view, OnPokemonClickListener l)
@@ -60,6 +61,7 @@ class PokemonViewHolder extends RecyclerView.ViewHolder
 		super(view);
 		mName = view.findViewById(R.id.pokemon_name);
 		mIcon = view.findViewById(R.id.pokemon_icon);
+		mId = view.findViewById(R.id.pokemon_id);
 		mListener = l;
 
 		view.setOnClickListener(new View.OnClickListener()
@@ -75,7 +77,8 @@ class PokemonViewHolder extends RecyclerView.ViewHolder
 	public void bind(Pokemon p)
 	{
 		mName.setText(p.identifier);
-		// TODO: set icon....
+		mId.setText(p.id);
+
 	}
 }
 
