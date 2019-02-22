@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModel;
 
 import java.io.IOException;
 
+import android.util.Log;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
@@ -25,6 +26,7 @@ public class PokeAPIViewModel extends ViewModel
 		if(url == null || mPokeListJSON == null || mPokeListJSON.getValue() != null)
 			return;
 
+		Log.d(this.getClass().getName(), "fetching JSON from pokeapi");
 		NetworkUtils.doHTTPGet(url, new Callback()
 		{
 			@EverythingIsNonNull

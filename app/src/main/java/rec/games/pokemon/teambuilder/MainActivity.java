@@ -30,31 +30,34 @@ public class MainActivity extends AppCompatActivity implements OnPokemonClickLis
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		final PokemonListAdapter adapter = new PokemonListAdapter(new ArrayList<Pokemon>(), this);
+
 		mViewModel = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
 		mViewModel.getPokeListJSON().observe(this, new Observer<String>()
 		{
 			@Override
 			public void onChanged(@Nullable String pokemonListJSON)
 			{
-				if(pokemonListJSON != null)
-				{
-					Log.d(TAG, "JSON: " + pokemonListJSON);
-					PokeAPIUtils.NamedAPIResourceList pokemonList = PokeAPIUtils.parsePokemonListJSON(pokemonListJSON);
-					Log.d(TAG, pokemonList.toString());
-				}
-				else
+				if(pokemonListJSON == null)
 				{
 					Log.d(TAG, "Could not load PokemonList JSON");
+					return;
 				}
+				Log.d(TAG, "JSON: " + pokemonListJSON);
+				PokeAPIUtils.NamedAPIResourceList apiPokemonList = PokeAPIUtils.parsePokemonListJSON(pokemonListJSON);
+				Log.d(TAG, apiPokemonList.toString());
+				List<Pokemon> pokemon = new ArrayList<>();
+				for (PokeAPIUtils.NamedAPIResource r : apiPokemonList.results) {
+					Pokemon p = new Pokemon();
+					p.identifier = r.name;
+					p.url = r.url;
+					pokemon.add(p);
+				}
+				adapter.updatePokemon(pokemon);
 			}
 		});
 
-		List<Pokemon> tempPokemon = Arrays.asList(
-			new Pokemon("bulbasaur"),
-			new Pokemon("squirtle")
-		);
 
-		PokemonListAdapter adapter = new PokemonListAdapter(tempPokemon, this);
 		rv = findViewById(R.id.pokemon_list);
 		rv.setAdapter(adapter);
 		rv.setLayoutManager(new LinearLayoutManager(this));

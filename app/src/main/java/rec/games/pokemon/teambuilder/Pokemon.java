@@ -7,6 +7,7 @@ public class Pokemon implements Serializable {
     public String url;
     public String identifier;
 
+    public Pokemon() {}
     // For debugging...
     Pokemon(String ident) { this.identifier = ident; }
 }

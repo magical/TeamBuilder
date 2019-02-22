@@ -19,6 +19,11 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonViewHolder> 
         this.mListener = l;
     }
 
+    public void updatePokemon(List<Pokemon> pokemon) {
+        this.mPokemon = pokemon;
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public PokemonViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -39,7 +44,7 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonViewHolder> 
 }
 
 class PokemonViewHolder extends RecyclerView.ViewHolder {
-    OnPokemonClickListener mListener;
+    private OnPokemonClickListener mListener;
     private TextView mName;
     private ImageView mIcon;
 
