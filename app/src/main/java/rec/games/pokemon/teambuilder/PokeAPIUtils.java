@@ -110,10 +110,7 @@ public class PokeAPIUtils
 	static String getPokeId(String url)
 	{
 		if(url != null)
-		{
 			return Uri.parse(url).getLastPathSegment();
-		}
-		else
-			return "0";
+		return "0";
 	}
 }
