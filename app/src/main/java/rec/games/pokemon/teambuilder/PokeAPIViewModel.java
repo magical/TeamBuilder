@@ -2,10 +2,10 @@ package rec.games.pokemon.teambuilder;
 
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
+import android.util.Log;
 
 import java.io.IOException;
 
-import android.util.Log;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
