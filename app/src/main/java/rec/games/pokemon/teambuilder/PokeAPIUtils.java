@@ -25,6 +25,12 @@ public class PokeAPIUtils
 		String url;
 	}
 
+	static class Name implements Serializable
+	{
+		String name;
+		NamedAPIResource language;
+	}
+
 	static class Pokemon implements Serializable
 	{
 		int id;
@@ -50,6 +56,33 @@ public class PokeAPIUtils
 	{
 		int slot;
 		NamedAPIResource type;
+	}
+
+	static class Move implements Serializable
+	{
+		int id;
+		String name;
+		int power;
+		Name[] names;
+		NamedAPIResource type;
+	}
+
+	static class Type implements Serializable
+	{
+		int id;
+		String name;
+		TypeRelations damage_relations;
+		Name[] names;
+	}
+
+	static class TypeRelations implements Serializable
+	{
+		NamedAPIResource[] no_damage_to;
+		NamedAPIResource[] half_damage_to;
+		NamedAPIResource[] double_damage_to;
+		NamedAPIResource[] no_damage_from;
+		NamedAPIResource[] half_damage_from;
+		NamedAPIResource[] double_damage_from;
 	}
 
 	static String buildNamedAPIResourceListURL(String endPoint, int limit, int offset)
