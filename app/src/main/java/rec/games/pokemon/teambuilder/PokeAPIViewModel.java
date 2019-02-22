@@ -2,6 +2,7 @@ package rec.games.pokemon.teambuilder;
 
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
+import android.util.Log;
 
 import java.io.IOException;
 
@@ -25,6 +26,7 @@ public class PokeAPIViewModel extends ViewModel
 		if(url == null || mPokeListJSON == null || mPokeListJSON.getValue() != null)
 			return;
 
+		Log.d(this.getClass().getName(), "fetching JSON from pokeapi");
 		NetworkUtils.doHTTPGet(url, new Callback()
 		{
 			@EverythingIsNonNull
