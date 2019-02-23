@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements OnPokemonClickLis
 					Pokemon p = new Pokemon();
 					p.identifier = r.name;
 					p.url = r.url;
+					p.id = PokeAPIUtils.getPokeId(r.url);
 					pokemon.add(p);
 				}
 				adapter.updatePokemon(pokemon);
