@@ -7,8 +7,6 @@ import com.google.gson.Gson;
 
 import java.io.Serializable;
 
-import static android.net.Uri.parse;
-
 public class PokeAPIUtils
 {
 	private final static String POKE_API_BASE_URL = "https://pokeapi.co/api/v2/";
@@ -90,7 +88,7 @@ public class PokeAPIUtils
 
 	static String buildNamedAPIResourceListURL(String endPoint, int limit, int offset)
 	{
-		return parse(POKE_API_BASE_URL).buildUpon()
+		return Uri.parse(POKE_API_BASE_URL).buildUpon()
 			.appendPath(endPoint)
 			.appendQueryParameter(POKE_API_LIMIT_PARAM, String.valueOf(limit))
 			.appendQueryParameter(POKE_API_OFFSET_PARAM, String.valueOf(offset))
@@ -114,7 +112,7 @@ public class PokeAPIUtils
 		if(url == null)
 			return 0;
 
-		String pokeId = parse(url).getLastPathSegment();
+		String pokeId = Uri.parse(url).getLastPathSegment();
 		if(pokeId != null)
 			return Integer.parseInt(pokeId);
 		return 0;
