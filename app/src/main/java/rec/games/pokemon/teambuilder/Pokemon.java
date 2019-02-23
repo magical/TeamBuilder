@@ -7,7 +7,7 @@ public class Pokemon implements Serializable
 {
 	public String url;
 	public String identifier;
-	public String id;
+	public int id;
 
 	public Pokemon()
 	{
