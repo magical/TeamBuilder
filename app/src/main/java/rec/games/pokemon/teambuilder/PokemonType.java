@@ -24,21 +24,21 @@ abstract class PokemonType
 
 class DeferredPokemonTypeResource extends PokemonType
 {
-	protected String name;
+	protected String resourceName;
 	protected String url;
 
-	public DeferredPokemonTypeResource(int id, String name, String url)
+	public DeferredPokemonTypeResource(int id, String resourceName, String url)
 	{
 		super(id);
 
-		this.name = name;
+		this.resourceName = resourceName;
 		this.url = url;
 	}
 
 	@Override
 	public String getName()
 	{
-		return name;
+		return resourceName;
 	}
 
 	//since we lack the data to infer damage multipliers, we can't determine a damage multiplier. So null it is
@@ -56,8 +56,8 @@ class DeferredPokemonTypeResource extends PokemonType
 
 class PokemonTypeResource extends PokemonType
 {
-	//for now the name will be the resource name returned by the api
-	protected String name;
+	//TODO: for now the name will be the resource name returned by the api
+	protected String resourceName;
 	//later we should use this for locale specific names
 	//key: locale. value: locale specific name
 	protected HashMap<String, String> localeNames;
@@ -65,18 +65,18 @@ class PokemonTypeResource extends PokemonType
 	//key: PokemonType id. value: damageMultiplier against the key
 	protected HashMap<Integer, Double> damageMultipliers;
 
-	public PokemonTypeResource(int id, String name, HashMap<Integer, Double> damageMultipliers)
+	public PokemonTypeResource(int id, String resourceName, HashMap<Integer, Double> damageMultipliers)
 	{
 		super(id);
 
-		this.name = name;
+		this.resourceName = resourceName;
 		this.damageMultipliers = damageMultipliers;
 	}
 
 	@Override
 	public String getName()
 	{
-		return name;
+		return resourceName;
 	}
 
 	@Override

@@ -1,5 +1,7 @@
 package rec.games.pokemon.teambuilder;
 
+import android.arch.lifecycle.LiveData;
+
 import java.util.HashMap;
 
 //Data class representing pokemon moves
@@ -32,21 +34,21 @@ abstract class PokemonMove
 
 class DeferredPokemonMoveResource extends PokemonMove
 {
-	protected String name;
+	protected String resourceName;
 	protected String url;
 
-	public DeferredPokemonMoveResource(int id, String name, String url)
+	public DeferredPokemonMoveResource(int id, String resourceName, String url)
 	{
 		super(id);
 
-		this.name = name;
+		this.resourceName = resourceName;
 		this.url = url;
 	}
 
 	@Override
 	public String getName()
 	{
-		return name;
+		return resourceName;
 	}
 
 	@Override
@@ -70,18 +72,18 @@ class DeferredPokemonMoveResource extends PokemonMove
 
 class PokemonMoveResource extends PokemonMove
 {
-	//for now use the resource name, but later we should use the locale specific names
-	protected String name;
+	//TODO: for now use the resource name, but later we should use the locale specific names
+	protected String resourceName;
 	//similar to the ones described in PokemonTypes
 	protected HashMap<String, String> localeNames;
-	protected PokemonType type;
+	protected LiveData<PokemonType> type;
 	protected Integer power;
 
-	public PokemonMoveResource(int id, String name, int power, PokemonType type)
+	public PokemonMoveResource(int id, String resourceName, int power, LiveData<PokemonType> type)
 	{
 		super(id);
 
-		this.name = name;
+		this.resourceName = resourceName;
 		this.power = Integer.valueOf(power);
 		this.type = type;
 	}
@@ -90,13 +92,13 @@ class PokemonMoveResource extends PokemonMove
 	@Override
 	public String getName()
 	{
-		return name;
+		return resourceName;
 	}
 
 	@Override
 	public PokemonType getType()
 	{
-		return type;
+		return type.getValue();
 	}
 
 	@Override
