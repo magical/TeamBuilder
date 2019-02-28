@@ -37,44 +37,11 @@ public class MainActivity extends AppCompatActivity implements OnPokemonClickLis
 
 		mLoadingPB = findViewById(R.id.pb_loading_circle);
 		mLoadingErrorMsgTV = findViewById(R.id.tv_loading_error);
-		//mLoadingErrorMsgTV.setVisibility(View.VISIBLE);
 		mLoadingPB.setVisibility(View.VISIBLE);
 
 		final PokemonListAdapter adapter = new PokemonListAdapter(new ArrayList<Pokemon>(), this);
 
-		rv = findViewById(R.id.pokemon_list);
-		rv.setAdapter(adapter);
-		rv.setLayoutManager(new LinearLayoutManager(this));
-		rv.setItemAnimator(new DefaultItemAnimator());
-
 		mViewModel = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
-		mViewModel.getLoadingStatus().observe(this, new Observer<Status>()
-		{
-			@Override
-			public void onChanged(@Nullable Status status)
-			{
-				if (status == Status.LOADING)
-				{
-					Log.d(TAG, "Loading");
-					rv.setVisibility(View.INVISIBLE);
-				}
-				else if (status == Status.SUCCESS)
-				{
-					Log.d(TAG, "Success");
-					mLoadingPB.setVisibility(View.INVISIBLE);
-					mLoadingErrorMsgTV.setVisibility(View.INVISIBLE);
-					rv.setVisibility(View.VISIBLE);
-				}
-				else
-				{
-					Log.d(TAG, "Error");
-					mLoadingPB.setVisibility(View.INVISIBLE);
-					mLoadingErrorMsgTV.setVisibility(View.VISIBLE);
-					rv.setVisibility(View.INVISIBLE);
-				}
-			}
-		});
-
 		mViewModel.getPokeListJSON().observe(this, new Observer<String>()
 		{
 			@Override
@@ -109,6 +76,11 @@ public class MainActivity extends AppCompatActivity implements OnPokemonClickLis
 				adapter.updatePokemon(pokemon);
 			}
 		});
+
+		rv = findViewById(R.id.pokemon_list);
+		rv.setAdapter(adapter);
+		rv.setLayoutManager(new LinearLayoutManager(this));
+		rv.setItemAnimator(new DefaultItemAnimator());
 
 		loadPokemonList();
 	}

@@ -27,10 +27,6 @@ public class PokeAPIViewModel extends ViewModel
 
 	MutableLiveData<String> getPokeListJSON()
 	{
-		if (mPokeListJSON != null)
-			mLoadingStatus.setValue(Status.SUCCESS);
-		else
-			mLoadingStatus.setValue(Status.ERROR);
 		return mPokeListJSON;
 	}
 
@@ -65,11 +61,5 @@ public class PokeAPIViewModel extends ViewModel
 			}
 		});
 		Log.d(TAG, "HERE");
-		/*
-		if (mPokeListJSON != null)
-			mLoadingStatus.setValue(Status.SUCCESS);
-		else
-			mLoadingStatus.setValue(Status.ERROR);
-			*/
 	}
 }
