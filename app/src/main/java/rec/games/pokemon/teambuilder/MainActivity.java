@@ -1,5 +1,6 @@
 package rec.games.pokemon.teambuilder;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -12,18 +13,32 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
 {
 	private static final String TAG = MainActivity.class.getSimpleName();
+
+	private PokeAPIViewModel mViewModel;
+	private RecyclerView rv;
 
 	private Toolbar toolbar;
 	private TabLayout tabLayout;
@@ -54,9 +69,35 @@ public class MainActivity extends AppCompatActivity
 		tabLayout = findViewById(R.id.main_tabs);
 		tabLayout.setupWithViewPager(viewPager);
 		tabLayout.setSelectedTabIndicatorColor(ContextCompat.getColor(this, R.color.tabIndicatorColor)); //b/c API of just getColor() needs >=23
+
+		final PokemonListAdapter adapter = new PokemonListAdapter(new ArrayList<Pokemon>(), this);
+
+		mViewModel = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
+		mViewModel.getPokemonCache().observe(this, new Observer<HashMap<Integer, LiveData<Pokemon>>>()
+		{
+			@Override
+			public void onChanged(@Nullable HashMap<Integer, LiveData<Pokemon>> pokemonCache)
+			{
+				if(pokemonCache == null)
+				{
+					Log.d(TAG, "Could not load PokemonList");
+					return;
+				}
+
+				List<Pokemon> pokemon = mViewModel.extractPokemonListFromCache();
+				adapter.updatePokemon(pokemon);
+			}
+		});
+
+
+		rv = findViewById(R.id.pokemon_list);
+		rv.setAdapter(adapter);
+		rv.setLayoutManager(new LinearLayoutManager(this));
+		rv.setItemAnimator(new DefaultItemAnimator());
 	}
 
-	class ViewPagerAdapter extends FragmentPagerAdapter {
+	class ViewPagerAdapter extends FragmentPagerAdapter
+	{
 		private final List<Fragment> mFragmentList = new ArrayList<>();
 		private final List<String> mFragmentTitleList = new ArrayList<>();
 
