@@ -8,6 +8,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+
 import java.util.List;
 
 public class PokemonListAdapter extends RecyclerView.Adapter<PokemonViewHolder>
@@ -78,6 +81,8 @@ class PokemonViewHolder extends RecyclerView.ViewHolder
 	{
 		mName.setText(p.identifier);
 		mId.setText(String.valueOf(p.id));
+		Glide.with(mIcon.getContext()).load(PokeAPIUtils.getSpriteUrl(p.id))
+			.apply(new RequestOptions().placeholder(R.drawable.ic_poke_unknown)).into(mIcon);
 
 	}
 }
