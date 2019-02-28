@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -11,42 +13,50 @@
         android:layout_height="wrap_content">
 
         <ImageView
-            android:layout_width="40dp"
-            android:layout_height="30dp"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
             android:padding="8dp"
             android:id="@+id/pokemon_icon"
             android:src="@drawable/ic_poke_unknown"/>
 
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:textSize="24sp"
-            android:id="@+id/pokemon_name" />
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:layout_gravity="start"
+                android:textSize="24sp"
+                android:id="@+id/pokemon_name"
+                tools:text="Poke"/>
 
-        <!-- push to one side -->
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:textSize="24sp"
-            android:paddingRight="24dp"
-            android:paddingEnd="24dp"
-            android:layout_gravity="end"
-            android:id="@+id/pokemon_id" />
+            <!-- push to one side -->
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:textSize="24sp"
+                android:gravity="center_vertical"
+                android:layout_gravity="end"
+                android:id="@+id/pokemon_id"
+                tools:text="0"/>
+        </LinearLayout>
     </LinearLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="4dp"
-        android:layout_marginLeft="48dp"
-        android:layout_marginRight="24dp"
-        android:background="#808080" />
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:background="#dadada" />
 
 </LinearLayout>

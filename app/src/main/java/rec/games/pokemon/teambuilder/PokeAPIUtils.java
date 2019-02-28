@@ -13,6 +13,8 @@ public class PokeAPIUtils
 	private final static String POKE_API_POKEMON_ENDPOINT = "pokemon";
 	private final static String POKE_API_LIMIT_PARAM = "limit";
 	private final static String POKE_API_OFFSET_PARAM = "offset";
+	private final static String POKE_API_SPRITE_URL = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/";
+	private final static String POKE_API_SPRITE_FILE_TYPE = ".png";
 
 	static class NamedAPIResourceList implements Serializable
 	{
@@ -116,5 +118,10 @@ public class PokeAPIUtils
 		if(pokeId != null)
 			return Integer.parseInt(pokeId);
 		return 0;
+	}
+
+	static String getSpriteUrl(int id){
+		return Uri.parse(POKE_API_SPRITE_URL).buildUpon()
+			.appendEncodedPath(Integer.toString(id) + POKE_API_SPRITE_FILE_TYPE).build().toString();
 	}
 }
