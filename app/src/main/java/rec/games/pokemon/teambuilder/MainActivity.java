@@ -1,5 +1,6 @@
 package rec.games.pokemon.teambuilder;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -14,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements OnPokemonClickListener
@@ -32,25 +34,18 @@ public class MainActivity extends AppCompatActivity implements OnPokemonClickLis
 		final PokemonListAdapter adapter = new PokemonListAdapter(new ArrayList<Pokemon>(), this);
 
 		mViewModel = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
-		mViewModel.getPokeListJSON().observe(this, new Observer<String>()
+		mViewModel.getPokemonCache().observe(this, new Observer<HashMap<Integer, LiveData<Pokemon>>>()
 		{
 			@Override
-			public void onChanged(@Nullable String pokemonListJSON)
+			public void onChanged(@Nullable HashMap<Integer, LiveData<Pokemon>> pokemonCache)
 			{
-				if(pokemonListJSON == null)
+				if(pokemonCache == null)
 				{
-					Log.d(TAG, "Could not load PokemonList JSON");
+					Log.d(TAG, "Could not load PokemonList");
 					return;
 				}
-				Log.d(TAG, "JSON: " + pokemonListJSON);
-				PokeAPIUtils.NamedAPIResourceList apiPokemonList = PokeAPIUtils.parsePokemonListJSON(pokemonListJSON);
-				Log.d(TAG, apiPokemonList.toString());
-				List<Pokemon> pokemon = new ArrayList<>();
-				for(PokeAPIUtils.NamedAPIResource r : apiPokemonList.results)
-				{
-					Pokemon p = new DeferredPokemonResource(PokeAPIUtils.getPokeId(r.url), r.name, r.url);
-					pokemon.add(p);
-				}
+
+				List<Pokemon> pokemon = mViewModel.extractPokemonListFromCache();
 				adapter.updatePokemon(pokemon);
 			}
 		});
@@ -60,16 +55,6 @@ public class MainActivity extends AppCompatActivity implements OnPokemonClickLis
 		rv.setAdapter(adapter);
 		rv.setLayoutManager(new LinearLayoutManager(this));
 		rv.setItemAnimator(new DefaultItemAnimator());
-
-		loadPokemonList();
-	}
-
-	public void loadPokemonList()
-	{
-		String pokemonListURL = PokeAPIUtils.buildPokemonListURL(10000, 0);
-		Log.d(TAG, "URL: " + pokemonListURL);
-
-		mViewModel.loadPokemonListJSON(pokemonListURL);
 	}
 
 	@Override
