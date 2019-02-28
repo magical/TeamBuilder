@@ -18,8 +18,8 @@ public class PokeAPIUtils
 
 	static class NamedAPIResourceList implements Serializable
 	{
-		//count is available
 		NamedAPIResource[] results;
+		int count; 		//count is available
 	}
 
 	static class NamedAPIResource implements Serializable
