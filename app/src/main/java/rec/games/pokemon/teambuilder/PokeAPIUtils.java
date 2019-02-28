@@ -10,12 +10,9 @@ import java.io.Serializable;
 public class PokeAPIUtils
 {
 	private final static String POKE_API_BASE_URL = "https://pokeapi.co/api/v2/";
+	private final static String POKE_API_POKEMON_ENDPOINT = "pokemon";
 	private final static String POKE_API_LIMIT_PARAM = "limit";
 	private final static String POKE_API_OFFSET_PARAM = "offset";
-
-	private final static String POKE_API_POKEMON_ENDPOINT = "pokemon";
-	private final static String POKE_API_TYPE_ENDPOINT = "type";
-	private final static String POKE_API_MOVE_ENDPOINT = "move";
 
 	static class NamedAPIResourceList implements Serializable
 	{
@@ -104,30 +101,20 @@ public class PokeAPIUtils
 		return buildNamedAPIResourceListURL(POKE_API_POKEMON_ENDPOINT, limit, offset);
 	}
 
-	static String buildTypeListURL(int limit, int offset)
-	{
-		return buildNamedAPIResourceListURL(POKE_API_TYPE_ENDPOINT, limit, offset);
-	}
-
-	static String buildMoveListURL(int limit, int offset)
-	{
-		return buildNamedAPIResourceListURL(POKE_API_MOVE_ENDPOINT, limit, offset);
-	}
-
-	static NamedAPIResourceList parseNamedAPIResourceListJSON(String namedAPIResourceListJSON)
+	static NamedAPIResourceList parsePokemonListJSON(String pokemonListJSON)
 	{
 		Gson gson = new Gson();
-		return gson.fromJson(namedAPIResourceListJSON, NamedAPIResourceList.class);
+		return gson.fromJson(pokemonListJSON, NamedAPIResourceList.class);
 	}
 
-	static int getId(String url)
+	static int getPokeId(String url)
 	{
 		if(url == null)
 			return 0;
 
-		String id = Uri.parse(url).getLastPathSegment();
-		if(id != null)
-			return Integer.parseInt(id);
+		String pokeId = Uri.parse(url).getLastPathSegment();
+		if(pokeId != null)
+			return Integer.parseInt(pokeId);
 		return 0;
 	}
 }
