@@ -76,8 +76,8 @@ class PokemonViewHolder extends RecyclerView.ViewHolder
 
 	public void bind(Pokemon p)
 	{
-		mName.setText(p.identifier);
-		mId.setText(String.valueOf(p.id));
+		mName.setText(p.getName());
+		mId.setText(String.valueOf(p.getId()));
 
 	}
 }
