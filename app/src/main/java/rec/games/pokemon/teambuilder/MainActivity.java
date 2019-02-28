@@ -42,9 +42,13 @@ public class MainActivity extends AppCompatActivity implements OnPokemonClickLis
 					Log.d(TAG, "Could not load PokemonList JSON");
 					return;
 				}
-				Log.d(TAG, "JSON: " + pokemonListJSON);
+				//Log.d(TAG, "JSON: " + pokemonListJSON);
 				PokeAPIUtils.NamedAPIResourceList apiPokemonList = PokeAPIUtils.parsePokemonListJSON(pokemonListJSON);
-				Log.d(TAG, apiPokemonList.toString());
+				//Log.d(TAG, apiPokemonList.toString());
+				int limit = PokeAPIUtils.getPokeId(apiPokemonList.results[apiPokemonList.results.length-1].url);
+				int lastPoke = apiPokemonList.results.length - (limit - 10_000);
+				Log.d(TAG, "Count is: " + apiPokemonList.count + " of " + limit + " Last ID = " + lastPoke);
+
 				List<Pokemon> pokemon = new ArrayList<>();
 				for(PokeAPIUtils.NamedAPIResource r : apiPokemonList.results)
 				{
