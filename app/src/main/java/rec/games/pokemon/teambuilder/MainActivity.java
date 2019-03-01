@@ -12,6 +12,9 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,11 +26,18 @@ public class MainActivity extends AppCompatActivity implements OnPokemonClickLis
 	private PokeAPIViewModel mViewModel;
 	private RecyclerView rv;
 
+	private ProgressBar mLoadingPB;
+	private TextView mLoadingErrorMsgTV;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
+		mLoadingPB = findViewById(R.id.pb_loading_circle);
+		mLoadingErrorMsgTV = findViewById(R.id.tv_loading_error);
+		mLoadingPB.setVisibility(View.VISIBLE);
 
 		final PokemonListAdapter adapter = new PokemonListAdapter(new ArrayList<Pokemon>(), this);
 
@@ -40,11 +50,20 @@ public class MainActivity extends AppCompatActivity implements OnPokemonClickLis
 				if(pokemonListJSON == null)
 				{
 					Log.d(TAG, "Could not load PokemonList JSON");
+					mLoadingPB.setVisibility(View.INVISIBLE);
+					mLoadingErrorMsgTV.setVisibility(View.VISIBLE);
+					rv.setVisibility(View.INVISIBLE);
 					return;
 				}
-				Log.d(TAG, "JSON: " + pokemonListJSON);
+				else
+				{
+					mLoadingPB.setVisibility(View.INVISIBLE);
+					mLoadingErrorMsgTV.setVisibility(View.INVISIBLE);
+					rv.setVisibility(View.VISIBLE);
+				}
+				//Log.d(TAG, "JSON: " + pokemonListJSON);
 				PokeAPIUtils.NamedAPIResourceList apiPokemonList = PokeAPIUtils.parsePokemonListJSON(pokemonListJSON);
-				Log.d(TAG, apiPokemonList.toString());
+				//Log.d(TAG, apiPokemonList.toString());
 				List<Pokemon> pokemon = new ArrayList<>();
 				for(PokeAPIUtils.NamedAPIResource r : apiPokemonList.results)
 				{
@@ -54,7 +73,6 @@ public class MainActivity extends AppCompatActivity implements OnPokemonClickLis
 				adapter.updatePokemon(pokemon);
 			}
 		});
-
 
 		rv = findViewById(R.id.pokemon_list);
 		rv.setAdapter(adapter);
