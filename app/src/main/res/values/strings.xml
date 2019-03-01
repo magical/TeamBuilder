@@ -3,6 +3,8 @@
     <string name="action_settings">Settings</string>
     <string name="pref_title">Settings</string>
 
+    <string name="loading_error_msg">Could not load from Pokeapi.co. Please check the internet connection, and try again.</string>
+
     <!-- sort order -->
     <string name="pref_sort_key" translatable="false">pref_sort</string>
     <string name="pref_sort_title">Sort By</string>

@@ -12,6 +12,9 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
@@ -26,6 +29,9 @@ public class MainActivity extends AppCompatActivity implements OnPokemonClickLis
 	private PokeAPIViewModel mViewModel;
 	private RecyclerView rv;
 
+	private ProgressBar mLoadingPB;
+	private TextView mLoadingErrorMsgTV;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -39,6 +45,10 @@ public class MainActivity extends AppCompatActivity implements OnPokemonClickLis
 			.diskCacheStrategy(DiskCacheStrategy.ALL);
 		GlideApp.with(this).setDefaultRequestOptions(requestOptions);
 
+		mLoadingPB = findViewById(R.id.pb_loading_circle);
+		mLoadingErrorMsgTV = findViewById(R.id.tv_loading_error);
+		mLoadingPB.setVisibility(View.VISIBLE);
+
 		final PokemonListAdapter adapter = new PokemonListAdapter(new ArrayList<Pokemon>(), this);
 
 		mViewModel = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
@@ -50,12 +60,21 @@ public class MainActivity extends AppCompatActivity implements OnPokemonClickLis
 				if(pokemonListJSON == null)
 				{
 					Log.d(TAG, "Could not load PokemonList JSON");
+					mLoadingPB.setVisibility(View.INVISIBLE);
+					mLoadingErrorMsgTV.setVisibility(View.VISIBLE);
+					rv.setVisibility(View.INVISIBLE);
 					return;
+				}
+				else
+				{
+					mLoadingPB.setVisibility(View.INVISIBLE);
+					mLoadingErrorMsgTV.setVisibility(View.INVISIBLE);
+					rv.setVisibility(View.VISIBLE);
 				}
 				//Log.d(TAG, "JSON: " + pokemonListJSON);
 				PokeAPIUtils.NamedAPIResourceList apiPokemonList = PokeAPIUtils.parsePokemonListJSON(pokemonListJSON);
 				//Log.d(TAG, apiPokemonList.toString());
-				int limit = PokeAPIUtils.getPokeId(apiPokemonList.results[apiPokemonList.results.length-1].url);
+        int limit = PokeAPIUtils.getPokeId(apiPokemonList.results[apiPokemonList.results.length-1].url);
 				int lastPoke = apiPokemonList.results.length - (limit - 10_000);
 				Log.d(TAG, "Count is: " + apiPokemonList.count + " of " + limit + " Last ID = " + lastPoke);
 
