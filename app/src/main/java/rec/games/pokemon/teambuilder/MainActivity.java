@@ -52,10 +52,7 @@ public class MainActivity extends AppCompatActivity implements OnPokemonClickLis
 				List<Pokemon> pokemon = new ArrayList<>();
 				for(PokeAPIUtils.NamedAPIResource r : apiPokemonList.results)
 				{
-					Pokemon p = new Pokemon();
-					p.identifier = r.name;
-					p.url = r.url;
-					p.id = PokeAPIUtils.getPokeId(r.url);
+					Pokemon p = new DeferredPokemonResource(PokeAPIUtils.getPokeId(r.url), r.name, r.url);
 					pokemon.add(p);
 				}
 				adapter.updatePokemon(pokemon);
