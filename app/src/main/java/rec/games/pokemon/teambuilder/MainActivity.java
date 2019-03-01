@@ -34,8 +34,8 @@ public class MainActivity extends AppCompatActivity implements OnPokemonClickLis
 
 		RequestOptions requestOptions = new RequestOptions()
 			.placeholder(R.drawable.ic_poke_unknown)
-			.placeholder(R.drawable.ic_poke_unknown)
-			.placeholder(R.drawable.ic_poke_unknown)
+			.error(R.drawable.ic_poke_unknown)
+			.fallback(R.drawable.ic_poke_unknown)
 			.diskCacheStrategy(DiskCacheStrategy.ALL);
 		GlideApp.with(this).setDefaultRequestOptions(requestOptions);
 
