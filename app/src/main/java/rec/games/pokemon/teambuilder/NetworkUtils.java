@@ -6,7 +6,9 @@ import okhttp3.Request;
 
 public class NetworkUtils
 {
-	private static final OkHttpClient mHttpClient = new OkHttpClient();
+	private static final OkHttpClient mHttpClient = new OkHttpClient.Builder()
+		.addInterceptor(new RateLimitInterceptor(100))
+		.build();
 
 	/*
 	 * When using a ViewModel, background network calls are necessary
