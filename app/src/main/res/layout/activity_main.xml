@@ -27,4 +27,38 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <!--
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical"
+            android:id="@+id/pokemon_list"
+            android:visibility="invisible"/>
+
+        <TextView
+            android:id="@+id/tv_loading_error"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="24sp"
+            android:padding="16dp"
+            android:layout_margin="16dp"
+            android:background="@android:color/holo_red_dark"
+            android:textColor="#fff"
+            android:visibility="invisible"
+            android:text="@string/loading_error_msg"/>
+
+        <ProgressBar
+            android:id="@+id/pb_loading_circle"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_margin="32dp"
+            android:layout_gravity="top|center_horizontal"
+            android:visibility="invisible"/>
+    </FrameLayout>
+    -->
+
 </LinearLayout>

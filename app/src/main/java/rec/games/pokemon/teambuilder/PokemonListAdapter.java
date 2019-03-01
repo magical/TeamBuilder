@@ -8,6 +8,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+
 import java.util.List;
 
 public class PokemonListAdapter extends RecyclerView.Adapter<PokemonViewHolder>
@@ -76,9 +79,9 @@ class PokemonViewHolder extends RecyclerView.ViewHolder
 
 	public void bind(Pokemon p)
 	{
-		mName.setText(p.identifier);
-		mId.setText(String.valueOf(p.id));
-
+		mName.setText(p.getName());
+		mId.setText(String.valueOf(p.getId()));
+		GlideApp.with(mIcon.getContext()).load(PokeAPIUtils.getSpriteUrl(p.getId())).into(mIcon);
 	}
 }
 

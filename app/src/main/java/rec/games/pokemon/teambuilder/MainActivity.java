@@ -7,14 +7,22 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +33,9 @@ public class MainActivity extends AppCompatActivity implements OnPokemonClickLis
 
 	private PokeAPIViewModel mViewModel;
 	private RecyclerView rv;
+
+	private ProgressBar mLoadingPB;
+	private TextView mLoadingErrorMsgTV;
 
 	private Toolbar toolbar;
 	private TabLayout tabLayout;
@@ -48,6 +59,17 @@ public class MainActivity extends AppCompatActivity implements OnPokemonClickLis
 		tabLayout = (TabLayout) findViewById(R.id.main_tabs);
 		tabLayout.setupWithViewPager(viewPager);
 
+		RequestOptions requestOptions = new RequestOptions()
+			.placeholder(R.drawable.ic_poke_unknown)
+			.error(R.drawable.ic_poke_unknown)
+			.fallback(R.drawable.ic_poke_unknown)
+			.diskCacheStrategy(DiskCacheStrategy.ALL);
+		GlideApp.with(this).setDefaultRequestOptions(requestOptions);
+
+		//mLoadingPB = findViewById(R.id.pb_loading_circle);
+		//mLoadingErrorMsgTV = findViewById(R.id.tv_loading_error);
+		mLoadingPB.setVisibility(View.VISIBLE);
+
 		final PokemonListAdapter adapter = new PokemonListAdapter(new ArrayList<Pokemon>(), this);
 
 		mViewModel = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
@@ -59,18 +81,28 @@ public class MainActivity extends AppCompatActivity implements OnPokemonClickLis
 				if(pokemonListJSON == null)
 				{
 					Log.d(TAG, "Could not load PokemonList JSON");
+					mLoadingPB.setVisibility(View.INVISIBLE);
+					mLoadingErrorMsgTV.setVisibility(View.VISIBLE);
+					rv.setVisibility(View.INVISIBLE);
 					return;
 				}
-				Log.d(TAG, "JSON: " + pokemonListJSON);
+				else
+				{
+					mLoadingPB.setVisibility(View.INVISIBLE);
+					mLoadingErrorMsgTV.setVisibility(View.INVISIBLE);
+					rv.setVisibility(View.VISIBLE);
+				}
+				//Log.d(TAG, "JSON: " + pokemonListJSON);
 				PokeAPIUtils.NamedAPIResourceList apiPokemonList = PokeAPIUtils.parsePokemonListJSON(pokemonListJSON);
-				Log.d(TAG, apiPokemonList.toString());
+				//Log.d(TAG, apiPokemonList.toString());
+        		int limit = PokeAPIUtils.getPokeId(apiPokemonList.results[apiPokemonList.results.length-1].url);
+				int lastPoke = apiPokemonList.results.length - (limit - 10_000);
+				Log.d(TAG, "Count is: " + apiPokemonList.count + " of " + limit + " Last ID = " + lastPoke);
+
 				List<Pokemon> pokemon = new ArrayList<>();
 				for(PokeAPIUtils.NamedAPIResource r : apiPokemonList.results)
 				{
-					Pokemon p = new Pokemon();
-					p.identifier = r.name;
-					p.url = r.url;
-					p.id = PokeAPIUtils.getPokeId(r.url);
+					Pokemon p = new DeferredPokemonResource(PokeAPIUtils.getPokeId(r.url), r.name, r.url);
 					pokemon.add(p);
 				}
 				adapter.updatePokemon(pokemon);
