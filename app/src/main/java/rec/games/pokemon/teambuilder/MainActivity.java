@@ -5,10 +5,13 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,11 +26,27 @@ public class MainActivity extends AppCompatActivity implements OnPokemonClickLis
 	private PokeAPIViewModel mViewModel;
 	private RecyclerView rv;
 
+	private Toolbar toolbar;
+	private TabLayout tabLayout;
+	private ViewPager viewPager;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
+		//https://www.androidhive.info/2015/09/android-material-design-working-with-tabs/
+		//toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+		//setSupportActionBar(toolbar);
+
+		viewPager = (ViewPager) findViewById(R.id.main_viewpager);
+		ViewPagerAdapter adapterVP = new ViewPagerAdapter(getSupportFragmentManager());
+		adapterVP.addFragment(new PokemonListFragment(), "Pokemon");
+		adapterVP.addFragment(new PokemonListFragment(), "Teams");
+		viewPager.setAdapter(adapterVP);
+		tabLayout = (TabLayout) findViewById(R.id.main_tabs);
+		tabLayout.setupWithViewPager(viewPager);
 
 		final PokemonListAdapter adapter = new PokemonListAdapter(new ArrayList<Pokemon>(), this);
 
@@ -59,10 +78,10 @@ public class MainActivity extends AppCompatActivity implements OnPokemonClickLis
 		});
 
 
-		rv = findViewById(R.id.pokemon_list);
-		rv.setAdapter(adapter);
-		rv.setLayoutManager(new LinearLayoutManager(this));
-		rv.setItemAnimator(new DefaultItemAnimator());
+		//rv = findViewById(R.id.pokemon_list);
+		//rv.setAdapter(adapter);
+		//rv.setLayoutManager(new LinearLayoutManager(this));
+		//rv.setItemAnimator(new DefaultItemAnimator());
 
 		loadPokemonList();
 	}
