@@ -13,6 +13,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +31,13 @@ public class MainActivity extends AppCompatActivity implements OnPokemonClickLis
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
+		RequestOptions requestOptions = new RequestOptions()
+			.placeholder(R.drawable.ic_poke_unknown)
+			.placeholder(R.drawable.ic_poke_unknown)
+			.placeholder(R.drawable.ic_poke_unknown)
+			.diskCacheStrategy(DiskCacheStrategy.ALL);
+		GlideApp.with(this).setDefaultRequestOptions(requestOptions);
 
 		final PokemonListAdapter adapter = new PokemonListAdapter(new ArrayList<Pokemon>(), this);
 
@@ -58,7 +68,6 @@ public class MainActivity extends AppCompatActivity implements OnPokemonClickLis
 				adapter.updatePokemon(pokemon);
 			}
 		});
-
 
 		rv = findViewById(R.id.pokemon_list);
 		rv.setAdapter(adapter);

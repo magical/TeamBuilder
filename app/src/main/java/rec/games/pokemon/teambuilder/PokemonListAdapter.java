@@ -81,8 +81,7 @@ class PokemonViewHolder extends RecyclerView.ViewHolder
 	{
 		mName.setText(p.getName());
 		mId.setText(String.valueOf(p.getId()));
-		Glide.with(mIcon.getContext()).load(PokeAPIUtils.getSpriteUrl(p.getId()))
-			.apply(new RequestOptions().placeholder(R.drawable.ic_poke_unknown)).into(mIcon);
+		GlideApp.with(mIcon.getContext()).load(PokeAPIUtils.getSpriteUrl(p.getId())).into(mIcon);
 	}
 }
 
