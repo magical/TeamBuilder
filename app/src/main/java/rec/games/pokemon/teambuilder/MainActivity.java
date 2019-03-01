@@ -16,6 +16,9 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +37,13 @@ public class MainActivity extends AppCompatActivity implements OnPokemonClickLis
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
+		RequestOptions requestOptions = new RequestOptions()
+			.placeholder(R.drawable.ic_poke_unknown)
+			.error(R.drawable.ic_poke_unknown)
+			.fallback(R.drawable.ic_poke_unknown)
+			.diskCacheStrategy(DiskCacheStrategy.ALL);
+		GlideApp.with(this).setDefaultRequestOptions(requestOptions);
 
 		mLoadingPB = findViewById(R.id.pb_loading_circle);
 		mLoadingErrorMsgTV = findViewById(R.id.tv_loading_error);
@@ -64,6 +74,10 @@ public class MainActivity extends AppCompatActivity implements OnPokemonClickLis
 				//Log.d(TAG, "JSON: " + pokemonListJSON);
 				PokeAPIUtils.NamedAPIResourceList apiPokemonList = PokeAPIUtils.parsePokemonListJSON(pokemonListJSON);
 				//Log.d(TAG, apiPokemonList.toString());
+        int limit = PokeAPIUtils.getPokeId(apiPokemonList.results[apiPokemonList.results.length-1].url);
+				int lastPoke = apiPokemonList.results.length - (limit - 10_000);
+				Log.d(TAG, "Count is: " + apiPokemonList.count + " of " + limit + " Last ID = " + lastPoke);
+
 				List<Pokemon> pokemon = new ArrayList<>();
 				for(PokeAPIUtils.NamedAPIResource r : apiPokemonList.results)
 				{

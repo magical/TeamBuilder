@@ -19,4 +19,11 @@
         android:summary="@string/pref_image_summary"
         android:defaultValue="true" />
 
+    <!-- Pokemon ID > 10,000 -->
+    <CheckBoxPreference
+        android:key="@string/pref_limit_key"
+        android:title="@string/pref_limit_title"
+        android:summary="@string/pref_limit_summary"
+        android:defaultValue="false" />
+
 </PreferenceScreen>
