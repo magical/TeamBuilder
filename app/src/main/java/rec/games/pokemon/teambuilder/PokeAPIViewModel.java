@@ -14,25 +14,11 @@ import okhttp3.internal.annotations.EverythingIsNonNull;
 
 public class PokeAPIViewModel extends ViewModel
 {
-	private static final String TAG = PokeAPIViewModel.class.getSimpleName();
-
-	private MutableLiveData<String> mPokeListJSON;
-	private MutableLiveData<Status> mLoadingStatus;
-
-	public PokeAPIViewModel(){
-		mPokeListJSON = new MutableLiveData<>();
-		mLoadingStatus = new MutableLiveData<>();
-		mLoadingStatus.setValue(Status.LOADING);
-	}
+	private MutableLiveData<String> mPokeListJSON = new MutableLiveData<>();
 
 	MutableLiveData<String> getPokeListJSON()
 	{
 		return mPokeListJSON;
-	}
-
-	public MutableLiveData<Status> getLoadingStatus()
-	{
-		return mLoadingStatus;
 	}
 
 	void loadPokemonListJSON(String url)
@@ -40,7 +26,6 @@ public class PokeAPIViewModel extends ViewModel
 		if(url == null || mPokeListJSON == null || mPokeListJSON.getValue() != null)
 			return;
 
-		mLoadingStatus.setValue(Status.LOADING);
 		Log.d(this.getClass().getName(), "fetching JSON from pokeapi");
 		NetworkUtils.doHTTPGet(url, new Callback()
 		{
@@ -60,6 +45,5 @@ public class PokeAPIViewModel extends ViewModel
 					mPokeListJSON.postValue(body.string());
 			}
 		});
-		Log.d(TAG, "HERE");
 	}
 }
