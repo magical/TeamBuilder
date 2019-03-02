@@ -11,38 +11,18 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
 import java.util.List;
 
-//public class MainActivity extends AppCompatActivity implements OnPokemonClickListener
 public class MainActivity extends AppCompatActivity
 {
 	private static final String TAG = MainActivity.class.getSimpleName();
-
-	/*
-	private PokeAPIViewModel mViewModel;
-	private RecyclerView rv;
-
-	private ProgressBar mLoadingPB;
-	private TextView mLoadingErrorMsgTV;
-	*/
 
 	private Toolbar toolbar;
 	private TabLayout tabLayout;
@@ -54,81 +34,18 @@ public class MainActivity extends AppCompatActivity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		//https://www.androidhive.info/2015/09/android-material-design-working-with-tabs/
-		toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+		toolbar = findViewById(R.id.main_toolbar);
 		setSupportActionBar(toolbar);
-		//getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-		viewPager = (ViewPager) findViewById(R.id.main_viewpager);
+		viewPager = findViewById(R.id.main_viewpager);
 		ViewPagerAdapter adapterVP = new ViewPagerAdapter(getSupportFragmentManager());
-		adapterVP.addFragment(new PokemonListFragment(), "Pokemon");
-		adapterVP.addFragment(new TeamListFragment(), "Teams");
+		adapterVP.addFragment(new PokemonListFragment(), "Pokémon"); //tab, title in caps
+		adapterVP.addFragment(new TeamListFragment(), "Teams"); //tab
 		viewPager.setAdapter(adapterVP);
 
-		tabLayout = (TabLayout) findViewById(R.id.main_tabs);
+		tabLayout = findViewById(R.id.main_tabs);
 		tabLayout.setupWithViewPager(viewPager);
-		tabLayout.setSelectedTabIndicatorColor(ContextCompat.getColor(this, R.color.tabIndicatorColor)); //b/c API needs >=23
-
-/*
-		RequestOptions requestOptions = new RequestOptions()
-			.placeholder(R.drawable.ic_poke_unknown)
-			.error(R.drawable.ic_poke_unknown)
-			.fallback(R.drawable.ic_poke_unknown)
-			.diskCacheStrategy(DiskCacheStrategy.ALL);
-		GlideApp.with(this).setDefaultRequestOptions(requestOptions);
-
-		//mLoadingPB = findViewById(R.id.pb_loading_circle);
-		//mLoadingErrorMsgTV = findViewById(R.id.tv_loading_error);
-		//mLoadingPB.setVisibility(View.VISIBLE);
-
-		final PokemonListAdapter adapter = new PokemonListAdapter(new ArrayList<Pokemon>(), this);
-
-		mViewModel = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
-		mViewModel.getPokeListJSON().observe(this, new Observer<String>()
-		{
-			@Override
-			public void onChanged(@Nullable String pokemonListJSON)
-			{
-				if(pokemonListJSON == null)
-				{
-					Log.d(TAG, "Could not load PokemonList JSON");
-					//mLoadingPB.setVisibility(View.INVISIBLE);
-					//mLoadingErrorMsgTV.setVisibility(View.VISIBLE);
-					//rv.setVisibility(View.INVISIBLE);
-					return;
-				}
-				else
-				{
-					//mLoadingPB.setVisibility(View.INVISIBLE);
-					//mLoadingErrorMsgTV.setVisibility(View.INVISIBLE);
-					//rv.setVisibility(View.VISIBLE);
-				}
-				//Log.d(TAG, "JSON: " + pokemonListJSON);
-				PokeAPIUtils.NamedAPIResourceList apiPokemonList = PokeAPIUtils.parsePokemonListJSON(pokemonListJSON);
-				//Log.d(TAG, apiPokemonList.toString());
-        		int limit = PokeAPIUtils.getPokeId(apiPokemonList.results[apiPokemonList.results.length-1].url);
-				int lastPoke = apiPokemonList.results.length - (limit - 10_000);
-				Log.d(TAG, "Count is: " + apiPokemonList.count + " of " + limit + " Last ID = " + lastPoke);
-
-				List<Pokemon> pokemon = new ArrayList<>();
-				for(PokeAPIUtils.NamedAPIResource r : apiPokemonList.results)
-				{
-					Pokemon p = new DeferredPokemonResource(PokeAPIUtils.getPokeId(r.url), r.name, r.url);
-					pokemon.add(p);
-				}
-				adapter.updatePokemon(pokemon);
-			}
-		});
-
-
-		//rv = findViewById(R.id.pokemon_list);
-		//rv.setAdapter(adapter);
-		//rv.setLayoutManager(new LinearLayoutManager(this));
-		//rv.setItemAnimator(new DefaultItemAnimator());
-
-		loadPokemonList();
-
-		*/
+		tabLayout.setSelectedTabIndicatorColor(ContextCompat.getColor(this, R.color.tabIndicatorColor)); //b/c API of just getColor() needs >=23
 	}
 
 	class ViewPagerAdapter extends FragmentPagerAdapter {
@@ -160,23 +77,6 @@ public class MainActivity extends AppCompatActivity
 			return mFragmentTitleList.get(i);
 		}
 	}
-
-	/*
-	public void loadPokemonList()
-	{
-		String pokemonListURL = PokeAPIUtils.buildPokemonListURL(10000, 0);
-		Log.d(TAG, "URL: " + pokemonListURL);
-
-		mViewModel.loadPokemonListJSON(pokemonListURL);
-	}
-
-
-	@Override
-	public void onPokemonClicked(int position)
-	{
-		// TODO
-	}
-	*/
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
