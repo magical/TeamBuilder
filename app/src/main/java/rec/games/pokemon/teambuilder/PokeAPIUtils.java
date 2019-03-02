@@ -15,6 +15,7 @@ public class PokeAPIUtils
 	private final static String POKE_API_OFFSET_PARAM = "offset";
 	private final static String POKE_API_SPRITE_URL = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/";
 	private final static String POKE_API_SPRITE_FILE_TYPE = ".png";
+	//https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other-sprites/official-artwork/1.png
 
 	static class NamedAPIResourceList implements Serializable
 	{

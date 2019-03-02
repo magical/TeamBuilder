@@ -2,6 +2,7 @@ package rec.games.pokemon.teambuilder;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -119,11 +120,12 @@ public class PokemonListFragment extends Fragment implements OnPokemonClickListe
 		mViewModel.loadPokemonListJSON(pokemonListURL);
 	}
 
-
 	//@Override
 	public void onPokemonClicked(int position)
 	{
-		// TODO
+		// TODO - open in new window
+		Intent intent = new Intent(getContext(), PokemonItemDetailActivity.class);
+		startActivity(intent);
 	}
 
 }

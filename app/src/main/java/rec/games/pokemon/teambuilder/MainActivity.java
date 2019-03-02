@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -36,6 +37,13 @@ public class MainActivity extends AppCompatActivity
 
 		toolbar = findViewById(R.id.main_toolbar);
 		setSupportActionBar(toolbar);
+
+		if (getSupportActionBar() != null)
+		{
+			ActionBar actionBar = getSupportActionBar();
+			actionBar.setElevation(0);
+			actionBar.setHomeButtonEnabled(true);
+		}
 
 		viewPager = findViewById(R.id.main_viewpager);
 		ViewPagerAdapter adapterVP = new ViewPagerAdapter(getSupportFragmentManager());
