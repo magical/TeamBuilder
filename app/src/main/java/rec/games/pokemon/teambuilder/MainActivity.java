@@ -6,6 +6,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -48,17 +51,21 @@ public class MainActivity extends AppCompatActivity implements OnPokemonClickLis
 		setContentView(R.layout.activity_main);
 
 		//https://www.androidhive.info/2015/09/android-material-design-working-with-tabs/
-		//toolbar = (Toolbar) findViewById(R.id.main_toolbar);
-		//setSupportActionBar(toolbar);
+		toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+		setSupportActionBar(toolbar);
+		//getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 		viewPager = (ViewPager) findViewById(R.id.main_viewpager);
 		ViewPagerAdapter adapterVP = new ViewPagerAdapter(getSupportFragmentManager());
 		adapterVP.addFragment(new PokemonListFragment(), "Pokemon");
 		adapterVP.addFragment(new PokemonListFragment(), "Teams");
 		viewPager.setAdapter(adapterVP);
+
 		tabLayout = (TabLayout) findViewById(R.id.main_tabs);
 		tabLayout.setupWithViewPager(viewPager);
 
+
+/*
 		RequestOptions requestOptions = new RequestOptions()
 			.placeholder(R.drawable.ic_poke_unknown)
 			.error(R.drawable.ic_poke_unknown)
@@ -68,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements OnPokemonClickLis
 
 		//mLoadingPB = findViewById(R.id.pb_loading_circle);
 		//mLoadingErrorMsgTV = findViewById(R.id.tv_loading_error);
-		mLoadingPB.setVisibility(View.VISIBLE);
+		//mLoadingPB.setVisibility(View.VISIBLE);
 
 		final PokemonListAdapter adapter = new PokemonListAdapter(new ArrayList<Pokemon>(), this);
 
@@ -81,16 +88,16 @@ public class MainActivity extends AppCompatActivity implements OnPokemonClickLis
 				if(pokemonListJSON == null)
 				{
 					Log.d(TAG, "Could not load PokemonList JSON");
-					mLoadingPB.setVisibility(View.INVISIBLE);
-					mLoadingErrorMsgTV.setVisibility(View.VISIBLE);
-					rv.setVisibility(View.INVISIBLE);
+					//mLoadingPB.setVisibility(View.INVISIBLE);
+					//mLoadingErrorMsgTV.setVisibility(View.VISIBLE);
+					//rv.setVisibility(View.INVISIBLE);
 					return;
 				}
 				else
 				{
-					mLoadingPB.setVisibility(View.INVISIBLE);
-					mLoadingErrorMsgTV.setVisibility(View.INVISIBLE);
-					rv.setVisibility(View.VISIBLE);
+					//mLoadingPB.setVisibility(View.INVISIBLE);
+					//mLoadingErrorMsgTV.setVisibility(View.INVISIBLE);
+					//rv.setVisibility(View.VISIBLE);
 				}
 				//Log.d(TAG, "JSON: " + pokemonListJSON);
 				PokeAPIUtils.NamedAPIResourceList apiPokemonList = PokeAPIUtils.parsePokemonListJSON(pokemonListJSON);
@@ -116,6 +123,38 @@ public class MainActivity extends AppCompatActivity implements OnPokemonClickLis
 		//rv.setItemAnimator(new DefaultItemAnimator());
 
 		loadPokemonList();
+
+		*/
+	}
+
+	class ViewPagerAdapter extends FragmentPagerAdapter {
+		private final List<Fragment> mFragmentList = new ArrayList<>();
+		private final List<String> mFragmentTitleList = new ArrayList<>();
+
+		public ViewPagerAdapter(FragmentManager manager){
+			super(manager);
+		}
+
+		@Override
+		public Fragment getItem(int i)
+		{
+			return mFragmentList.get(i);
+		}
+
+		@Override
+		public int getCount()
+		{
+			return mFragmentList.size();
+		}
+
+		public void addFragment(Fragment fragment, String title){
+			mFragmentList.add(fragment);
+			mFragmentTitleList.add(title);
+		}
+
+		public CharSequence getPageTitle(int i){
+			return mFragmentTitleList.get(i);
+		}
 	}
 
 	public void loadPokemonList()
