@@ -9,6 +9,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -58,12 +59,12 @@ public class MainActivity extends AppCompatActivity implements OnPokemonClickLis
 		viewPager = (ViewPager) findViewById(R.id.main_viewpager);
 		ViewPagerAdapter adapterVP = new ViewPagerAdapter(getSupportFragmentManager());
 		adapterVP.addFragment(new PokemonListFragment(), "Pokemon");
-		adapterVP.addFragment(new PokemonListFragment(), "Teams");
+		adapterVP.addFragment(new TeamListFragment(), "Teams");
 		viewPager.setAdapter(adapterVP);
 
 		tabLayout = (TabLayout) findViewById(R.id.main_tabs);
 		tabLayout.setupWithViewPager(viewPager);
-
+		tabLayout.setSelectedTabIndicatorColor(ContextCompat.getColor(this, R.color.tabIndicatorColor)); //b/c API needs >=23
 
 /*
 		RequestOptions requestOptions = new RequestOptions()
