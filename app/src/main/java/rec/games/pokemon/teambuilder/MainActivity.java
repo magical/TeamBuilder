@@ -31,15 +31,18 @@ import com.bumptech.glide.request.RequestOptions;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements OnPokemonClickListener
+//public class MainActivity extends AppCompatActivity implements OnPokemonClickListener
+public class MainActivity extends AppCompatActivity
 {
 	private static final String TAG = MainActivity.class.getSimpleName();
 
+	/*
 	private PokeAPIViewModel mViewModel;
 	private RecyclerView rv;
 
 	private ProgressBar mLoadingPB;
 	private TextView mLoadingErrorMsgTV;
+	*/
 
 	private Toolbar toolbar;
 	private TabLayout tabLayout;
@@ -158,6 +161,7 @@ public class MainActivity extends AppCompatActivity implements OnPokemonClickLis
 		}
 	}
 
+	/*
 	public void loadPokemonList()
 	{
 		String pokemonListURL = PokeAPIUtils.buildPokemonListURL(10000, 0);
@@ -166,11 +170,13 @@ public class MainActivity extends AppCompatActivity implements OnPokemonClickLis
 		mViewModel.loadPokemonListJSON(pokemonListURL);
 	}
 
+
 	@Override
 	public void onPokemonClicked(int position)
 	{
 		// TODO
 	}
+	*/
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
