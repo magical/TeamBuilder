@@ -17,10 +17,19 @@ abstract class PokemonType
 		return id;
 	}
 
+	public boolean isDeferred()
+	{
+		return this instanceof DeferredPokemonTypeResource;
+	}
+
 	//subclasses may or may not have these. Or they could return different values
-	public abstract boolean isLoaded();
 	public abstract String getName();
 	public abstract Double getDamageMultiplier(PokemonType pokemonType);
+
+	public boolean isLoaded()
+	{
+		return false;
+	}
 }
 
 class DeferredPokemonTypeResource extends PokemonType
@@ -34,12 +43,6 @@ class DeferredPokemonTypeResource extends PokemonType
 
 		this.resourceName = resourceName;
 		this.url = url;
-	}
-
-	@Override
-	public boolean isLoaded()
-	{
-		return false;
 	}
 
 	@Override
@@ -81,12 +84,6 @@ class PokemonTypeResource extends PokemonType
 	}
 
 	@Override
-	public boolean isLoaded()
-	{
-		return true;
-	}
-
-	@Override
 	public String getName()
 	{
 		return resourceName;
@@ -96,5 +93,11 @@ class PokemonTypeResource extends PokemonType
 	public Double getDamageMultiplier(PokemonType pokemonType)
 	{
 		return damageMultipliers.get(pokemonType.getId());
+	}
+
+	@Override
+	public boolean isLoaded()
+	{
+		return true;
 	}
 }

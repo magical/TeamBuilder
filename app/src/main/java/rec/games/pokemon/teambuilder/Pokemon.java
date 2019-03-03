@@ -19,9 +19,18 @@ abstract class Pokemon
 		return id;
 	}
 
+	public boolean isDeferred()
+	{
+		return this instanceof DeferredPokemonResource;
+	}
+
 	//subclasses may or may not have these. Or they could return different values
-	public abstract boolean isLoaded();
 	public abstract String getName();
+
+	public boolean isLoaded()
+	{
+		return false;
+	}
 }
 
 class DeferredPokemonResource extends Pokemon
@@ -35,12 +44,6 @@ class DeferredPokemonResource extends Pokemon
 
 		this.resourceName = resourceName;
 		this.url = url;
-	}
-
-	@Override
-	public boolean isLoaded()
-	{
-		return false;
 	}
 
 	@Override
@@ -78,14 +81,22 @@ class PokemonResource extends Pokemon
 	}
 
 	@Override
-	public boolean isLoaded()
-	{
-		return true;
-	}
-
-	@Override
 	public String getName()
 	{
 		return resourceName;
+	}
+
+	@Override
+	public boolean isLoaded()
+	{
+		for(LiveData<PokemonType> pokemonTypeReference: types)
+			if(pokemonTypeReference.getValue() == null || pokemonTypeReference.getValue().isDeferred())
+				return false;
+
+		for(LiveData<PokemonMove> pokemonMoveReference: moves)
+			if(pokemonMoveReference.getValue() == null || pokemonMoveReference.getValue().isDeferred())
+				return false;
+
+		return true;
 	}
 }

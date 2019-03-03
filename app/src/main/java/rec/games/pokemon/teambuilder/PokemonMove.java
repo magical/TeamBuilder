@@ -1,6 +1,7 @@
 package rec.games.pokemon.teambuilder;
 
 import android.arch.lifecycle.LiveData;
+import android.support.annotation.NonNull;
 
 import java.util.HashMap;
 
@@ -19,11 +20,20 @@ abstract class PokemonMove
 		return id;
 	}
 
+	public boolean isDeferred()
+	{
+		return this instanceof DeferredPokemonMoveResource;
+	}
+
 	//subclasses may or may not have these. Or they could return different values
-	public abstract boolean isLoaded();
 	public abstract String getName();
 	public abstract PokemonType getType();
 	public abstract Integer getPower();
+
+	public boolean isLoaded()
+	{
+		return false;
+	}
 
 	public boolean isAttackMove()
 	{
@@ -44,12 +54,6 @@ class DeferredPokemonMoveResource extends PokemonMove
 
 		this.resourceName = resourceName;
 		this.url = url;
-	}
-
-	@Override
-	public boolean isLoaded()
-	{
-		return false;
 	}
 
 	@Override
@@ -96,12 +100,6 @@ class PokemonMoveResource extends PokemonMove
 	}
 
 	@Override
-	public boolean isLoaded()
-	{
-		return true;
-	}
-
-	@Override
 	public String getName()
 	{
 		return resourceName;
@@ -117,5 +115,14 @@ class PokemonMoveResource extends PokemonMove
 	public Integer getPower()
 	{
 		return power;
+	}
+
+	@Override
+	public boolean isLoaded()
+	{
+		if(type.getValue() == null)
+			return false;
+
+		return !type.getValue().isDeferred();
 	}
 }
