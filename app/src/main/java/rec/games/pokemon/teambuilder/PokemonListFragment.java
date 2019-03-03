@@ -14,6 +14,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -33,6 +35,8 @@ public class PokemonListFragment extends Fragment implements OnPokemonClickListe
 
 	private ProgressBar mLoadingPB;
 	private TextView mLoadingErrorMsgTV;
+	private LinearLayout mLoadingErrorLL;
+	private Button mLoadingErrorBtn;
 
 	public PokemonListFragment()
 	{
@@ -63,8 +67,12 @@ public class PokemonListFragment extends Fragment implements OnPokemonClickListe
 		rv.setItemAnimator(new DefaultItemAnimator());
 
 		mLoadingPB = view.findViewById(R.id.pb_loading_circle);
-		mLoadingErrorMsgTV = view.findViewById(R.id.tv_loading_error);
 		mLoadingPB.setVisibility(View.VISIBLE);
+
+		//loading error message
+		mLoadingErrorMsgTV = view.findViewById(R.id.tv_loading_error);
+		mLoadingErrorLL = view.findViewById(R.id.ll_loading_error);
+		mLoadingErrorBtn = view.findViewById(R.id.btn_loading_error);
 
 		final PokemonListAdapter adapter = new PokemonListAdapter(new ArrayList<Pokemon>(), this);
 
@@ -77,15 +85,21 @@ public class PokemonListFragment extends Fragment implements OnPokemonClickListe
 				if(pokemonListJSON == null)
 				{
 					Log.d(TAG, "Could not load PokemonList JSON");
+					rv.setVisibility(View.INVISIBLE);
+
 					mLoadingPB.setVisibility(View.INVISIBLE);
 					mLoadingErrorMsgTV.setVisibility(View.VISIBLE);
-					rv.setVisibility(View.INVISIBLE);
+					mLoadingErrorLL.setVisibility(LinearLayout.VISIBLE);
+					mLoadingErrorBtn.setVisibility(View.VISIBLE);
 					return;
 				}
 				else
 				{
 					mLoadingPB.setVisibility(View.INVISIBLE);
 					mLoadingErrorMsgTV.setVisibility(View.INVISIBLE);
+					mLoadingErrorLL.setVisibility(LinearLayout.INVISIBLE);
+					mLoadingErrorBtn.setVisibility(View.INVISIBLE);
+
 					rv.setVisibility(View.VISIBLE);
 				}
 				//Log.d(TAG, "JSON: " + pokemonListJSON);
@@ -102,6 +116,16 @@ public class PokemonListFragment extends Fragment implements OnPokemonClickListe
 					pokemon.add(p);
 				}
 				adapter.updatePokemon(pokemon);
+			}
+		});
+
+		mLoadingErrorBtn.setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				Log.d(TAG, "Refreshing");
+				loadPokemonList();
 			}
 		});
 
