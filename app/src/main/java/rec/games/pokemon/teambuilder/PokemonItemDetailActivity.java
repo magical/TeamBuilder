@@ -8,6 +8,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 public class PokemonItemDetailActivity extends AppCompatActivity
 {
@@ -20,14 +21,13 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_pokemon_item_detail);
 
-		Toolbar toolbar = findViewById(R.id.toolbar);
-		setSupportActionBar(toolbar);
-
 		if(getSupportActionBar() != null)
 		{
 			getSupportActionBar().setDisplayHomeAsUpEnabled(true); //show back button
+			getSupportActionBar().setTitle("Pokemon Detail");
 		}
 		Intent intent = getIntent();
+
 	}
 
 	@Override

@@ -12,4 +12,9 @@
         <item name="windowActionBar">false</item>
     </style>
 
+    <style name="AppTheme.Toolbar" parent="AppTheme">
+        <item name="windowNoTitle">false</item>
+        <item name="windowActionBar">true</item>
+    </style>
+
 </resources>
