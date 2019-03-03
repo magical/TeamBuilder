@@ -7,11 +7,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-     <TextView
+     <ImageView
+         android:id="@+id/iv_pokemon_detail_artwork"
+         android:layout_gravity="center"
+         android:layout_width="200dp"
+         android:layout_height="200dp"
+         android:src="@drawable/ic_poke_unknown"/>
+
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:padding="16dp"
         android:textSize="22sp"
-        android:text="Pokemon item..."/>
+        android:text="Pokemon"/>
 
 </LinearLayout>

@@ -29,17 +29,4 @@ public class SettingsActivity extends AppCompatActivity
 			getSupportActionBar().setTitle("PokéSettings");
 		}
 	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
-		switch(item.getItemId()) {
-			case android.R.id.home:
-				this.finish(); //go back to main
-				return true;
-			default:
-				return super.onOptionsItemSelected(item);
-
-		}
-	}
 }

@@ -124,7 +124,9 @@ public class PokemonListFragment extends Fragment implements OnPokemonClickListe
 	public void onPokemonClicked(int position)
 	{
 		// TODO - open in new window
+		Log.d(TAG, "Position: " + position);
 		Intent intent = new Intent(getContext(), PokemonItemDetailActivity.class);
+		intent.putExtra(PokeAPIUtils.POKE_ITEM, position); //temporary assignment
 		startActivity(intent);
 	}
 

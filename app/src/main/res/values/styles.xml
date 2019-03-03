@@ -8,13 +8,13 @@
         <item name="colorAccent">@color/colorAccent</item>
 
         <!-- needed for tabs -->
-        <item name="windowNoTitle">true</item>
-        <item name="windowActionBar">false</item>
-    </style>
-
-    <style name="AppTheme.Toolbar" parent="AppTheme">
         <item name="windowNoTitle">false</item>
         <item name="windowActionBar">true</item>
+    </style>
+
+    <style name="AppTheme.NoToolbar" parent="AppTheme">
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
     </style>
 
 </resources>

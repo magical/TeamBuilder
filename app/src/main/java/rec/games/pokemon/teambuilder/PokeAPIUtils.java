@@ -9,13 +9,14 @@ import java.io.Serializable;
 
 public class PokeAPIUtils
 {
+	public static final String POKE_ITEM = "rec.games.pokemon.teambuilder.PokeAPIUtils";
 	private final static String POKE_API_BASE_URL = "https://pokeapi.co/api/v2/";
 	private final static String POKE_API_POKEMON_ENDPOINT = "pokemon";
 	private final static String POKE_API_LIMIT_PARAM = "limit";
 	private final static String POKE_API_OFFSET_PARAM = "offset";
 	private final static String POKE_API_SPRITE_URL = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/";
+	private final static String POKE_API_ARTWORK_URL = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other-sprites/official-artwork/";
 	private final static String POKE_API_SPRITE_FILE_TYPE = ".png";
-	//https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other-sprites/official-artwork/1.png
 
 	static class NamedAPIResourceList implements Serializable
 	{
@@ -125,4 +126,10 @@ public class PokeAPIUtils
 		return Uri.parse(POKE_API_SPRITE_URL).buildUpon()
 			.appendEncodedPath(Integer.toString(id) + POKE_API_SPRITE_FILE_TYPE).build().toString();
 	}
+
+	static String getArtworkUrl(int id){
+		return Uri.parse(POKE_API_ARTWORK_URL).buildUpon()
+			.appendEncodedPath(Integer.toString(id) + POKE_API_SPRITE_FILE_TYPE).build().toString();
+	}
+
 }
