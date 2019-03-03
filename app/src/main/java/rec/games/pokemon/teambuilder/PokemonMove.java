@@ -20,6 +20,7 @@ abstract class PokemonMove
 	}
 
 	//subclasses may or may not have these. Or they could return different values
+	public abstract boolean isLoaded();
 	public abstract String getName();
 	public abstract PokemonType getType();
 	public abstract Integer getPower();
@@ -28,7 +29,7 @@ abstract class PokemonMove
 	{
 		Integer power = getPower();
 
-		return power != null && power.intValue() > 0;
+		return power != null && power > 0;
 	}
 }
 
@@ -43,6 +44,12 @@ class DeferredPokemonMoveResource extends PokemonMove
 
 		this.resourceName = resourceName;
 		this.url = url;
+	}
+
+	@Override
+	public boolean isLoaded()
+	{
+		return false;
 	}
 
 	@Override
@@ -84,10 +91,15 @@ class PokemonMoveResource extends PokemonMove
 		super(id);
 
 		this.resourceName = resourceName;
-		this.power = Integer.valueOf(power);
+		this.power = power;
 		this.type = type;
 	}
 
+	@Override
+	public boolean isLoaded()
+	{
+		return true;
+	}
 
 	@Override
 	public String getName()

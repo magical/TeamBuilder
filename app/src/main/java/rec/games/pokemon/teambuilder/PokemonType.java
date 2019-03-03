@@ -18,6 +18,7 @@ abstract class PokemonType
 	}
 
 	//subclasses may or may not have these. Or they could return different values
+	public abstract boolean isLoaded();
 	public abstract String getName();
 	public abstract Double getDamageMultiplier(PokemonType pokemonType);
 }
@@ -33,6 +34,12 @@ class DeferredPokemonTypeResource extends PokemonType
 
 		this.resourceName = resourceName;
 		this.url = url;
+	}
+
+	@Override
+	public boolean isLoaded()
+	{
+		return false;
 	}
 
 	@Override
@@ -71,6 +78,12 @@ class PokemonTypeResource extends PokemonType
 
 		this.resourceName = resourceName;
 		this.damageMultipliers = damageMultipliers;
+	}
+
+	@Override
+	public boolean isLoaded()
+	{
+		return true;
 	}
 
 	@Override

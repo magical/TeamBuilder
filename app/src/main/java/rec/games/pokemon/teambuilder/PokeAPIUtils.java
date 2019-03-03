@@ -122,6 +122,24 @@ public class PokeAPIUtils
 		return gson.fromJson(namedAPIResourceListJSON, NamedAPIResourceList.class);
 	}
 
+	static Pokemon parsePokemonJSON(String pokemonJSON)
+	{
+		Gson gson = new Gson();
+		return gson.fromJson(pokemonJSON, Pokemon.class);
+	}
+
+	static Move parseMoveJSON(String moveJSON)
+	{
+		Gson gson = new Gson();
+		return gson.fromJson(moveJSON, Move.class);
+	}
+
+	static Type parseTypeJSON(String typeJSON)
+	{
+		Gson gson = new Gson();
+		return gson.fromJson(typeJSON, Type.class);
+	}
+
 	static int getId(String url)
 	{
 		if(url == null)

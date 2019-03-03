@@ -20,6 +20,7 @@ abstract class Pokemon
 	}
 
 	//subclasses may or may not have these. Or they could return different values
+	public abstract boolean isLoaded();
 	public abstract String getName();
 }
 
@@ -34,6 +35,12 @@ class DeferredPokemonResource extends Pokemon
 
 		this.resourceName = resourceName;
 		this.url = url;
+	}
+
+	@Override
+	public boolean isLoaded()
+	{
+		return false;
 	}
 
 	@Override
@@ -53,21 +60,27 @@ class PokemonResource extends Pokemon
 	//TODO: later down the road we should use the pokemon-species name or the pokemon-form name
 	protected String resourceName;
 
-	protected LiveData<PokemonType> type1;
-	//if type2 is not null, then this pokemon possess a second type
-	protected LiveData<PokemonType> type2;
+	protected ArrayList<LiveData<PokemonType>> types;
 
 	//in java, object arrays default array value is null
 	//so if a move in this array is not null, then this pokemon is using that move
-	protected ArrayList<LiveData<PokemonMove>> moves = new ArrayList<>(4);
+	protected ArrayList<LiveData<PokemonMove>> moves;
 
 	//TODO: maybe also store a reference to the sprite's here as well
 
-	public PokemonResource(int id, String resourceName)
+	public PokemonResource(int id, String resourceName, ArrayList<LiveData<PokemonType>> types, ArrayList<LiveData<PokemonMove>> moves)
 	{
 		super(id);
 
 		this.resourceName = resourceName;
+		this.types = types;
+		this.moves = moves;
+	}
+
+	@Override
+	public boolean isLoaded()
+	{
+		return true;
 	}
 
 	@Override

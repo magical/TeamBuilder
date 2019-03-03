@@ -3,12 +3,13 @@ package rec.games.pokemon.teambuilder;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
+import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
+import java.util.concurrent.Semaphore;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -164,18 +165,227 @@ class PokeAPIViewModel extends ViewModel
 		return pokemonCache;
 	}
 
-	//TODO: later we should refactor away List<Pokemon>, just doing the minimum amount to get the application to compile/run
-	List<Pokemon> extractPokemonListFromCache()
+	LiveDataList<Pokemon> extractPokemonListFromCache()
 	{
 		if(pokemonCache.getValue() == null)
 			return null;
 
 		Collection<LiveData<Pokemon>> pokemonReferences = pokemonCache.getValue().values();
-		List<Pokemon> pokemonList = new ArrayList<>(pokemonReferences.size());
+		return new LiveDataList<>(pokemonReferences);
+	}
 
-		for(LiveData<Pokemon> pokemonReference: pokemonReferences)
-			pokemonList.add(pokemonReference.getValue());
+	private LiveData<PokemonType> getTypeReferenceFromCache(int id)
+	{
+		if(typeCache.getValue() == null)
+			return null;
 
-		return pokemonList;
+		return typeCache.getValue().get(id);
+	}
+
+	private LiveData<PokemonMove> getMoveReferenceFromCache(int id)
+	{
+		if(moveCache.getValue() == null)
+			return null;
+
+		return moveCache.getValue().get(id);
+	}
+
+	private LiveData<Pokemon> getPokemonReferenceFromCache(int id)
+	{
+		if(pokemonCache.getValue() == null)
+			return null;
+
+		return pokemonCache.getValue().get(id);
+	}
+
+	PokemonType getTypeFromCache(int id)
+	{
+		LiveData<PokemonType> pokemonTypeReference = getTypeReferenceFromCache(id);
+		if(pokemonTypeReference == null)
+			return null;
+
+		return pokemonTypeReference.getValue();
+	}
+
+	PokemonMove getMoveFromCache(int id)
+	{
+		LiveData<PokemonMove> pokemonMoveReference = getMoveReferenceFromCache(id);
+		if(pokemonMoveReference == null)
+			return null;
+
+		return pokemonMoveReference.getValue();
+	}
+
+	Pokemon getPokemonFromCache(int id)
+	{
+		LiveData<Pokemon> pokemonReference = getPokemonReferenceFromCache(id);
+		if(pokemonReference == null)
+			return null;
+
+		return pokemonReference.getValue();
+	}
+
+	void loadType(int id, final Semaphore sem)
+	{
+		PokemonType pokemonType = getTypeFromCache(id);
+		if(pokemonType.isLoaded())
+		{
+			sem.release();
+			return;
+		}
+
+		final DeferredPokemonTypeResource deferredPokemonType = (DeferredPokemonTypeResource) pokemonType;
+		NetworkUtils.doHTTPGet(deferredPokemonType.getUrl(), new Callback()
+		{
+			@EverythingIsNonNull
+			@Override
+			public void onFailure(Call call, IOException e)
+			{
+				Log.d(PokeAPIViewModel.class.getSimpleName(), "unable to request type at url: " + deferredPokemonType.getUrl());
+				sem.release();
+			}
+
+			@EverythingIsNonNull
+			@Override
+			public void onResponse(Call call, Response response) throws IOException
+			{
+				ResponseBody body = response.body();
+				if(body == null)
+				{
+					Log.d(PokeAPIViewModel.class.getSimpleName(), "Body was null");
+					sem.release();
+					return;
+				}
+
+				String pokemonTypeJSON = body.string();
+				PokeAPIUtils.Type typeData = PokeAPIUtils.parseTypeJSON(pokemonTypeJSON);
+
+				//TODO: actually parse out the damageMultipliers
+				PokemonTypeResource newPokemonType = new PokemonTypeResource(typeData.id, typeData.name, new HashMap<Integer, Double>());
+				MutableLiveData<PokemonType> pokemonTypeReference = (MutableLiveData<PokemonType>) getTypeReferenceFromCache(newPokemonType.id);
+				pokemonTypeReference.postValue(newPokemonType);
+
+				sem.release();
+			}
+		});
+	}
+
+	void loadMove(int id, final Semaphore sem)
+	{
+		PokemonMove pokemonMove = getMoveFromCache(id);
+		if(pokemonMove.isLoaded())
+		{
+			sem.release();
+			return;
+		}
+
+		final DeferredPokemonMoveResource deferredPokemonMove = (DeferredPokemonMoveResource) pokemonMove;
+		NetworkUtils.doHTTPGet(deferredPokemonMove.getUrl(), new Callback()
+		{
+			@EverythingIsNonNull
+			@Override
+			public void onFailure(Call call, IOException e)
+			{
+				Log.d(PokeAPIViewModel.class.getSimpleName(), "unable to request type at url: " + deferredPokemonMove.getUrl());
+				sem.release();
+			}
+
+			@EverythingIsNonNull
+			@Override
+			public void onResponse(Call call, Response response) throws IOException
+			{
+				ResponseBody body = response.body();
+				if(body == null)
+				{
+					Log.d(PokeAPIViewModel.class.getSimpleName(), "Body was null");
+					sem.release();
+					return;
+				}
+
+				String pokemonMoveJSON = body.string();
+				PokeAPIUtils.Move moveData = PokeAPIUtils.parseMoveJSON(pokemonMoveJSON);
+
+				Semaphore waitUntil = new Semaphore(0);
+
+				int typeId = PokeAPIUtils.getId(moveData.type.url);
+				loadType(typeId, waitUntil);
+
+				waitUntil.acquireUninterruptibly();
+
+				PokemonMoveResource newPokemonMove = new PokemonMoveResource(moveData.id, moveData.name, moveData.power, getTypeReferenceFromCache(typeId));
+				MutableLiveData<PokemonMove> pokemonMoveReference = (MutableLiveData<PokemonMove>) getMoveReferenceFromCache(moveData.id);
+				pokemonMoveReference.postValue(newPokemonMove);
+
+				sem.release();
+			}
+		});
+	}
+
+	void loadPokemon(int id)
+	{
+		Pokemon pokemon = getPokemonFromCache(id);
+		if(pokemon.isLoaded())
+			return;
+
+		final DeferredPokemonResource deferredPokemon = (DeferredPokemonResource) pokemon;
+		NetworkUtils.doHTTPGet(deferredPokemon.getUrl(), new Callback()
+		{
+			@EverythingIsNonNull
+			@Override
+			public void onFailure(Call call, IOException e)
+			{
+				Log.d(PokeAPIViewModel.class.getSimpleName(), "unable to request pokemon at url: " + deferredPokemon.getUrl());
+			}
+
+			@EverythingIsNonNull
+			@Override
+			public void onResponse(Call call, Response response) throws IOException
+			{
+				ResponseBody body = response.body();
+				if(body == null)
+				{
+					Log.d(PokeAPIViewModel.class.getSimpleName(), "Body was null");
+					return;
+				}
+
+				String pokemonJSON = body.string();
+				PokeAPIUtils.Pokemon pokemonData = PokeAPIUtils.parsePokemonJSON(pokemonJSON);
+
+
+				//we can only acquire a semaphore when permits >= 1
+				//so 1 - thingsToWaitOn is the magic number for
+				Semaphore waitUntil = new Semaphore(1 - pokemonData.types.length - pokemonData.moves.length);
+
+				for(PokeAPIUtils.PokemonType pokeAPIType: pokemonData.types)
+				{
+					int id = PokeAPIUtils.getId(pokeAPIType.type.url);
+					loadType(id, waitUntil);
+				}
+
+				for(PokeAPIUtils.PokemonMove pokeAPIMove: pokemonData.moves)
+				{
+					int id = PokeAPIUtils.getId(pokeAPIMove.move.url);
+					loadMove(id, waitUntil);
+				}
+
+				waitUntil.acquireUninterruptibly();
+
+				ArrayList<LiveData<PokemonType>> types = new ArrayList<>(pokemonData.types.length);
+				for(PokeAPIUtils.PokemonType pokeAPIType: pokemonData.types)
+				{
+					int id = PokeAPIUtils.getId(pokeAPIType.type.url);
+					types.add(getTypeReferenceFromCache(id));
+				}
+				ArrayList<LiveData<PokemonMove>> moves = new ArrayList<>(pokemonData.moves.length);
+				for(PokeAPIUtils.PokemonMove pokeAPIMove: pokemonData.moves)
+				{
+					int id = PokeAPIUtils.getId(pokeAPIMove.move.url);
+					moves.add(getMoveReferenceFromCache(id));
+				}
+				PokemonResource newPokemon = new PokemonResource(pokemonData.id, pokemonData.name, types, moves);
+				MutableLiveData<Pokemon> pokemonReference = (MutableLiveData<Pokemon>) getPokemonReferenceFromCache(pokemonData.id);
+				pokemonReference.postValue(newPokemon);
+			}
+		});
 	}
 }

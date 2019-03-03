@@ -1,6 +1,8 @@
 package rec.games.pokemon.teambuilder;
 
+import android.arch.lifecycle.LifecycleOwner;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,26 +10,37 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
-
-import java.util.List;
-
 public class PokemonListAdapter extends RecyclerView.Adapter<PokemonViewHolder>
 {
-	private List<Pokemon> mPokemon;
+	private LiveDataList<Pokemon> mPokemon;
 	private OnPokemonClickListener mListener;
+	private LifecycleOwner mOwner;
 
-	PokemonListAdapter(List<Pokemon> pokemon, OnPokemonClickListener l)
+	private final ItemObserver<Pokemon> cacheNotifier = new ItemObserver<Pokemon>()
+	{
+		@Override
+		public void onItemChanged(@Nullable Pokemon pokemon, int index)
+		{
+			if(pokemon instanceof PokemonResource)
+				notifyItemChanged(index);
+		}
+	};
+
+	PokemonListAdapter(LiveDataList<Pokemon> pokemon, OnPokemonClickListener l, LifecycleOwner owner)
 	{
 		this.mPokemon = pokemon;
 		this.mListener = l;
+		this.mOwner = owner;
+
+		mPokemon.observeCollection(mOwner, cacheNotifier);
 	}
 
-	public void updatePokemon(List<Pokemon> pokemon)
+	public void updatePokemon(LiveDataList<Pokemon> pokemon)
 	{
 		this.mPokemon = pokemon;
 		notifyDataSetChanged();
+
+		mPokemon.observeCollection(mOwner, cacheNotifier);
 	}
 
 	@NonNull
@@ -48,7 +61,7 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonViewHolder>
 	@Override
 	public void onBindViewHolder(@NonNull PokemonViewHolder viewHolder, int i)
 	{
-		viewHolder.bind(mPokemon.get(i));
+		viewHolder.bind(mPokemon.getValue(i));
 	}
 }
 
@@ -81,7 +94,9 @@ class PokemonViewHolder extends RecyclerView.ViewHolder
 	{
 		mName.setText(p.getName());
 		mId.setText(String.valueOf(p.getId()));
-		GlideApp.with(mIcon.getContext()).load(PokeAPIUtils.getSpriteUrl(p.getId())).into(mIcon);
+		GlideApp.with(mIcon.getContext())
+			.load(PokeAPIUtils.getSpriteUrl(p.getId()))
+			.into(mIcon);
 	}
 }
 

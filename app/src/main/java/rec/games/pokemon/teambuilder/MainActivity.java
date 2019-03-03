@@ -20,9 +20,7 @@ import android.widget.TextView;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements OnPokemonClickListener
 {
@@ -51,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements OnPokemonClickLis
 		mLoadingErrorMsgTV = findViewById(R.id.tv_loading_error);
 		mLoadingPB.setVisibility(View.VISIBLE);
 
-		final PokemonListAdapter adapter = new PokemonListAdapter(new ArrayList<Pokemon>(), this);
+		final PokemonListAdapter adapter = new PokemonListAdapter(new LiveDataList<Pokemon>(), this, this);
 
 		mViewModel = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
 		mViewModel.getPokemonCache().observe(this, new Observer<HashMap<Integer, LiveData<Pokemon>>>()
@@ -74,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements OnPokemonClickLis
 					rv.setVisibility(View.VISIBLE);
 				}
 
-				List<Pokemon> pokemon = mViewModel.extractPokemonListFromCache();
+				LiveDataList<Pokemon> pokemon = mViewModel.extractPokemonListFromCache();
 				adapter.updatePokemon(pokemon);
 			}
 		});
