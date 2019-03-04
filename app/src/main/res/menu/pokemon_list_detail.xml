@@ -4,4 +4,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <item
+        android:id="@+id/action_share_poke_details"
+        android:icon="@drawable/ic_action_share"
+        android:title="@string/action_share_poke"
+        android:orderInCategory="1"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_browser"
+        android:icon="@drawable/ic_action_browser"
+        android:title="@string/action_browser"
+        android:orderInCategory="2"
+        app:showAsAction="never"/>
+
 </menu>
