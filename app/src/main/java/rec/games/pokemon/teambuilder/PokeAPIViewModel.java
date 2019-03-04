@@ -54,7 +54,7 @@ class PokeAPIViewModel extends ViewModel
 				PokeAPIUtils.NamedAPIResourceList typeList = PokeAPIUtils.parseNamedAPIResourceListJSON(typeListJSON);
 
 				//create a temporary variable, we don't want to post it until we are done processing
-				HashMap<Integer, LiveData<PokemonType>> tempTypeCache = new HashMap<>();
+				HashMap<Integer, LiveData<PokemonType>> tempTypeCache = new HashMap<>(typeList.results.length);
 				for(PokeAPIUtils.NamedAPIResource r: typeList.results)
 				{
 					MutableLiveData<PokemonType> pokemonType = new MutableLiveData<>();
@@ -94,7 +94,7 @@ class PokeAPIViewModel extends ViewModel
 				String moveListJSON = body.string();
 				PokeAPIUtils.NamedAPIResourceList moveList = PokeAPIUtils.parseNamedAPIResourceListJSON(moveListJSON);
 
-				HashMap<Integer, LiveData<PokemonMove>> tempMoveCache = new HashMap<>();
+				HashMap<Integer, LiveData<PokemonMove>> tempMoveCache = new HashMap<>(moveList.results.length);
 				for(PokeAPIUtils.NamedAPIResource r: moveList.results)
 				{
 					MutableLiveData<PokemonMove> pokemonMove = new MutableLiveData<>();
@@ -133,7 +133,7 @@ class PokeAPIViewModel extends ViewModel
 				String pokemonListJSON = body.string();
 				PokeAPIUtils.NamedAPIResourceList pokemonList = PokeAPIUtils.parseNamedAPIResourceListJSON(pokemonListJSON);
 
-				HashMap<Integer, LiveData<Pokemon>> tempPokemonCache = new HashMap<>();
+				HashMap<Integer, LiveData<Pokemon>> tempPokemonCache = new HashMap<>(pokemonList.results.length);
 				for(PokeAPIUtils.NamedAPIResource r: pokemonList.results)
 				{
 					MutableLiveData<Pokemon> pokemon = new MutableLiveData<>();
@@ -149,21 +149,6 @@ class PokeAPIViewModel extends ViewModel
 		});
 	}
 
-	LiveData<HashMap<Integer, LiveData<PokemonType>>> getTypeCache()
-	{
-		return typeCache;
-	}
-
-	LiveData<HashMap<Integer, LiveData<PokemonMove>>> getMoveCache()
-	{
-		return moveCache;
-	}
-
-	LiveData<HashMap<Integer, LiveData<Pokemon>>> getPokemonCache()
-	{
-		return pokemonCache;
-	}
-
 	LiveDataList<Pokemon> extractPokemonListFromCache()
 	{
 		if(pokemonCache.getValue() == null)
@@ -171,6 +156,11 @@ class PokeAPIViewModel extends ViewModel
 
 		Collection<LiveData<Pokemon>> pokemonReferences = pokemonCache.getValue().values();
 		return new LiveDataList<>(pokemonReferences);
+	}
+
+	LiveData<HashMap<Integer, LiveData<Pokemon>>> getPokemonCache()
+	{
+		return pokemonCache;
 	}
 
 	private LiveData<PokemonType> getTypeReferenceFromCache(int id)
@@ -197,33 +187,6 @@ class PokeAPIViewModel extends ViewModel
 		return pokemonCache.getValue().get(id);
 	}
 
-	PokemonType getTypeFromCache(int id)
-	{
-		LiveData<PokemonType> pokemonTypeReference = getTypeReferenceFromCache(id);
-		if(pokemonTypeReference == null)
-			return null;
-
-		return pokemonTypeReference.getValue();
-	}
-
-	PokemonMove getMoveFromCache(int id)
-	{
-		LiveData<PokemonMove> pokemonMoveReference = getMoveReferenceFromCache(id);
-		if(pokemonMoveReference == null)
-			return null;
-
-		return pokemonMoveReference.getValue();
-	}
-
-	Pokemon getPokemonFromCache(int id)
-	{
-		LiveData<Pokemon> pokemonReference = getPokemonReferenceFromCache(id);
-		if(pokemonReference == null)
-			return null;
-
-		return pokemonReference.getValue();
-	}
-
 	/*
 	 * return codes:
 	 * 0 - operation has been queued
@@ -233,10 +196,10 @@ class PokeAPIViewModel extends ViewModel
 	 */
 	int loadType(int id)
 	{
-		if(typeCache == null)
+		if(typeCache.getValue() == null)
 			return 1;
 
-		final MutableLiveData<PokemonType> pokemonTypeReference = (MutableLiveData<PokemonType>) getTypeReferenceFromCache(id);
+		final MutableLiveData<PokemonType> pokemonTypeReference = (MutableLiveData<PokemonType>) typeCache.getValue().get(id);
 		if(pokemonTypeReference == null)
 			return 2;
 
@@ -268,8 +231,11 @@ class PokeAPIViewModel extends ViewModel
 				String pokemonTypeJSON = body.string();
 				PokeAPIUtils.Type typeData = PokeAPIUtils.parseTypeJSON(pokemonTypeJSON);
 
-				//TODO: actually parse out the damageMultipliers
-				PokemonTypeResource newPokemonType = new PokemonTypeResource(typeData.id, typeData.name, new HashMap<Integer, Double>());
+				PokemonTypeResource newPokemonType = new PokemonTypeResource(
+					typeData.id,
+					typeData.name,
+					PokemonTypeResource.generateDamageMultipliers(typeData.damage_relations, typeCache.getValue().keySet())
+				);
 				pokemonTypeReference.postValue(newPokemonType);
 			}
 		});
@@ -286,10 +252,10 @@ class PokeAPIViewModel extends ViewModel
 	 */
 	int loadMove(int id)
 	{
-		if(typeCache == null || moveCache == null)
+		if(typeCache.getValue() == null || moveCache.getValue() == null)
 			return 1;
 
-		final MutableLiveData<PokemonMove> pokemonMoveReference = (MutableLiveData<PokemonMove>) getMoveReferenceFromCache(id);
+		final MutableLiveData<PokemonMove> pokemonMoveReference = (MutableLiveData<PokemonMove>) moveCache.getValue().get(id);
 		if(pokemonMoveReference == null)
 			return 2;
 
@@ -322,7 +288,6 @@ class PokeAPIViewModel extends ViewModel
 				PokeAPIUtils.Move moveData = PokeAPIUtils.parseMoveJSON(pokemonMoveJSON);
 
 				int typeId = PokeAPIUtils.getId(moveData.type.url);
-				loadType(typeId);
 
 				PokemonMoveResource newPokemonMove = new PokemonMoveResource(moveData.id, moveData.name, moveData.power, getTypeReferenceFromCache(typeId));
 				pokemonMoveReference.postValue(newPokemonMove);
@@ -342,11 +307,11 @@ class PokeAPIViewModel extends ViewModel
 	int loadPokemon(int id)
 	{
 		//have the dependencies loaded yet?
-		if(typeCache == null || moveCache == null || pokemonCache == null)
+		if(typeCache.getValue() == null || moveCache.getValue() == null || pokemonCache.getValue() == null)
 			return 1;
 
 		//did they give us a bad id?
-		final MutableLiveData<Pokemon> pokemonReference = (MutableLiveData<Pokemon>) getPokemonReferenceFromCache(id);
+		final MutableLiveData<Pokemon> pokemonReference = (MutableLiveData<Pokemon>) pokemonCache.getValue().get(id);
 		if(pokemonReference == null)
 			return 2;
 
@@ -385,9 +350,6 @@ class PokeAPIViewModel extends ViewModel
 				for(PokeAPIUtils.PokemonType pokeAPIType: pokemonData.types)
 				{
 					int typeId = PokeAPIUtils.getId(pokeAPIType.type.url);
-
-					//not gonna error handle here. The error conditions are improbable if we made it this far
-					loadType(typeId);
 					types.add(getTypeReferenceFromCache(typeId));
 				}
 
@@ -396,9 +358,6 @@ class PokeAPIViewModel extends ViewModel
 				for(PokeAPIUtils.PokemonMove pokeAPIMove: pokemonData.moves)
 				{
 					int moveId = PokeAPIUtils.getId(pokeAPIMove.move.url);
-
-					//not gonna error handle here. The error conditions are improbable if we made it this far
-					loadMove(moveId);
 					moves.add(getMoveReferenceFromCache(moveId));
 				}
 
