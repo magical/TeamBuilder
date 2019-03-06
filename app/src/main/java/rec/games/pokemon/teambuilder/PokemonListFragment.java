@@ -1,5 +1,6 @@
 package rec.games.pokemon.teambuilder;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -23,6 +24,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class PokemonListFragment extends Fragment implements OnPokemonClickListener
@@ -40,7 +42,6 @@ public class PokemonListFragment extends Fragment implements OnPokemonClickListe
 
 	public PokemonListFragment()
 	{
-
 	}
 
 	@Override
@@ -77,12 +78,12 @@ public class PokemonListFragment extends Fragment implements OnPokemonClickListe
 		final PokemonListAdapter adapter = new PokemonListAdapter(new ArrayList<Pokemon>(), this);
 
 		mViewModel = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
-		mViewModel.getPokeListJSON().observe(this, new Observer<String>()
+		mViewModel.getPokemonCache().observe(this, new Observer<HashMap<Integer, LiveData<Pokemon>>>()
 		{
 			@Override
-			public void onChanged(@Nullable String pokemonListJSON)
+			public void onChanged(@Nullable HashMap<Integer, LiveData<Pokemon>> pokemonCache)
 			{
-				if(pokemonListJSON == null)
+				if(pokemonCache == null)
 				{
 					Log.d(TAG, "Could not load PokemonList JSON");
 					rv.setVisibility(View.INVISIBLE);
@@ -102,19 +103,8 @@ public class PokemonListFragment extends Fragment implements OnPokemonClickListe
 
 					rv.setVisibility(View.VISIBLE);
 				}
-				//Log.d(TAG, "JSON: " + pokemonListJSON);
-				PokeAPIUtils.NamedAPIResourceList apiPokemonList = PokeAPIUtils.parsePokemonListJSON(pokemonListJSON);
-				//Log.d(TAG, apiPokemonList.toString());
-				int limit = PokeAPIUtils.getPokeId(apiPokemonList.results[apiPokemonList.results.length-1].url);
-				int lastPoke = apiPokemonList.results.length - (limit - 10_000);
-				Log.d(TAG, "Count is: " + apiPokemonList.count + " of " + limit + " Last ID = " + lastPoke);
 
-				List<Pokemon> pokemon = new ArrayList<>();
-				for(PokeAPIUtils.NamedAPIResource r : apiPokemonList.results)
-				{
-					Pokemon p = new DeferredPokemonResource(PokeAPIUtils.getPokeId(r.url), r.name, r.url);
-					pokemon.add(p);
-				}
+				List<Pokemon> pokemon = mViewModel.extractPokemonListFromCache();
 				adapter.updatePokemon(pokemon);
 			}
 		});
@@ -125,23 +115,13 @@ public class PokemonListFragment extends Fragment implements OnPokemonClickListe
 			public void onClick(View v)
 			{
 				Log.d(TAG, "Refreshing");
-				loadPokemonList();
+
 			}
 		});
 
 		rv.setAdapter(adapter);
 
-		loadPokemonList();
-
 		return view;
-	}
-
-	public void loadPokemonList()
-	{
-		String pokemonListURL = PokeAPIUtils.buildPokemonListURL(10000, 0);
-		Log.d(TAG, "URL: " + pokemonListURL);
-
-		mViewModel.loadPokemonListJSON(pokemonListURL);
 	}
 
 	//@Override

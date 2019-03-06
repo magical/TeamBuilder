@@ -62,38 +62,13 @@ public class MainActivity extends AppCompatActivity
 
 		viewPager = findViewById(R.id.main_viewpager);
 		ViewPagerAdapter adapterVP = new ViewPagerAdapter(getSupportFragmentManager());
-		adapterVP.addFragment(new PokemonListFragment(), "Pokémon"); //tab, title in caps
 		adapterVP.addFragment(new TeamListFragment(), "Teams"); //tab
+		adapterVP.addFragment(new PokemonListFragment(), "Pokémon"); //tab, title in caps
 		viewPager.setAdapter(adapterVP);
 
 		tabLayout = findViewById(R.id.main_tabs);
 		tabLayout.setupWithViewPager(viewPager);
 		tabLayout.setSelectedTabIndicatorColor(ContextCompat.getColor(this, R.color.tabIndicatorColor)); //b/c API of just getColor() needs >=23
-
-		final PokemonListAdapter adapter = new PokemonListAdapter(new ArrayList<Pokemon>(), this);
-
-		mViewModel = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
-		mViewModel.getPokemonCache().observe(this, new Observer<HashMap<Integer, LiveData<Pokemon>>>()
-		{
-			@Override
-			public void onChanged(@Nullable HashMap<Integer, LiveData<Pokemon>> pokemonCache)
-			{
-				if(pokemonCache == null)
-				{
-					Log.d(TAG, "Could not load PokemonList");
-					return;
-				}
-
-				List<Pokemon> pokemon = mViewModel.extractPokemonListFromCache();
-				adapter.updatePokemon(pokemon);
-			}
-		});
-
-
-		rv = findViewById(R.id.pokemon_list);
-		rv.setAdapter(adapter);
-		rv.setLayoutManager(new LinearLayoutManager(this));
-		rv.setItemAnimator(new DefaultItemAnimator());
 	}
 
 	class ViewPagerAdapter extends FragmentPagerAdapter
