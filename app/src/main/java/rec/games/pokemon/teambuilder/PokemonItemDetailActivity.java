@@ -2,23 +2,17 @@ package rec.games.pokemon.teambuilder;
 
 import android.content.Intent;
 import android.support.v4.app.ShareCompat;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
-import android.widget.TextView;
-
-import java.lang.reflect.Array;
 
 public class PokemonItemDetailActivity extends AppCompatActivity
 {
 	private static final String TAG = PokemonItemDetailActivity.class.getSimpleName();
 
-	private int ArrayId;
+	private int tempArrayId; //replace with actual details of pokemon, is placeholder
 	private ImageView mArtwork;
 
 	@Override
@@ -27,13 +21,13 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_pokemon_item_detail);
 		mArtwork = findViewById(R.id.iv_pokemon_detail_artwork);
-		ArrayId = -1;
+		tempArrayId = -1;
 
 		Intent intent = getIntent();
 
 		if (intent != null && intent.hasExtra(PokeAPIUtils.POKE_ITEM)){
-			ArrayId = intent.getIntExtra(PokeAPIUtils.POKE_ITEM, 25); //default to pikachu
-			GlideApp.with(this).load(PokeAPIUtils.getArtworkUrl(ArrayId+1)).placeholder(R.drawable.ic_poke_unknown).into(mArtwork);
+			tempArrayId = intent.getIntExtra(PokeAPIUtils.POKE_ITEM, 25); //default to pikachu
+			GlideApp.with(this).load(PokeAPIUtils.getArtworkUrl(tempArrayId +1)).placeholder(R.drawable.ic_poke_unknown).into(mArtwork);
 		}
 	}
 
@@ -60,9 +54,9 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 	}
 
 	public void sharePokeDetails(){
-		if(ArrayId > -1) //fake null - TODO - replace
+		if(tempArrayId > -1) //fake null - TODO - replace
 		{
-			String pokeDetails = Integer.toString(ArrayId);
+			String pokeDetails = Integer.toString(tempArrayId);
 
 			ShareCompat.IntentBuilder.from(this)
 				.setType("text/plain")
@@ -73,9 +67,9 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 	}
 
 	public void shareToBrowser(){
-		if(ArrayId > 0) //placeholder data, need to replace
+		if(tempArrayId > 0) //placeholder data, need to replace
 		{
-			Intent intent = new Intent(Intent.ACTION_VIEW, PokeAPIUtils.getBulbapediaPage(Integer.toString(ArrayId)));
+			Intent intent = new Intent(Intent.ACTION_VIEW, PokeAPIUtils.getBulbapediaPage(Integer.toString(tempArrayId)));
 			if(intent.resolveActivity(getPackageManager())!=null){
 				startActivity(intent);
 			}
