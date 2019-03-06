@@ -32,7 +32,6 @@ class PokeAPIViewModel extends ViewModel
 	}
 
 	public void getNewPokemonList(){
-
 		//asynchronously load the type list
 		NetworkUtils.doHTTPGet(PokeAPIUtils.buildTypeListURL(10000, 0), new Callback()
 		{

@@ -22,6 +22,7 @@ public class PokeAPIUtils
 	private final static String POKE_API_ARTWORK_URL = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other-sprites/official-artwork/";
 	private final static String POKE_API_SPRITE_FILE_TYPE = ".png";
 
+
 	private final static String POKE_BULBAPEDIA_URL = "https://bulbapedia.bulbagarden.net/wiki/";
 	private final static String POKE_BULBAPEDIA_END = "_(Pokémon)";
 
