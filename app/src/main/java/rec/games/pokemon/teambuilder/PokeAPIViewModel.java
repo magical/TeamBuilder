@@ -28,6 +28,11 @@ class PokeAPIViewModel extends ViewModel
 		moveCache = new MutableLiveData<>();
 		pokemonCache = new MutableLiveData<>();
 
+		getNewPokemonList();
+	}
+
+	public void getNewPokemonList(){
+
 		//asynchronously load the type list
 		NetworkUtils.doHTTPGet(PokeAPIUtils.buildTypeListURL(10000, 0), new Callback()
 		{

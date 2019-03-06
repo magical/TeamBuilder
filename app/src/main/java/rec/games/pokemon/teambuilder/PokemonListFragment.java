@@ -115,7 +115,7 @@ public class PokemonListFragment extends Fragment implements OnPokemonClickListe
 			public void onClick(View v)
 			{
 				Log.d(TAG, "Refreshing");
-
+				mViewModel.getNewPokemonList();
 			}
 		});
 
