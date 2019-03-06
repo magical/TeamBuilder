@@ -345,7 +345,7 @@ class PokeAPIViewModel extends ViewModel
 				String pokemonJSON = body.string();
 				PokeAPIUtils.Pokemon pokemonData = PokeAPIUtils.parsePokemonJSON(pokemonJSON);
 
-				//queue this pokemon's types to be loaded (if deferred). Also grab the type references from the cache
+				//grab the type references from the cache
 				ArrayList<LiveData<PokemonType>> types = new ArrayList<>(pokemonData.types.length);
 				for(PokeAPIUtils.PokemonType pokeAPIType: pokemonData.types)
 				{
@@ -353,7 +353,7 @@ class PokeAPIViewModel extends ViewModel
 					types.add(getTypeReferenceFromCache(typeId));
 				}
 
-				//queue this pokemon's moves to be loaded (if deferred). Also grab the move references from the cache
+				//grab the move references from the cache
 				ArrayList<LiveData<PokemonMove>> moves = new ArrayList<>(pokemonData.moves.length);
 				for(PokeAPIUtils.PokemonMove pokeAPIMove: pokemonData.moves)
 				{
