@@ -167,7 +167,7 @@ class PokeAPIViewModel extends ViewModel
 		return pokemonCache;
 	}
 
-	private LiveData<PokemonType> getTypeReferenceFromCache(int id)
+	LiveData<PokemonType> getTypeReferenceFromCache(int id)
 	{
 		if(typeCache.getValue() == null)
 			return null;
@@ -175,7 +175,7 @@ class PokeAPIViewModel extends ViewModel
 		return typeCache.getValue().get(id);
 	}
 
-	private LiveData<PokemonMove> getMoveReferenceFromCache(int id)
+	LiveData<PokemonMove> getMoveReferenceFromCache(int id)
 	{
 		if(moveCache.getValue() == null)
 			return null;
@@ -183,7 +183,7 @@ class PokeAPIViewModel extends ViewModel
 		return moveCache.getValue().get(id);
 	}
 
-	private LiveData<Pokemon> getPokemonReferenceFromCache(int id)
+	LiveData<Pokemon> getPokemonReferenceFromCache(int id)
 	{
 		if(pokemonCache.getValue() == null)
 			return null;
