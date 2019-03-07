@@ -6,6 +6,9 @@
     <string name="loading_error_msg">Could not load from Pokeapi.co. Please check the internet connection, and try again.</string>
     <string name="loading_error_button">Refresh</string>
 
+    <!-- Misc -->
+    <string name="action_select_poke">"Select a Pokémon"</string>
+
     <!-- sort order -->
     <string name="pref_sort_key" translatable="false">pref_sort</string>
     <string name="pref_sort_title">Sort By</string>

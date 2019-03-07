@@ -1,9 +1,11 @@
 package rec.games.pokemon.teambuilder;
 
 import android.content.Intent;
+import android.support.v4.app.NavUtils;
 import android.support.v4.app.ShareCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -25,9 +27,11 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 
 		Intent intent = getIntent();
 
-		if (intent != null && intent.hasExtra(PokeAPIUtils.POKE_ITEM)){
+		if (intent != null && intent.hasExtra(PokeAPIUtils.POKE_ITEM))
+		{
 			tempArrayId = intent.getIntExtra(PokeAPIUtils.POKE_ITEM, 25); //default to pikachu
 			GlideApp.with(this).load(PokeAPIUtils.getArtworkUrl(tempArrayId +1)).placeholder(R.drawable.ic_poke_unknown).into(mArtwork);
+
 		}
 	}
 

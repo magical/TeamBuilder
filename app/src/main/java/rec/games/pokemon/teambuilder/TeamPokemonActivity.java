@@ -9,11 +9,15 @@ import android.support.v7.app.AppCompatActivity;
 
 public class TeamPokemonActivity extends AppCompatActivity
 {
+
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		//Fragment newFragment = new PokemonListFragment();
 		setContentView(R.layout.activity_team_pokemon_list);
+		setTitle(getString(R.string.action_select_poke));
+		if(getSupportActionBar() != null) 				//no null pointer exception
+			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 }
