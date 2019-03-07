@@ -1,12 +1,16 @@
 package rec.games.pokemon.teambuilder;
 
+import java.util.concurrent.TimeUnit;
+
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
 public class NetworkUtils
 {
-	private static final OkHttpClient mHttpClient = new OkHttpClient();
+	private static final OkHttpClient mHttpClient = new OkHttpClient.Builder()
+		.addInterceptor(new RateLimitInterceptor(100, TimeUnit.MINUTES.toNanos(1)))
+		.build();
 
 	/*
 	 * When using a ViewModel, background network calls are necessary
