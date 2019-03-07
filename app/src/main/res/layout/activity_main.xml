@@ -8,37 +8,32 @@
     tools:context=".MainActivity"
     android:orientation="vertical">
 
-
-    <FrameLayout
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-        <android.support.v7.widget.RecyclerView
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/main_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scrollbars="vertical"
-            android:id="@+id/pokemon_list"
-            android:visibility="invisible"/>
+            android:layout_height="?attr/actionBarSize"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
-        <TextView
-            android:id="@+id/tv_loading_error"
-            android:layout_width="wrap_content"
+        <android.support.design.widget.TabLayout
+            android:id="@+id/main_tabs"
+            android:background="@color/colorPrimary"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="24sp"
-            android:padding="16dp"
-            android:layout_margin="16dp"
-            android:background="@android:color/holo_red_dark"
-            android:textColor="#fff"
-            android:visibility="invisible"
-            android:text="@string/loading_error_msg"/>
+            app:tabIndicatorAnimationDuration="@android:integer/config_longAnimTime"
+            app:tabMode="fixed"
+            app:tabGravity="fill"/>
 
-        <ProgressBar
-            android:id="@+id/pb_loading_circle"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
-            android:layout_margin="32dp"
-            android:layout_gravity="top|center_horizontal"
-            android:visibility="invisible"/>
-    </FrameLayout>
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/main_viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </LinearLayout>
