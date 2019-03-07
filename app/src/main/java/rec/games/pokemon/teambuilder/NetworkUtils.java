@@ -12,7 +12,9 @@ import okhttp3.Request;
 
 public class NetworkUtils
 {
+	//data store for the requests that enter our "priority" network queue
 	private static final Map<Request, Triplet<Integer, OnCallStart, PriorityCallback>> requestMap = Collections.synchronizedMap(new HashMap<Request, Triplet<Integer, OnCallStart, PriorityCallback>>());
+	//request counts for the priorities in our priority network queue
 	//TODO: lets define the maximum priority somewhere in a variable
 	private static final AtomicIntegerArray priorityCounts = new AtomicIntegerArray(5);
 
@@ -40,18 +42,27 @@ public class NetworkUtils
 		doHTTPGet(request, callback);
 	}
 
+	//priority: the priority of the request when added to our priority network queue
+	//callStart: interface to run some code before the call occurs, if it returns false then we will drop the call
+	//callback: callback that gets called when the priority network queue actually performs the request
 	static void doPriorityHTTPGet(String url, int priority, OnCallStart callStart, Callback callback)
 	{
+		//TODO: what if they give us a bad priority?
+
 		Request request = new Request.Builder().url(url).build();
 		PriorityCallback priorityCallback = new PriorityCallback(callback);
 		Triplet<Integer, OnCallStart, PriorityCallback> requestData = Triplet.create(priority, callStart, priorityCallback);
 
+		//update the priority network queue's data structures
+		//make sure the priority counts are updated as soon as possible, look at PriorityRequestInterceptor as to why
 		priorityCounts.incrementAndGet(priority);
 		synchronized(requestMap)
 		{
 			requestMap.put(request, requestData);
 		}
 
+		//the priority network queue and the regular network calls use the same interface and okhttp dispatcher
+		//but if it is a priority network call, then we will treat it a wee bit differently
 		doHTTPGet(request, priorityCallback);
 	}
 

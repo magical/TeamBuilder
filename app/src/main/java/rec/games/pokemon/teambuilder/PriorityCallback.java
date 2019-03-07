@@ -7,6 +7,8 @@ import okhttp3.Callback;
 import okhttp3.Response;
 import okhttp3.internal.annotations.EverythingIsNonNull;
 
+//This class the defines the behavior of our callbacks for our priority network calls
+//if the network call actually gets processed, then call the real callback
 public class PriorityCallback implements Callback
 {
 	private Callback realCallback;

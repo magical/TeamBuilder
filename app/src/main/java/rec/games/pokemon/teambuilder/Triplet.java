@@ -1,5 +1,6 @@
 package rec.games.pokemon.teambuilder;
 
+//Utility class that follows the same pattern as Android's Pair class
 public class Triplet<T, U, V>
 {
 	public final T first;
