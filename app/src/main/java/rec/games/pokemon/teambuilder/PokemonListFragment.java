@@ -127,10 +127,15 @@ public class PokemonListFragment extends Fragment implements OnPokemonClickListe
 	//@Override
 	public void onPokemonClicked(int position)
 	{
-		// TODO - open in new window
-		Log.d(TAG, "Position: " + position);
+		Pokemon pokemon;
+		if(position >= 0 && position < mViewModel.extractPokemonListFromCache().size())
+			pokemon = mViewModel.extractPokemonListFromCache().get(position);
+		else
+			pokemon = mViewModel.extractPokemonListFromCache().get(0); //default to 0 if not found
+
+		Log.d(TAG, "Pokemon Id: " + pokemon.getId() + " " + pokemon.getName());
 		Intent intent = new Intent(getContext(), PokemonItemDetailActivity.class);
-		intent.putExtra(PokeAPIUtils.POKE_ITEM, position); //temporary assignment
+		intent.putExtra(PokeAPIUtils.POKE_ITEM, pokemon); //temporary assignment
 		startActivity(intent);
 	}
 

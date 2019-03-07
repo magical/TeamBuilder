@@ -2,10 +2,11 @@ package rec.games.pokemon.teambuilder;
 
 import android.arch.lifecycle.LiveData;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 // Pokemon is a data class representing a pokemon
-abstract class Pokemon
+abstract class Pokemon implements Serializable
 {
 	protected int id;
 
@@ -23,7 +24,7 @@ abstract class Pokemon
 	public abstract String getName();
 }
 
-class DeferredPokemonResource extends Pokemon
+class DeferredPokemonResource extends Pokemon implements Serializable
 {
 	protected String resourceName;
 	protected String url;
@@ -48,7 +49,7 @@ class DeferredPokemonResource extends Pokemon
 	}
 }
 
-class PokemonResource extends Pokemon
+class PokemonResource extends Pokemon implements Serializable
 {
 	//TODO: later down the road we should use the pokemon-species name or the pokemon-form name
 	protected String resourceName;

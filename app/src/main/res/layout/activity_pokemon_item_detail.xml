@@ -15,10 +15,11 @@
          android:src="@drawable/ic_poke_unknown"/>
 
     <TextView
+        android:id="@+id/tv_pokemon_detail_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
         android:textSize="22sp"
-        android:text="Pokemon"/>
+        android:text="@string/placeholder_pokemon_name"/>
 
 </LinearLayout>

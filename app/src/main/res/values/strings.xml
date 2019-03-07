@@ -8,6 +8,7 @@
 
     <!-- Misc -->
     <string name="action_select_poke">"Select a Pokémon"</string>
+    <string name="placeholder_pokemon_name">Pokémon</string>
 
     <!-- sort order -->
     <string name="pref_sort_key" translatable="false">pref_sort</string>
