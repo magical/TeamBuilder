@@ -19,7 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import java.util.HashMap;
 
-public class TeamListFragment extends Fragment
+public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClickListener
 {
 	private static final String TAG = TeamListFragment.class.getSimpleName();
 
@@ -28,6 +28,7 @@ public class TeamListFragment extends Fragment
 
 	private TeamAdapter adapter;
 	private RecyclerView teamRV;
+	private PokeAPIViewModel mViewModel;
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState)
@@ -40,16 +41,16 @@ public class TeamListFragment extends Fragment
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.team_list, container, false);
 
-        adapter = new TeamAdapter(this);
+        adapter = new TeamAdapter(this, this);
         teamRV = view.findViewById(R.id.rv_team_members);
         teamRV.setAdapter(adapter);
         teamRV.setLayoutManager(new GridLayoutManager(view.getContext(), 2));
         teamRV.setItemAnimator(new DefaultItemAnimator());
 
-        PokeAPIViewModel model = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
+        mViewModel = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
 
         // Fill in with some fake data
-        model.getPokemonCache().observe(this, new Observer<HashMap<Integer, LiveData<Pokemon>>>() {
+        mViewModel.getPokemonCache().observe(this, new Observer<HashMap<Integer, LiveData<Pokemon>>>() {
             @Override
             public void onChanged(@Nullable HashMap<Integer, LiveData<Pokemon>> list) {
                 team = new Team();
@@ -85,4 +86,11 @@ public class TeamListFragment extends Fragment
         tm.pokemon = p;
         return tm;
     }
+
+    public void onTeamMemberClicked(int pokeId)
+	{
+		Intent intent = new Intent(getContext(), PokemonItemDetailActivity.class);
+		intent.putExtra(PokeAPIUtils.POKE_ITEM, pokeId); //temporary assignment
+		startActivity(intent);
+	}
 }

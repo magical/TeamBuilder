@@ -4,6 +4,7 @@
     <string name="pref_title">Settings</string>
 
     <string name="loading_error_msg">Could not load from Pokeapi.co. Please check the internet connection, and try again.</string>
+    <string name="loading_msg_short">Loading…</string>
     <string name="loading_error_button">Refresh</string>
 
     <!-- Misc -->

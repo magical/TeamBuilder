@@ -2,6 +2,7 @@ package rec.games.pokemon.teambuilder;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,8 @@ import java.util.List;
 
 public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.PokemonViewHolder>
 {
+	private static final String TAG = PokemonListAdapter.class.getSimpleName();
+
 	private List<Pokemon> mPokemon;
 	private OnPokemonClickListener mListener;
 
@@ -51,8 +54,9 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 	}
 
 	public int getPokemonClickedId(int position){
-		if(position > 0)
-			return mPokemon.get(position-1).getId();
+		//Log.d(TAG, "position: "+ position);
+		if(position > 0 && mPokemon != null)
+			return mPokemon.get(position-1).getId(); //mPokemon ids start at 1
 		else
 			return 0;
 	}
