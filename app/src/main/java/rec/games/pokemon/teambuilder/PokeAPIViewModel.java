@@ -3,12 +3,12 @@ package rec.games.pokemon.teambuilder;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
+import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -58,7 +58,7 @@ class PokeAPIViewModel extends ViewModel
 				PokeAPIUtils.NamedAPIResourceList typeList = PokeAPIUtils.parseNamedAPIResourceListJSON(typeListJSON);
 
 				//create a temporary variable, we don't want to post it until we are done processing
-				HashMap<Integer, LiveData<PokemonType>> tempTypeCache = new HashMap<>();
+				HashMap<Integer, LiveData<PokemonType>> tempTypeCache = new HashMap<>(typeList.results.length);
 				for(PokeAPIUtils.NamedAPIResource r: typeList.results)
 				{
 					MutableLiveData<PokemonType> pokemonType = new MutableLiveData<>();
@@ -98,7 +98,7 @@ class PokeAPIViewModel extends ViewModel
 				String moveListJSON = body.string();
 				PokeAPIUtils.NamedAPIResourceList moveList = PokeAPIUtils.parseNamedAPIResourceListJSON(moveListJSON);
 
-				HashMap<Integer, LiveData<PokemonMove>> tempMoveCache = new HashMap<>();
+				HashMap<Integer, LiveData<PokemonMove>> tempMoveCache = new HashMap<>(moveList.results.length);
 				for(PokeAPIUtils.NamedAPIResource r: moveList.results)
 				{
 					MutableLiveData<PokemonMove> pokemonMove = new MutableLiveData<>();
@@ -137,7 +137,7 @@ class PokeAPIViewModel extends ViewModel
 				String pokemonListJSON = body.string();
 				PokeAPIUtils.NamedAPIResourceList pokemonList = PokeAPIUtils.parseNamedAPIResourceListJSON(pokemonListJSON);
 
-				HashMap<Integer, LiveData<Pokemon>> tempPokemonCache = new HashMap<>();
+				HashMap<Integer, LiveData<Pokemon>> tempPokemonCache = new HashMap<>(pokemonList.results.length);
 				for(PokeAPIUtils.NamedAPIResource r: pokemonList.results)
 				{
 					MutableLiveData<Pokemon> pokemon = new MutableLiveData<>();
@@ -153,14 +153,13 @@ class PokeAPIViewModel extends ViewModel
 		});
 	}
 
-	LiveData<HashMap<Integer, LiveData<PokemonType>>> getTypeCache()
+	LiveDataList<Pokemon> extractPokemonListFromCache()
 	{
-		return typeCache;
-	}
+		if(pokemonCache.getValue() == null)
+			return null;
 
-	LiveData<HashMap<Integer, LiveData<PokemonMove>>> getMoveCache()
-	{
-		return moveCache;
+		Collection<LiveData<Pokemon>> pokemonReferences = pokemonCache.getValue().values();
+		return new LiveDataList<>(pokemonReferences);
 	}
 
 	LiveData<HashMap<Integer, LiveData<Pokemon>>> getPokemonCache()
@@ -168,18 +167,210 @@ class PokeAPIViewModel extends ViewModel
 		return pokemonCache;
 	}
 
-	//TODO: later we should refactor away List<Pokemon>, just doing the minimum amount to get the application to compile/run
-	List<Pokemon> extractPokemonListFromCache()
+	LiveData<PokemonType> getTypeReferenceFromCache(int id)
+	{
+		if(typeCache.getValue() == null)
+			return null;
+
+		return typeCache.getValue().get(id);
+	}
+
+	LiveData<PokemonMove> getMoveReferenceFromCache(int id)
+	{
+		if(moveCache.getValue() == null)
+			return null;
+
+		return moveCache.getValue().get(id);
+	}
+
+	LiveData<Pokemon> getPokemonReferenceFromCache(int id)
 	{
 		if(pokemonCache.getValue() == null)
 			return null;
 
-		Collection<LiveData<Pokemon>> pokemonReferences = pokemonCache.getValue().values();
-		List<Pokemon> pokemonList = new ArrayList<>(pokemonReferences.size());
+		return pokemonCache.getValue().get(id);
+	}
 
-		for(LiveData<Pokemon> pokemonReference: pokemonReferences)
-			pokemonList.add(pokemonReference.getValue());
+	/*
+	 * return codes:
+	 * 0 - operation has been queued
+	 * 1 - typeCache hasn't finished loading yet
+	 * 2 - could not find LiveData reference, a bad id
+	 * 3 - LiveData is not Deferred. Hypothetically LiveData.getValue() could return null, but that would be a bug in the constructor
+	 */
+	int loadType(int id)
+	{
+		if(typeCache.getValue() == null)
+			return 1;
 
-		return pokemonList;
+		final MutableLiveData<PokemonType> pokemonTypeReference = (MutableLiveData<PokemonType>) typeCache.getValue().get(id);
+		if(pokemonTypeReference == null)
+			return 2;
+
+		PokemonType pokemonType = pokemonTypeReference.getValue();
+		if(pokemonType == null || !pokemonType.isDeferred())
+			return 3;
+
+		final DeferredPokemonTypeResource deferredPokemonType = (DeferredPokemonTypeResource) pokemonType;
+		NetworkUtils.doHTTPGet(deferredPokemonType.getUrl(), new Callback()
+		{
+			@EverythingIsNonNull
+			@Override
+			public void onFailure(Call call, IOException e)
+			{
+				Log.d(PokeAPIViewModel.class.getSimpleName(), "unable to request type at url: " + deferredPokemonType.getUrl());
+			}
+
+			@EverythingIsNonNull
+			@Override
+			public void onResponse(Call call, Response response) throws IOException
+			{
+				ResponseBody body = response.body();
+				if(body == null)
+				{
+					Log.d(PokeAPIViewModel.class.getSimpleName(), "Body was null");
+					return;
+				}
+
+				String pokemonTypeJSON = body.string();
+				PokeAPIUtils.Type typeData = PokeAPIUtils.parseTypeJSON(pokemonTypeJSON);
+
+				PokemonTypeResource newPokemonType = new PokemonTypeResource(
+					typeData.id,
+					typeData.name,
+					PokemonTypeResource.generateDamageMultipliers(typeData.damage_relations, typeCache.getValue().keySet())
+				);
+				pokemonTypeReference.postValue(newPokemonType);
+			}
+		});
+
+		return 0;
+	}
+
+	/*
+	 * return codes:
+	 * 0 - operation has been queued
+	 * 1 - moveCache and it's dependencies haven't finished loading yet
+	 * 2 - could not find LiveData reference, a bad id
+	 * 3 - LiveData is not Deferred. Hypothetically LiveData.getValue() could return null, but that would be a bug in the constructor
+	 */
+	int loadMove(int id)
+	{
+		if(typeCache.getValue() == null || moveCache.getValue() == null)
+			return 1;
+
+		final MutableLiveData<PokemonMove> pokemonMoveReference = (MutableLiveData<PokemonMove>) moveCache.getValue().get(id);
+		if(pokemonMoveReference == null)
+			return 2;
+
+		PokemonMove pokemonMove = pokemonMoveReference.getValue();
+		if(pokemonMove == null || !pokemonMove.isDeferred())
+			return 3;
+
+		final DeferredPokemonMoveResource deferredPokemonMove = (DeferredPokemonMoveResource) pokemonMove;
+		NetworkUtils.doHTTPGet(deferredPokemonMove.getUrl(), new Callback()
+		{
+			@EverythingIsNonNull
+			@Override
+			public void onFailure(Call call, IOException e)
+			{
+				Log.d(PokeAPIViewModel.class.getSimpleName(), "unable to request type at url: " + deferredPokemonMove.getUrl());
+			}
+
+			@EverythingIsNonNull
+			@Override
+			public void onResponse(Call call, Response response) throws IOException
+			{
+				ResponseBody body = response.body();
+				if(body == null)
+				{
+					Log.d(PokeAPIViewModel.class.getSimpleName(), "Body was null");
+					return;
+				}
+
+				String pokemonMoveJSON = body.string();
+				PokeAPIUtils.Move moveData = PokeAPIUtils.parseMoveJSON(pokemonMoveJSON);
+
+				int typeId = PokeAPIUtils.getId(moveData.type.url);
+
+				PokemonMoveResource newPokemonMove = new PokemonMoveResource(moveData.id, moveData.name, moveData.power, getTypeReferenceFromCache(typeId));
+				pokemonMoveReference.postValue(newPokemonMove);
+			}
+		});
+
+		return 0;
+	}
+
+	/*
+	 * return codes:
+	 * 0 - operation has been queued
+	 * 1 - pokemonCache and it's dependencies haven't finished loading yet
+	 * 2 - could not find LiveData reference, a bad id
+	 * 3 - LiveData is not Deferred. Hypothetically LiveData.getValue() could return null, but that would be a bug in the constructor
+	 */
+	int loadPokemon(int id)
+	{
+		//have the dependencies loaded yet?
+		if(typeCache.getValue() == null || moveCache.getValue() == null || pokemonCache.getValue() == null)
+			return 1;
+
+		//did they give us a bad id?
+		final MutableLiveData<Pokemon> pokemonReference = (MutableLiveData<Pokemon>) pokemonCache.getValue().get(id);
+		if(pokemonReference == null)
+			return 2;
+
+		//is this thing actually deferred?
+		Pokemon pokemon = pokemonReference.getValue();
+		if(pokemon == null || !pokemon.isDeferred())
+			return 3;
+
+		//so now we know it is deferred, we can make a request for the data
+		final DeferredPokemonResource deferredPokemon = (DeferredPokemonResource) pokemon;
+		NetworkUtils.doHTTPGet(deferredPokemon.getUrl(), new Callback()
+		{
+			@EverythingIsNonNull
+			@Override
+			public void onFailure(Call call, IOException e)
+			{
+				Log.d(PokeAPIViewModel.class.getSimpleName(), "unable to request pokemon at url: " + deferredPokemon.getUrl());
+			}
+
+			@EverythingIsNonNull
+			@Override
+			public void onResponse(Call call, Response response) throws IOException
+			{
+				ResponseBody body = response.body();
+				if(body == null)
+				{
+					Log.d(PokeAPIViewModel.class.getSimpleName(), "Body was null");
+					return;
+				}
+
+				String pokemonJSON = body.string();
+				PokeAPIUtils.Pokemon pokemonData = PokeAPIUtils.parsePokemonJSON(pokemonJSON);
+
+				//grab the type references from the cache
+				ArrayList<LiveData<PokemonType>> types = new ArrayList<>(pokemonData.types.length);
+				for(PokeAPIUtils.PokemonType pokeAPIType: pokemonData.types)
+				{
+					int typeId = PokeAPIUtils.getId(pokeAPIType.type.url);
+					types.add(getTypeReferenceFromCache(typeId));
+				}
+
+				//grab the move references from the cache
+				ArrayList<LiveData<PokemonMove>> moves = new ArrayList<>(pokemonData.moves.length);
+				for(PokeAPIUtils.PokemonMove pokeAPIMove: pokemonData.moves)
+				{
+					int moveId = PokeAPIUtils.getId(pokeAPIMove.move.url);
+					moves.add(getMoveReferenceFromCache(moveId));
+				}
+
+				//create a non-deferred and post it to our LiveData
+				PokemonResource newPokemon = new PokemonResource(pokemonData.id, pokemonData.name, types, moves);
+				pokemonReference.postValue(newPokemon);
+			}
+		});
+
+		return 0;
 	}
 }

@@ -87,7 +87,8 @@ public class MainActivity extends AppCompatActivity
 		private final List<Fragment> mFragmentList = new ArrayList<>();
 		private final List<String> mFragmentTitleList = new ArrayList<>();
 
-		public ViewPagerAdapter(FragmentManager manager){
+		public ViewPagerAdapter(FragmentManager manager)
+		{
 			super(manager);
 		}
 
@@ -103,12 +104,14 @@ public class MainActivity extends AppCompatActivity
 			return mFragmentList.size();
 		}
 
-		public void addFragment(Fragment fragment, String title){
+		public void addFragment(Fragment fragment, String title)
+		{
 			mFragmentList.add(fragment);
 			mFragmentTitleList.add(title);
 		}
 
-		public CharSequence getPageTitle(int i){
+		public CharSequence getPageTitle(int i)
+		{
 			return mFragmentTitleList.get(i);
 		}
 	}

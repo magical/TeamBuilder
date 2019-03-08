@@ -1,7 +1,9 @@
 package rec.games.pokemon.teambuilder;
 
+import android.arch.lifecycle.LifecycleOwner;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,24 +21,40 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 {
 	private static final String TAG = PokemonListAdapter.class.getSimpleName();
 
-	private List<Pokemon> mPokemon;
+	private LiveDataList<Pokemon> mPokemon;
 	private OnPokemonClickListener mListener;
+	private LifecycleOwner mOwner;
+
+	private final ItemObserver<Pokemon> cacheNotifier = new ItemObserver<Pokemon>()
+	{
+		@Override
+		public void onItemChanged(@Nullable Pokemon pokemon, int index)
+		{
+			if(pokemon instanceof PokemonResource)
+				notifyItemChanged(index);
+		}
+	};
+
+	PokemonListAdapter(LiveDataList<Pokemon> pokemon, OnPokemonClickListener l, LifecycleOwner owner)
+	{
+		this.mPokemon = pokemon;
+		this.mListener = l;
+		this.mOwner = owner;
+
+		mPokemon.observeCollection(mOwner, cacheNotifier);
+	}
 
 	public interface OnPokemonClickListener
 	{
 		void onPokemonClicked(int position);
 	}
 
-	PokemonListAdapter(List<Pokemon> pokemon, OnPokemonClickListener l)
-	{
-		this.mPokemon = pokemon;
-		this.mListener = l;
-	}
-
-	public void updatePokemon(List<Pokemon> pokemon)
+	public void updatePokemon(LiveDataList<Pokemon> pokemon)
 	{
 		this.mPokemon = pokemon;
 		notifyDataSetChanged();
+
+		mPokemon.observeCollection(mOwner, cacheNotifier);
 	}
 
 	@NonNull
@@ -54,12 +72,13 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 		return mPokemon.size();
 	}
 
-	public int getPokemonClickedId(int position){
-		Log.d(TAG, "position: "+ position);
+	public int getPokemonClickedId(int position)
+	{
+		Log.d(TAG, "position: " + position);
 		if(position > 0 && mPokemon != null)
 		{
-			Log.d(TAG, Integer.toString(mPokemon.get(position - 1).getId()));
-			return mPokemon.get(position - 1).getId(); //mPokemon ids start at 1
+			Log.d(TAG, Integer.toString(mPokemon.getValue(position - 1).getId()));
+			return mPokemon.getValue(position - 1).getId(); //mPokemon ids start at 1
 		}
 		else
 			return 0;
@@ -68,7 +87,7 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 	@Override
 	public void onBindViewHolder(@NonNull PokemonViewHolder viewHolder, int i)
 	{
-		viewHolder.bind(mPokemon.get(i));
+		viewHolder.bind(mPokemon.getValue(i));
 	}
 
 	class PokemonViewHolder extends RecyclerView.ViewHolder
@@ -91,7 +110,7 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 				@Override
 				public void onClick(View v)
 				{
-					mListener.onPokemonClicked(getPokemonClickedId(getAdapterPosition()));
+					mListener.onPokemonClicked(getAdapterPosition());
 				}
 			});
 		}
@@ -100,8 +119,9 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 		{
 			mName.setText(p.getName());
 			mId.setText(String.valueOf(p.getId()));
-			GlideApp.with(mIcon.getContext()).load(PokeAPIUtils.getSpriteUrl(p.getId())).into(mIcon);
+			GlideApp.with(mIcon.getContext())
+				.load(PokeAPIUtils.getSpriteUrl(p.getId()))
+				.into(mIcon);
 		}
 	}
 }
-
