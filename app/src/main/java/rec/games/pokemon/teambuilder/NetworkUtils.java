@@ -1,27 +1,43 @@
 package rec.games.pokemon.teambuilder;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import org.javatuples.Quartet;
+
+import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicIntegerArray;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import okhttp3.Callback;
+import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
 public class NetworkUtils
 {
-	//data store for the requests that enter our "priority" network queue
-	private static final Map<Request, Triplet<Integer, OnCallStart, PriorityCallback>> requestMap = Collections.synchronizedMap(new HashMap<Request, Triplet<Integer, OnCallStart, PriorityCallback>>());
-	//request counts for the priorities in our priority network queue
-	//TODO: lets define the maximum priority somewhere in a variable
-	private static final AtomicIntegerArray priorityCounts = new AtomicIntegerArray(5);
+	private static final OkHttpClient mHttpClient;
+	private static final Dispatcher mDispatcher;
+	private static final PriorityBlockingQueue<Quartet<NetworkPriority, Request, OnCallStart, Callback>> networkPriorityQueue;
+	private static final Lock flushLock;
 
-	private static final OkHttpClient mHttpClient = new OkHttpClient.Builder()
-		.addInterceptor(new PriorityRequestInterceptor(requestMap, priorityCounts))
-		.addInterceptor(new RateLimitInterceptor(100, TimeUnit.MINUTES.toNanos(1)))
-		.build();
+	static
+	{
+		mHttpClient = new OkHttpClient.Builder()
+			.addInterceptor(new RateLimitInterceptor(100, TimeUnit.MINUTES.toNanos(1)))
+			.build();
+
+		networkPriorityQueue = new PriorityBlockingQueue<>();
+		flushLock = new ReentrantLock();
+
+		mDispatcher = mHttpClient.dispatcher();
+		mDispatcher.setIdleCallback(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				flushPriorityQueue();
+			}
+		});
+	}
 
 	/*
 	 * When using a ViewModel, background network calls are necessary
@@ -42,32 +58,53 @@ public class NetworkUtils
 		doHTTPGet(request, callback);
 	}
 
+	public interface OnCallStart
+	{
+		boolean onStart();
+	}
+
+	enum NetworkPriority
+	{
+		CRITICAL,
+		USER_INTERACTION,
+		USER_IMPORTANT,
+		ABOVE_NORMAL,
+		NORMAL,
+		LOW
+	}
+
 	//priority: the priority of the request when added to our priority network queue
 	//callStart: interface to run some code before the call occurs, if it returns false then we will drop the call
 	//callback: callback that gets called when the priority network queue actually performs the request
-	static void doPriorityHTTPGet(String url, int priority, OnCallStart callStart, Callback callback)
+	static void doPriorityHTTPGet(String url, NetworkPriority priority, OnCallStart callStart, Callback callback)
 	{
 		//TODO: what if they give us a bad priority?
 
 		Request request = new Request.Builder().url(url).build();
-		PriorityCallback priorityCallback = new PriorityCallback(callback);
-		Triplet<Integer, OnCallStart, PriorityCallback> requestData = Triplet.create(priority, callStart, priorityCallback);
+		Quartet<NetworkPriority, Request, OnCallStart, Callback> queueItem = new Quartet<>(priority, request, callStart, callback);
 
-		//update the priority network queue's data structures
-		//make sure the priority counts are updated as soon as possible, look at PriorityRequestInterceptor as to why
-		priorityCounts.incrementAndGet(priority);
-		synchronized(requestMap)
-		{
-			requestMap.put(request, requestData);
-		}
-
-		//the priority network queue and the regular network calls use the same interface and okhttp dispatcher
-		//but if it is a priority network call, then we will treat it a wee bit differently
-		doHTTPGet(request, priorityCallback);
+		networkPriorityQueue.offer(queueItem);
+		if(mDispatcher.queuedCallsCount() == 0)
+			flushPriorityQueue();
 	}
 
-	public interface OnCallStart
+	private static void flushPriorityQueue()
 	{
-		boolean onStart();
+		flushLock.lock();
+		if(networkPriorityQueue.isEmpty())
+			return;
+
+		Quartet<NetworkPriority, Request, OnCallStart, Callback> queueItem = networkPriorityQueue.peek();
+		NetworkPriority lowestPriority = queueItem.getValue0();
+		while(!networkPriorityQueue.isEmpty() && queueItem.getValue0().compareTo(lowestPriority) <= 0)
+		{
+			if(queueItem.getValue2().onStart())
+				mHttpClient.newCall(queueItem.getValue1()).enqueue(queueItem.getValue3());
+
+			networkPriorityQueue.poll();
+			queueItem = networkPriorityQueue.peek();
+		}
+
+		flushLock.unlock();
 	}
 }
