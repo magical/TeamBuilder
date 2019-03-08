@@ -39,7 +39,9 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 		if(mPokeShortDetails != null)
 		{
 			mPokemonName.setText(mPokeShortDetails.getName());
-			GlideApp.with(this).load(PokeAPIUtils.getArtworkUrl(mPokeShortDetails.getId())).placeholder(R.drawable.ic_poke_unknown).into(mArtwork);
+			GlideApp.with(this).load(PokeAPIUtils.getArtworkUrl(mPokeShortDetails.getId()))
+				.error(GlideApp.with(this).load(PokeAPIUtils.getSpriteUrl(mPokeShortDetails.getId())))
+				.placeholder(R.drawable.ic_poke_unknown).into(mArtwork);
 			setTitle(mPokeShortDetails.getName());
 		}
 	}
