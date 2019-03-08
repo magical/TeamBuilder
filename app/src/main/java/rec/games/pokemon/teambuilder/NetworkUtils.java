@@ -12,7 +12,6 @@ import okhttp3.Request;
 
 public class NetworkUtils
 {
-	private static final int limit;
 	private static final OkHttpClient mHttpClient;
 	private static final Dispatcher mDispatcher;
 	private static final PriorityBlockingQueue<PriorityNetworkRequest> networkPriorityQueue;
@@ -20,10 +19,8 @@ public class NetworkUtils
 
 	static
 	{
-		limit = 100;
-
 		mHttpClient = new OkHttpClient.Builder()
-			.addInterceptor(new RateLimitInterceptor(limit, TimeUnit.MINUTES.toNanos(1)))
+			.addInterceptor(new RateLimitInterceptor(100, TimeUnit.MINUTES.toNanos(1)))
 			.build();
 
 		networkPriorityQueue = new PriorityBlockingQueue<>();
@@ -100,7 +97,7 @@ public class NetworkUtils
 		PriorityNetworkRequest queueItem = networkPriorityQueue.peek();
 		NetworkPriority lowestPriority = queueItem.priority;
 		while(!networkPriorityQueue.isEmpty()
-			&& mDispatcher.queuedCallsCount() <= limit
+			&& mDispatcher.queuedCallsCount() <= (2*mDispatcher.getMaxRequestsPerHost())
 			&& queueItem.priority.compareTo(lowestPriority) <= 0)
 		{
 			if(queueItem.callStart.onStart())
