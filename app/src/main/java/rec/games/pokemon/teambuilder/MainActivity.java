@@ -1,18 +1,7 @@
 package rec.games.pokemon.teambuilder;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -21,16 +10,12 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
@@ -53,7 +38,7 @@ public class MainActivity extends AppCompatActivity
 		toolbar = findViewById(R.id.main_toolbar);
 		setSupportActionBar(toolbar);
 
-		if (getSupportActionBar() != null)
+		if(getSupportActionBar() != null)
 		{
 			ActionBar actionBar = getSupportActionBar();
 			actionBar.setElevation(0);
@@ -66,7 +51,6 @@ public class MainActivity extends AppCompatActivity
 		adapterVP.addFragment(new PokemonListFragment(), "Pokémon"); //tab, title in caps
 		viewPager.setAdapter(adapterVP);
 
-
 		tabLayout = findViewById(R.id.main_tabs);
 		tabLayout.setupWithViewPager(viewPager);
 		tabLayout.setSelectedTabIndicatorColor(ContextCompat.getColor(this, R.color.tabIndicatorColor)); //b/c API of just getColor() needs >=23
@@ -77,7 +61,8 @@ public class MainActivity extends AppCompatActivity
 		private final List<Fragment> mFragmentList = new ArrayList<>();
 		private final List<String> mFragmentTitleList = new ArrayList<>();
 
-		public ViewPagerAdapter(FragmentManager manager){
+		public ViewPagerAdapter(FragmentManager manager)
+		{
 			super(manager);
 		}
 
@@ -93,12 +78,14 @@ public class MainActivity extends AppCompatActivity
 			return mFragmentList.size();
 		}
 
-		public void addFragment(Fragment fragment, String title){
+		public void addFragment(Fragment fragment, String title)
+		{
 			mFragmentList.add(fragment);
 			mFragmentTitleList.add(title);
 		}
 
-		public CharSequence getPageTitle(int i){
+		public CharSequence getPageTitle(int i)
+		{
 			return mFragmentTitleList.get(i);
 		}
 	}

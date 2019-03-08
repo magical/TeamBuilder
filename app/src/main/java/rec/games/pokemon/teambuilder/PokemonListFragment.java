@@ -75,7 +75,7 @@ public class PokemonListFragment extends Fragment implements OnPokemonClickListe
 		mLoadingErrorLL = view.findViewById(R.id.ll_loading_error);
 		mLoadingErrorBtn = view.findViewById(R.id.btn_loading_error);
 
-		final PokemonListAdapter adapter = new PokemonListAdapter(new ArrayList<Pokemon>(), this);
+		final PokemonListAdapter adapter = new PokemonListAdapter(new LiveDataList<Pokemon>(), this, this);
 
 		mViewModel = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
 		mViewModel.getPokemonCache().observe(this, new Observer<HashMap<Integer, LiveData<Pokemon>>>()
@@ -104,7 +104,7 @@ public class PokemonListFragment extends Fragment implements OnPokemonClickListe
 					rv.setVisibility(View.VISIBLE);
 				}
 
-				List<Pokemon> pokemon = mViewModel.extractPokemonListFromCache();
+				LiveDataList<Pokemon> pokemon = mViewModel.extractPokemonListFromCache();
 				adapter.updatePokemon(pokemon);
 			}
 		});

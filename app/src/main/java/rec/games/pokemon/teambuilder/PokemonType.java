@@ -1,6 +1,7 @@
 package rec.games.pokemon.teambuilder;
 
 import java.util.HashMap;
+import java.util.Set;
 
 //Data class representing pokemon types
 abstract class PokemonType
@@ -17,9 +18,19 @@ abstract class PokemonType
 		return id;
 	}
 
+	public boolean isDeferred()
+	{
+		return this instanceof DeferredPokemonTypeResource;
+	}
+
 	//subclasses may or may not have these. Or they could return different values
 	public abstract String getName();
 	public abstract Double getDamageMultiplier(PokemonType pokemonType);
+
+	public boolean isLoaded()
+	{
+		return false;
+	}
 }
 
 class DeferredPokemonTypeResource extends PokemonType
@@ -83,5 +94,34 @@ class PokemonTypeResource extends PokemonType
 	public Double getDamageMultiplier(PokemonType pokemonType)
 	{
 		return damageMultipliers.get(pokemonType.getId());
+	}
+
+	@Override
+	public boolean isLoaded()
+	{
+		return true;
+	}
+
+	static HashMap<Integer, Double> generateDamageMultipliers(PokeAPIUtils.TypeRelations damageRelations, Set<Integer> typeKeys)
+	{
+		HashMap<Integer, Double> damageMultipliers = new HashMap<>(typeKeys.size());
+
+		//set the defaults
+		for(int typeKey: typeKeys)
+			damageMultipliers.put(typeKey, 1.0);
+
+		//no damage
+		for(PokeAPIUtils.NamedAPIResource typeResource: damageRelations.no_damage_to)
+			damageMultipliers.put(PokeAPIUtils.getId(typeResource.url), 0.0);
+
+		//half damage
+		for(PokeAPIUtils.NamedAPIResource typeResource: damageRelations.half_damage_to)
+			damageMultipliers.put(PokeAPIUtils.getId(typeResource.url), 0.5);
+
+		//double damage
+		for(PokeAPIUtils.NamedAPIResource typeResource: damageRelations.double_damage_to)
+			damageMultipliers.put(PokeAPIUtils.getId(typeResource.url), 2.0);
+
+		return damageMultipliers;
 	}
 }
