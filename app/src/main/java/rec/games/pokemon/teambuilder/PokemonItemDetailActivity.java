@@ -15,6 +15,8 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.request.RequestOptions;
+
 import java.util.HashMap;
 
 public class PokemonItemDetailActivity extends AppCompatActivity
@@ -60,7 +62,8 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 		{
 			mPokemonName.setText(mPokemon.getName());
 			GlideApp.with(this).load(PokeAPIUtils.getArtworkUrl(pokeId))
-				.error(GlideApp.with(this).load(PokeAPIUtils.getSpriteUrl(pokeId)))
+				.error(GlideApp.with(this).load(PokeAPIUtils.getSpriteUrl(pokeId))
+					.error(R.drawable.ic_poke_unknown))
 				.placeholder(R.drawable.ic_poke_unknown).into(mArtwork);
 			setTitle(mPokemon.getName());
 		}
