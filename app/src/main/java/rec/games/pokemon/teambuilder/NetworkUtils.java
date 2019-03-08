@@ -1,7 +1,5 @@
 package rec.games.pokemon.teambuilder;
 
-import org.javatuples.Quartet;
-
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -16,7 +14,7 @@ public class NetworkUtils
 {
 	private static final OkHttpClient mHttpClient;
 	private static final Dispatcher mDispatcher;
-	private static final PriorityBlockingQueue<Quartet<NetworkPriority, Request, OnCallStart, Callback>> networkPriorityQueue;
+	private static final PriorityBlockingQueue<PriorityNetworkRequest> networkPriorityQueue;
 	private static final Lock flushLock;
 
 	static
@@ -58,11 +56,6 @@ public class NetworkUtils
 		doHTTPGet(request, callback);
 	}
 
-	public interface OnCallStart
-	{
-		boolean onStart();
-	}
-
 	enum NetworkPriority
 	{
 		CRITICAL,
@@ -73,33 +66,37 @@ public class NetworkUtils
 		LOW
 	}
 
+	public interface OnCallStart
+	{
+		boolean onStart();
+	}
+
 	//priority: the priority of the request when added to our priority network queue
 	//callStart: interface to run some code before the call occurs, if it returns false then we will drop the call
 	//callback: callback that gets called when the priority network queue actually performs the request
 	static void doPriorityHTTPGet(String url, NetworkPriority priority, OnCallStart callStart, Callback callback)
 	{
-		//TODO: what if they give us a bad priority?
-
 		Request request = new Request.Builder().url(url).build();
-		Quartet<NetworkPriority, Request, OnCallStart, Callback> queueItem = new Quartet<>(priority, request, callStart, callback);
+		PriorityNetworkRequest queueItem = new PriorityNetworkRequest(priority, request, callStart, callback);
 
 		networkPriorityQueue.offer(queueItem);
 		if(mDispatcher.queuedCallsCount() == 0)
 			flushPriorityQueue();
 	}
 
+	//due to race conditions, only let one thread flush at a given time
 	private static void flushPriorityQueue()
 	{
 		flushLock.lock();
 		if(networkPriorityQueue.isEmpty())
 			return;
 
-		Quartet<NetworkPriority, Request, OnCallStart, Callback> queueItem = networkPriorityQueue.peek();
-		NetworkPriority lowestPriority = queueItem.getValue0();
-		while(!networkPriorityQueue.isEmpty() && queueItem.getValue0().compareTo(lowestPriority) <= 0)
+		PriorityNetworkRequest queueItem = networkPriorityQueue.peek();
+		NetworkPriority lowestPriority = queueItem.priority;
+		while(!networkPriorityQueue.isEmpty() && queueItem.priority.compareTo(lowestPriority) <= 0)
 		{
-			if(queueItem.getValue2().onStart())
-				mHttpClient.newCall(queueItem.getValue1()).enqueue(queueItem.getValue3());
+			if(queueItem.callStart.onStart())
+				mHttpClient.newCall(queueItem.request).enqueue(queueItem.callback);
 
 			networkPriorityQueue.poll();
 			queueItem = networkPriorityQueue.peek();
