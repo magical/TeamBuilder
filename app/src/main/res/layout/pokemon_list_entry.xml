@@ -43,7 +43,7 @@
                 android:padding="8dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginRight="16dp"
-                android:textSize="24sp"
+                android:textSize="18sp"
                 android:gravity="center_vertical"
                 android:layout_gravity="end"
                 android:id="@+id/pokemon_id"
