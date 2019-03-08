@@ -4,6 +4,8 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NavUtils;
 import android.support.v4.app.ShareCompat;
@@ -61,10 +63,19 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 		if(pokeId > 0)
 		{
 			mPokemonName.setText(mPokemon.getName());
-			GlideApp.with(this).load(PokeAPIUtils.getArtworkUrl(pokeId))
-				.error(GlideApp.with(this).load(PokeAPIUtils.getSpriteUrl(pokeId))
-					.error(R.drawable.ic_poke_unknown))
-				.placeholder(R.drawable.ic_poke_unknown).into(mArtwork);
+
+			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+			if (prefs.getBoolean(this.getResources().getString(R.string.pref_image_key), true))
+			{
+				GlideApp.with(this).load(PokeAPIUtils.getArtworkUrl(pokeId))
+					.error(GlideApp.with(this).load(PokeAPIUtils.getSpriteUrl(pokeId))
+						.error(R.drawable.ic_poke_unknown))
+					.placeholder(R.drawable.ic_poke_unknown).into(mArtwork);
+			}
+			else
+			{
+				GlideApp.with(this).load(R.drawable.ic_poke_unknown).into(mArtwork);
+			}
 			setTitle(mPokemon.getName());
 		}
 	}

@@ -2,6 +2,9 @@ package rec.games.pokemon.teambuilder;
 
 import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.Observer;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
@@ -17,7 +20,8 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder
 	private static final String TAG = TeamAdapter.class.getSimpleName();
     private LifecycleOwner mLifecycleOwner;
     private Team team;
-    private OnTeamClickListener mListener; // TODO
+    private OnTeamClickListener mListener;
+	Context context;
 
     public interface OnTeamClickListener
 	{
@@ -50,6 +54,13 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder
     		return 0;
 	}
 
+	@Override
+	public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView)
+	{
+		super.onAttachedToRecyclerView(recyclerView);
+		context = recyclerView.getContext();
+	}
+
     @NonNull
     @Override
     public TeamViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int position) {
@@ -57,6 +68,11 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder
         View v = inf.inflate(R.layout.team_list_entry, parent, false);
         return new TeamViewHolder(v, mListener, mLifecycleOwner);
     }
+
+	private boolean checkDisplayImages(){
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		return prefs.getBoolean(context.getResources().getString(R.string.pref_image_key), true);
+	}
 
     @Override
     public void onBindViewHolder(@NonNull TeamViewHolder vh, int position) {
@@ -71,7 +87,7 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder
         TeamMember mSavedTeamMember;
         private ImageView image;
         private TextView name;
-        //private Object mListener; // TODO
+        //private Object mListener;
 
         TeamViewHolder(View v, OnTeamClickListener l, LifecycleOwner lifecycleOwner) {
             super(v);
@@ -103,7 +119,16 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder
                 public void onChanged(@Nullable Pokemon pokemon) {
                     if (pokemon != null) {
                         name.setText(pokemon.getName());
-                        GlideApp.with(itemView.getContext()).load(PokeAPIUtils.getSpriteUrl(pokemon.getId())).into(image);
+						if(checkDisplayImages())
+						{
+							GlideApp.with(itemView.getContext()).
+								load(PokeAPIUtils.getSpriteUrl(pokemon.getId())).into(image);
+						}
+						else
+						{
+							GlideApp.with(itemView.getContext())
+								.load(R.drawable.ic_poke_unknown).into(image);
+						}
                     }
                 }
             };
