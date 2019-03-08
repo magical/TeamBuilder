@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 // Pokemon is a data class representing a pokemon
-abstract class Pokemon implements Serializable
+abstract class Pokemon
 {
 	protected int id;
 
@@ -24,7 +24,7 @@ abstract class Pokemon implements Serializable
 	public abstract String getName();
 }
 
-class DeferredPokemonResource extends Pokemon implements Serializable
+class DeferredPokemonResource extends Pokemon
 {
 	protected String resourceName;
 	protected String url;
@@ -49,7 +49,7 @@ class DeferredPokemonResource extends Pokemon implements Serializable
 	}
 }
 
-class PokemonResource extends Pokemon implements Serializable
+class PokemonResource extends Pokemon
 {
 	//TODO: later down the road we should use the pokemon-species name or the pokemon-form name
 	protected String resourceName;

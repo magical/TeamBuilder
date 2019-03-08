@@ -13,10 +13,15 @@ import com.bumptech.glide.request.RequestOptions;
 
 import java.util.List;
 
-public class PokemonListAdapter extends RecyclerView.Adapter<PokemonViewHolder>
+public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.PokemonViewHolder>
 {
 	private List<Pokemon> mPokemon;
 	private OnPokemonClickListener mListener;
+
+	public interface OnPokemonClickListener
+	{
+		void onPokemonClicked(int position);
+	}
 
 	PokemonListAdapter(List<Pokemon> pokemon, OnPokemonClickListener l)
 	{
@@ -45,47 +50,50 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonViewHolder>
 		return mPokemon.size();
 	}
 
+	public int getPokemonClickedId(int position){
+		if(position > 0)
+			return mPokemon.get(position-1).getId();
+		else
+			return 0;
+	}
+
 	@Override
 	public void onBindViewHolder(@NonNull PokemonViewHolder viewHolder, int i)
 	{
 		viewHolder.bind(mPokemon.get(i));
 	}
-}
 
-class PokemonViewHolder extends RecyclerView.ViewHolder
-{
-	private OnPokemonClickListener mListener;
-	private TextView mName;
-	private TextView mId;
-	private ImageView mIcon;
-
-	public PokemonViewHolder(View view, OnPokemonClickListener l)
+	class PokemonViewHolder extends RecyclerView.ViewHolder
 	{
-		super(view);
-		mName = view.findViewById(R.id.pokemon_name);
-		mIcon = view.findViewById(R.id.pokemon_icon);
-		mId = view.findViewById(R.id.pokemon_id);
-		mListener = l;
+		private OnPokemonClickListener mListener;
+		private TextView mName;
+		private TextView mId;
+		private ImageView mIcon;
 
-		view.setOnClickListener(new View.OnClickListener()
+		public PokemonViewHolder(View view, OnPokemonClickListener l)
 		{
-			@Override
-			public void onClick(View v)
+			super(view);
+			mName = view.findViewById(R.id.pokemon_name);
+			mIcon = view.findViewById(R.id.pokemon_icon);
+			mId = view.findViewById(R.id.pokemon_id);
+			mListener = l;
+
+			view.setOnClickListener(new View.OnClickListener()
 			{
-				mListener.onPokemonClicked(getAdapterPosition());
-			}
-		});
-	}
+				@Override
+				public void onClick(View v)
+				{
+					mListener.onPokemonClicked(getPokemonClickedId(getAdapterPosition()));
+				}
+			});
+		}
 
-	public void bind(Pokemon p)
-	{
-		mName.setText(p.getName());
-		mId.setText(String.valueOf(p.getId()));
-		GlideApp.with(mIcon.getContext()).load(PokeAPIUtils.getSpriteUrl(p.getId())).into(mIcon);
+		public void bind(Pokemon p)
+		{
+			mName.setText(p.getName());
+			mId.setText(String.valueOf(p.getId()));
+			GlideApp.with(mIcon.getContext()).load(PokeAPIUtils.getSpriteUrl(p.getId())).into(mIcon);
+		}
 	}
 }
 
-interface OnPokemonClickListener
-{
-	void onPokemonClicked(int position);
-}

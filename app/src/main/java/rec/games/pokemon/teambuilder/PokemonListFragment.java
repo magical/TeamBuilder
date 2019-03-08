@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class PokemonListFragment extends Fragment implements OnPokemonClickListener
+public class PokemonListFragment extends Fragment implements PokemonListAdapter.OnPokemonClickListener
 {
 	private static final String TAG = PokemonListFragment.class.getSimpleName();
 
@@ -55,13 +55,6 @@ public class PokemonListFragment extends Fragment implements OnPokemonClickListe
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
 	{
 		View view = inflater.inflate(R.layout.pokemon_list, container, false);
-
-		RequestOptions requestOptions = new RequestOptions()
-			.placeholder(R.drawable.ic_poke_unknown)
-			.error(R.drawable.ic_poke_unknown)
-			.fallback(R.drawable.ic_poke_unknown)
-			.diskCacheStrategy(DiskCacheStrategy.ALL);
-		GlideApp.with(this).setDefaultRequestOptions(requestOptions);
 
 		rv = view.findViewById(R.id.pokemon_list_rv);
 		rv.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -127,15 +120,14 @@ public class PokemonListFragment extends Fragment implements OnPokemonClickListe
 	//@Override
 	public void onPokemonClicked(int position)
 	{
-		Pokemon pokemon;
+		int pokemonID;
 		if(position >= 0 && position < mViewModel.extractPokemonListFromCache().size())
-			pokemon = mViewModel.extractPokemonListFromCache().get(position);
+			pokemonID = mViewModel.extractPokemonListFromCache().get(position).getId();
 		else
-			pokemon = mViewModel.extractPokemonListFromCache().get(0); //default to 0 if not found
+			pokemonID = mViewModel.extractPokemonListFromCache().get(0).getId(); //default to 0 if not found
 
-		Log.d(TAG, "Pokemon Id: " + pokemon.getId() + " " + pokemon.getName());
 		Intent intent = new Intent(getContext(), PokemonItemDetailActivity.class);
-		intent.putExtra(PokeAPIUtils.POKE_ITEM, pokemon); //temporary assignment
+		intent.putExtra(PokeAPIUtils.POKE_ITEM, pokemonID); //temporary assignment
 		startActivity(intent);
 	}
 

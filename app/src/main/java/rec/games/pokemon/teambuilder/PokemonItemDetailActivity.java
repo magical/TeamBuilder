@@ -1,6 +1,10 @@
 package rec.games.pokemon.teambuilder;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NavUtils;
 import android.support.v4.app.ShareCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -11,10 +15,13 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.HashMap;
+
 public class PokemonItemDetailActivity extends AppCompatActivity
 {
 	private static final String TAG = PokemonItemDetailActivity.class.getSimpleName();
-	private Pokemon mPokeShortDetails;
+	private int pokeId;
+	private Pokemon mPokemon;
 	private ImageView mArtwork;
 	private TextView mPokemonName;
 
@@ -30,19 +37,32 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 
 		if (intent != null && intent.hasExtra(PokeAPIUtils.POKE_ITEM))
 		{
-			mPokeShortDetails = (Pokemon)intent.getSerializableExtra(PokeAPIUtils.POKE_ITEM);
-			fillLayout();
+			pokeId = intent.getIntExtra(PokeAPIUtils.POKE_ITEM, pokeId);
+
+			PokeAPIViewModel model = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
+
+			// Fill in with some fake data
+			model.getPokemonCache().observe(this, new Observer<HashMap<Integer, LiveData<Pokemon>>>() {
+				@Override
+				public void onChanged(@Nullable HashMap<Integer, LiveData<Pokemon>> list) {
+					Log.d(TAG, "Got value");
+					if(list != null)
+						mPokemon = list.get(pokeId).getValue();
+
+					fillLayout();
+				}
+			});
 		}
 	}
 
 	private void fillLayout(){
-		if(mPokeShortDetails != null)
+		if(pokeId > 0)
 		{
-			mPokemonName.setText(mPokeShortDetails.getName());
-			GlideApp.with(this).load(PokeAPIUtils.getArtworkUrl(mPokeShortDetails.getId()))
-				.error(GlideApp.with(this).load(PokeAPIUtils.getSpriteUrl(mPokeShortDetails.getId())))
+			mPokemonName.setText(mPokemon.getName());
+			GlideApp.with(this).load(PokeAPIUtils.getArtworkUrl(pokeId))
+				.error(GlideApp.with(this).load(PokeAPIUtils.getSpriteUrl(pokeId)))
 				.placeholder(R.drawable.ic_poke_unknown).into(mArtwork);
-			setTitle(mPokeShortDetails.getName());
+			setTitle(mPokemon.getName());
 		}
 	}
 
@@ -69,10 +89,10 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 	}
 
 	public void sharePokeDetails(){
-		if(mPokeShortDetails != null) //fake null - TODO - replace
+		if(mPokemon != null) //fake null - TODO - replace
 		{
-			String pokeDetails = mPokeShortDetails.getName() + " (" +
-				Integer.toString(mPokeShortDetails.getId()) + ")";
+			String pokeDetails = mPokemon.getName() + " (" +
+				Integer.toString(mPokemon.getId()) + ")";
 
 			ShareCompat.IntentBuilder.from(this)
 				.setType("text/plain")
@@ -83,10 +103,10 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 	}
 
 	public void shareToBrowser(){
-		if(mPokeShortDetails != null) //placeholder data, need to replace
+		if(mPokemon != null) //placeholder data, need to replace
 		{
 			Intent intent = new Intent(Intent.ACTION_VIEW,
-				PokeAPIUtils.getBulbapediaPage(mPokeShortDetails.getName()));
+				PokeAPIUtils.getBulbapediaPage(mPokemon.getName()));
 			if(intent.resolveActivity(getPackageManager())!=null){
 				startActivity(intent);
 			}

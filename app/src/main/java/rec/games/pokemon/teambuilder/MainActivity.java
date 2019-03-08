@@ -22,6 +22,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,12 +56,18 @@ public class MainActivity extends AppCompatActivity
 			actionBar.setHomeButtonEnabled(true);
 		}
 
+		RequestOptions requestOptions = new RequestOptions()
+			.placeholder(R.drawable.ic_poke_unknown)
+			.error(R.drawable.ic_poke_unknown)
+			.fallback(R.drawable.ic_poke_unknown)
+			.diskCacheStrategy(DiskCacheStrategy.ALL);
+		GlideApp.with(this).setDefaultRequestOptions(requestOptions);
+
 		viewPager = findViewById(R.id.main_viewpager);
 		ViewPagerAdapter adapterVP = new ViewPagerAdapter(getSupportFragmentManager());
 		adapterVP.addFragment(new TeamListFragment(), "Teams"); //tab
 		adapterVP.addFragment(new PokemonListFragment(), "Pokémon"); //tab, title in caps
 		viewPager.setAdapter(adapterVP);
-
 
 		tabLayout = findViewById(R.id.main_tabs);
 		tabLayout.setupWithViewPager(viewPager);
