@@ -1,6 +1,8 @@
 package rec.games.pokemon.teambuilder;
 
 import android.arch.lifecycle.LifecycleOwner;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -24,6 +26,7 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 	private LiveDataList<Pokemon> mPokemon;
 	private OnPokemonClickListener mListener;
 	private LifecycleOwner mOwner;
+	Context context;
 
 	private final ItemObserver<Pokemon> cacheNotifier = new ItemObserver<Pokemon>()
 	{
@@ -57,6 +60,13 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 		mPokemon.observeCollection(mOwner, cacheNotifier);
 	}
 
+	@Override
+	public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView)
+	{
+		super.onAttachedToRecyclerView(recyclerView);
+		context = recyclerView.getContext();
+	}
+
 	@NonNull
 	@Override
 	public PokemonViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
@@ -82,6 +92,11 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 		}
 		else
 			return 0;
+	}
+
+	private boolean checkDisplayImages(){
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		return prefs.getBoolean(context.getResources().getString(R.string.pref_image_key), true);
 	}
 
 	@Override
@@ -119,9 +134,14 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 		{
 			mName.setText(p.getName());
 			mId.setText(String.valueOf(p.getId()));
-			GlideApp.with(mIcon.getContext())
-				.load(PokeAPIUtils.getSpriteUrl(p.getId()))
-				.into(mIcon);
+			if(checkDisplayImages())
+			{
+				GlideApp.with(mIcon.getContext())
+					.load(PokeAPIUtils.getSpriteUrl(p.getId()))
+					.into(mIcon);
+			}
+			else
+				GlideApp.with(mIcon.getContext()).load(R.drawable.ic_poke_unknown).into(mIcon);
 		}
 	}
 }
