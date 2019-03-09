@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.NavUtils;
 import android.support.v4.app.ShareCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,8 +17,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.bumptech.glide.request.RequestOptions;
 
 import java.util.HashMap;
 
@@ -100,7 +97,7 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 			@Override
 			public void onClick(View v)
 			{
-				itemFAB();
+				addOrRemovePokemonFromTeam();
 			}
 		});
 	}
@@ -152,7 +149,7 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 		}
 	}
 
-	public void itemFAB(){
+	public void addOrRemovePokemonFromTeam(){
 		if(!mItemAdded)
 		{
 			Log.d(TAG, "Added");

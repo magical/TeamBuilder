@@ -87,8 +87,8 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 		Log.d(TAG, "position: " + position);
 		if(position > 0 && mPokemon != null)
 		{
-			Log.d(TAG, Integer.toString(mPokemon.getValue(position - 1).getId()));
-			return mPokemon.getValue(position - 1).getId()+1; //mPokemon ids start at 1
+			Log.d(TAG, Integer.toString(mPokemon.getValue(position).getId()));
+			return mPokemon.getValue(position).getId(); //mPokemon ids start at 1
 		}
 		else
 			return 1;
