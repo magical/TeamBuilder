@@ -26,7 +26,6 @@ import java.util.HashMap;
 public class PokemonItemDetailActivity extends AppCompatActivity
 {
 	private static final String TAG = PokemonItemDetailActivity.class.getSimpleName();
-	private static final String TEAM_MEMBER = "rec.games.pokemon.teambuilder.Team"; //put somewhere else?
 
 	private int pokeId;
 	private Pokemon mPokemon;
@@ -67,9 +66,9 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 				}
 			});
 
-			if (intent.hasExtra(TEAM_MEMBER)){
+			if (intent.hasExtra(getString(R.string.team_id_string))){
 				mItemFAB.show();
-				mTeamName = intent.getStringExtra(TEAM_MEMBER);
+				mTeamName = intent.getStringExtra(getString(R.string.team_id_string));
 				Log.d(TAG, "Have Team " + mTeamName);
 
 			}

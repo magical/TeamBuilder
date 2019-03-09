@@ -22,7 +22,6 @@ import java.util.HashMap;
 public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClickListener
 {
 	private static final String TAG = TeamListFragment.class.getSimpleName();
-	private static final String TEAM_MEMBER = "rec.games.pokemon.teambuilder.Team"; //put somewhere else?
 
 	private FloatingActionButton mTeamFAB;
 	private Team team;
@@ -75,7 +74,7 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 				//should be replaced by activity to create a new team, is a placeholder...
 				Log.d(TAG, "FAB Clicked");
 				Intent intent = new Intent(getActivity(), TeamPokemonActivity.class);
-				intent.putExtra(TEAM_MEMBER, "Team1");
+				intent.putExtra(getString(R.string.team_id_string), "Team1");
 				startActivity(intent);
 			}
 		});

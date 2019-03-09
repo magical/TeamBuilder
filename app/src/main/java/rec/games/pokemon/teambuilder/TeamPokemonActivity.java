@@ -13,7 +13,6 @@ import android.widget.ProgressBar;
 public class TeamPokemonActivity extends AppCompatActivity
 {
 	private static final String TAG = TeamPokemonActivity.class.getSimpleName();
-	private static final String TEAM_MEMBER = "rec.games.pokemon.teambuilder.Team"; //put somewhere else?
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState)
@@ -22,10 +21,10 @@ public class TeamPokemonActivity extends AppCompatActivity
 
 		Bundle bundle = new Bundle();
 		Intent intent = getIntent();
-		if(intent !=null && intent.hasExtra(TEAM_MEMBER))
+		if(intent !=null && intent.hasExtra(getString(R.string.team_id_string)))
 		{
 			//Log.d(TAG, "Passing Team info");
-			bundle.putString(TEAM_MEMBER, intent.getStringExtra(TEAM_MEMBER));
+			bundle.putString(getString(R.string.team_id_string), intent.getStringExtra(getString(R.string.team_id_string)));
 		}
 
 		setContentView(R.layout.activity_team_pokemon_list);

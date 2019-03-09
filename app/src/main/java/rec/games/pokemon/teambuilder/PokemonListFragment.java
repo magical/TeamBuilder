@@ -29,7 +29,6 @@ import java.util.HashMap;
 public class PokemonListFragment extends Fragment implements PokemonListAdapter.OnPokemonClickListener
 {
 	private static final String TAG = PokemonListFragment.class.getSimpleName();
-	private static final String TEAM_MEMBER = "rec.games.pokemon.teambuilder.Team"; //put somewhere else?
 
 	private PokeAPIViewModel mViewModel;
 	private RecyclerView listRV;
@@ -70,7 +69,7 @@ public class PokemonListFragment extends Fragment implements PokemonListAdapter.
 
 		if (getArguments() != null){
 			//Log.d(TAG, "Got arguments");
-			mTeamToAdd = getArguments().getString(TEAM_MEMBER);
+			mTeamToAdd = getArguments().getString(getString(R.string.team_id_string));
 		}
 
 		final PokemonListAdapter adapter = new PokemonListAdapter(new LiveDataList<Pokemon>(), this, this);
@@ -159,7 +158,7 @@ public class PokemonListFragment extends Fragment implements PokemonListAdapter.
 		Intent intent = new Intent(getContext(), PokemonItemDetailActivity.class);
 		intent.putExtra(PokeAPIUtils.POKE_ITEM, pokemonID+1); //assign id
 		if(mTeamToAdd != null)
-			intent.putExtra(TEAM_MEMBER, mTeamToAdd);
+			intent.putExtra(getString(R.string.team_id_string), mTeamToAdd);
 		startActivity(intent);
 	}
 
