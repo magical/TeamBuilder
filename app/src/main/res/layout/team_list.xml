@@ -22,6 +22,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scrollbars="vertical"
+            android:paddingBottom="42dp"
+            android:clipToPadding="false"
             android:id="@+id/rv_team_members" />
 
     </LinearLayout>
@@ -39,7 +41,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|bottom"
-            android:layout_margin="28dp"
+            android:layout_margin="20dp"
             app:fabSize="normal"
             android:elevation="6dp"
             android:src="@drawable/ic_action_add"

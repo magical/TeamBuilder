@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Team Builder</string>
     <string name="action_settings">Settings</string>
+    <string name="action_search">Search</string>
     <string name="pref_title">Settings</string>
 
     <string name="loading_error_msg">Could not load from Pokeapi.co. Please check the internet connection, and try again.</string>
@@ -10,6 +11,11 @@
     <!-- Misc -->
     <string name="action_select_poke">"Select a Pokémon"</string>
     <string name="placeholder_pokemon_name">Pokémon</string>
+
+    <!-- Search -->
+    <string name="action_pokemon_list_search">Pokémon Name or Pokédex ID</string>
+    <string name="action_search_title">Search</string>
+    <string name="action_search_submit">Submit</string>
 
     <!-- sort order -->
     <string name="pref_sort_key" translatable="false">pref_sort</string>

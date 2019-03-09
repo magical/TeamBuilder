@@ -23,7 +23,7 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 {
 	private static final String TAG = TeamListFragment.class.getSimpleName();
 
-	FloatingActionButton mTeamFAB;
+	private FloatingActionButton mTeamFAB;
 	private Team team;
 
 	private TeamAdapter adapter;
@@ -75,6 +75,23 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 				Log.d(TAG, "FAB Clicked");
 				Intent intent = new Intent(getActivity(), TeamPokemonActivity.class);
 				startActivity(intent);
+			}
+		});
+		teamRV.addOnScrollListener(new RecyclerView.OnScrollListener()
+		{
+			@Override
+			public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy)
+			{
+				if ( dy > 0 || dy < 0 && mTeamFAB.isShown())
+					mTeamFAB.hide();							//hide if scrolling
+			}
+
+			@Override
+			public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState)
+			{
+				if (newState == RecyclerView.SCROLL_STATE_IDLE)
+					mTeamFAB.show();
+				super.onScrollStateChanged(recyclerView, newState);
 			}
 		});
 
