@@ -30,7 +30,6 @@ public class PokemonListFragment extends Fragment implements PokemonListAdapter.
 {
 	private static final String TAG = PokemonListFragment.class.getSimpleName();
 
-
 	private PokeAPIViewModel mViewModel;
 	private RecyclerView listRV;
 
@@ -39,6 +38,7 @@ public class PokemonListFragment extends Fragment implements PokemonListAdapter.
 	private LinearLayout mLoadingErrorLL;
 	private Button mLoadingErrorBtn;
 	private FloatingActionButton mListFAB;
+	private String mTeamToAdd;
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState)
@@ -65,6 +65,11 @@ public class PokemonListFragment extends Fragment implements PokemonListAdapter.
 		mLoadingErrorBtn = view.findViewById(R.id.btn_loading_error);
 		mListFAB = view.findViewById(R.id.pokemon_list_FAB);
 		mListFAB.hide();
+
+		if (getArguments() != null){
+			Log.d(TAG, "Got arguments");
+			mTeamToAdd = getArguments().getString("TEAM");
+		}
 
 		final PokemonListAdapter adapter = new PokemonListAdapter(new LiveDataList<Pokemon>(), this, this);
 
@@ -151,6 +156,8 @@ public class PokemonListFragment extends Fragment implements PokemonListAdapter.
 
 		Intent intent = new Intent(getContext(), PokemonItemDetailActivity.class);
 		intent.putExtra(PokeAPIUtils.POKE_ITEM, pokemonID+1); //assign id
+		if(mTeamToAdd != null)
+			intent.putExtra("TEAM", mTeamToAdd);
 		startActivity(intent);
 	}
 

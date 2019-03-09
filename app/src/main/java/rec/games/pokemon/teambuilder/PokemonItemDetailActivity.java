@@ -63,6 +63,11 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 					fillLayout();
 				}
 			});
+
+			if (intent.hasExtra("TEAM")){
+				Log.d(TAG, "Can do it!");
+			}
+
 		}
 	}
 

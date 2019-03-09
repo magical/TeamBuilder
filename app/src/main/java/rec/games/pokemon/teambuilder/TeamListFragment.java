@@ -74,6 +74,7 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 				//should be replaced by activity to create a new team, is a placeholder...
 				Log.d(TAG, "FAB Clicked");
 				Intent intent = new Intent(getActivity(), TeamPokemonActivity.class);
+				intent.putExtra("TEAM", "Team1");
 				startActivity(intent);
 			}
 		});
