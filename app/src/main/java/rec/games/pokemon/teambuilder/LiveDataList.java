@@ -16,7 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-interface ItemObserver<T>
+interface CollectionObserver<T>
 {
 	void onItemChanged(@Nullable T t, int index);
 }
@@ -62,7 +62,7 @@ class LiveDataList<E> implements Iterable<E>
 {
 	private List<LiveData<E>> list;
 	private HashMap<LiveData<E>, LiveDataMapValue<E>> liveDataMap = new HashMap<>();
-	private HashSet<ItemObserver<E>> collectionObserverSet = new HashSet<>();
+	private HashSet<CollectionObserver<E>> collectionObserverSet = new HashSet<>();
 	private MediatorLiveData<LiveData<E>> mediator = new MediatorLiveData<>();
 
 	LiveDataList()
@@ -84,12 +84,14 @@ class LiveDataList<E> implements Iterable<E>
 				public void onChanged(@Nullable E e)
 				{
 					LiveDataMapValue<E> liveDataMapValue = liveDataMap.get(item);
+					if(liveDataMapValue == null)
+						return;
 
 					for(Observer<E> observer: liveDataMapValue.itemObservers)
 						observer.onChanged(e);
 
-					for(ItemObserver<E> itemObserver: collectionObserverSet)
-						itemObserver.onItemChanged(e, liveDataMapValue.index);
+					for(CollectionObserver<E> collectionObserver: collectionObserverSet)
+						collectionObserver.onItemChanged(e, liveDataMapValue.index);
 				}
 			});
 		}
@@ -109,12 +111,14 @@ class LiveDataList<E> implements Iterable<E>
 			public void onChanged(@Nullable E e)
 			{
 				LiveDataMapValue<E> liveDataMapValue = liveDataMap.get(item);
+				if(liveDataMapValue == null)
+					return;
 
 				for(Observer<E> observer: liveDataMapValue.itemObservers)
 					observer.onChanged(e);
 
-				for(ItemObserver<E> itemObserver: collectionObserverSet)
-					itemObserver.onItemChanged(e, liveDataMapValue.index);
+				for(CollectionObserver<E> collectionObserver: collectionObserverSet)
+					collectionObserver.onItemChanged(e, liveDataMapValue.index);
 			}
 		});
 
@@ -148,6 +152,9 @@ class LiveDataList<E> implements Iterable<E>
 		for(int i = 0; i < list.size(); i++)
 		{
 			LiveDataMapValue<E> liveDataMapValue = liveDataMap.get(list.get(i));
+			if(liveDataMapValue == null)
+				continue;
+
 			liveDataMapValue.index = i;
 		}
 	}
@@ -159,7 +166,11 @@ class LiveDataList<E> implements Iterable<E>
 			return;
 
 		LiveData<E> item = list.get(index);
-		liveDataMap.get(item).itemObservers.add(observer);
+		LiveDataMapValue<E> liveDataMapValue = liveDataMap.get(item);
+		if(liveDataMapValue == null)
+			return;
+
+		liveDataMapValue.itemObservers.add(observer);
 	}
 
 	//remove the itemObserver and the observer associated with it
@@ -169,19 +180,23 @@ class LiveDataList<E> implements Iterable<E>
 			return;
 
 		LiveData<E> item = list.get(index);
-		liveDataMap.get(item).itemObservers.remove(observer);
+		LiveDataMapValue<E> liveDataMapValue = liveDataMap.get(item);
+		if(liveDataMapValue == null)
+			return;
+
+		liveDataMapValue.itemObservers.remove(observer);
 
 	}
 
 	//adds an observer to all items in the collection, which this class manages as a collectionObserver
-	void observeCollection(ItemObserver<E> itemObserver)
+	void observeCollection(CollectionObserver<E> collectionObserver)
 	{
-		collectionObserverSet.add(itemObserver);
+		collectionObserverSet.add(collectionObserver);
 	}
 
 	//remove the collectionObserver and the observer associated with it
-	void removeCollectionObserver(ItemObserver<E> itemObserver)
+	void removeCollectionObserver(CollectionObserver<E> collectionObserver)
 	{
-		collectionObserverSet.remove(itemObserver);
+		collectionObserverSet.remove(collectionObserver);
 	}
 }

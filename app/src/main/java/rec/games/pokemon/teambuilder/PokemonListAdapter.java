@@ -1,6 +1,5 @@
 package rec.games.pokemon.teambuilder;
 
-import android.arch.lifecycle.LifecycleOwner;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
@@ -15,7 +14,7 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonViewHolder>
 	private LiveDataList<Pokemon> mPokemon;
 	private OnPokemonClickListener mListener;
 
-	private final ItemObserver<Pokemon> cacheNotifier = new ItemObserver<Pokemon>()
+	private final CollectionObserver<Pokemon> cacheNotifier = new CollectionObserver<Pokemon>()
 	{
 		@Override
 		public void onItemChanged(@Nullable Pokemon pokemon, int index)
