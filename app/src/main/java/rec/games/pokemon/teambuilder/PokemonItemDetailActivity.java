@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.NavUtils;
 import android.support.v4.app.ShareCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -14,6 +15,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -28,6 +30,8 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 	private Pokemon mPokemon;
 	private ImageView mArtwork;
 	private TextView mPokemonName;
+	private FloatingActionButton mItemFAB;
+	private boolean mItemAdded;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -36,6 +40,9 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 		setContentView(R.layout.activity_pokemon_item_detail);
 		mArtwork = findViewById(R.id.iv_pokemon_detail_artwork);
 		mPokemonName = findViewById(R.id.tv_pokemon_detail_name);
+		mItemFAB = findViewById(R.id.item_add_FAB);
+		mItemFAB.show();
+		mItemAdded = false;
 
 		Intent intent = getIntent();
 
@@ -78,6 +85,15 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 			}
 			setTitle(mPokemon.getName());
 		}
+
+		mItemFAB.setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				ifItemAddedFAB();
+			}
+		});
 	}
 
 	@Override
@@ -124,6 +140,21 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 			if(intent.resolveActivity(getPackageManager())!=null){
 				startActivity(intent);
 			}
+		}
+	}
+
+	public void ifItemAddedFAB(){
+		if(!mItemAdded)
+		{
+			Log.d(TAG, "Added");
+			mItemFAB.setImageResource(R.drawable.ic_status_added); //add to SQL
+			mItemAdded = true;
+		}
+		else
+		{
+			Log.d(TAG, "Removed");
+			mItemFAB.setImageResource(R.drawable.ic_action_add); //remove
+			mItemAdded = false;
 		}
 	}
 }
