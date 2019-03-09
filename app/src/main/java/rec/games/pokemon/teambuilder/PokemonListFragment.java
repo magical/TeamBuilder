@@ -40,6 +40,7 @@ public class PokemonListFragment extends Fragment implements PokemonListAdapter.
 	private Button mLoadingErrorBtn;
 	private FloatingActionButton mListFAB;
 	private String mTeamToAdd;
+	private String searchTerm;
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState)
@@ -177,6 +178,7 @@ public class PokemonListFragment extends Fragment implements PokemonListAdapter.
 				public void onClick(DialogInterface dialog, int which)
 				{
 					String input = userInputText.getText().toString();
+					searchTerm = input;
 					Log.d(TAG, "Searched for: " + input);
 					if (!input.isEmpty())
 					{
