@@ -2,10 +2,10 @@ package rec.games.pokemon.teambuilder;
 
 import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.Observer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Pair;
 
 import java.util.Collection;
 import java.util.ArrayList;
@@ -45,11 +45,24 @@ class LiveDataListIterator<E> implements Iterator<E>
 	}
 }
 
+class LiveDataMapValue<E>
+{
+	int index;
+	ArrayList<Observer<E>> itemObservers;
+
+	LiveDataMapValue(int index)
+	{
+		this.index = index;
+		itemObservers = new ArrayList<>();
+	}
+}
+
 class LiveDataList<E> implements Iterable<E>
 {
 	private List<LiveData<E>> list;
-	private HashSet<Pair<LiveData<E>, Observer<E>>> itemObserverMap = new HashSet<>();
-	private HashMap<ItemObserver<E>, ArrayList<Observer<E>>> collectionObserverMap = new HashMap<>();
+	private HashMap<LiveData<E>, LiveDataMapValue<E>> liveDataMap = new HashMap<>();
+	private HashSet<ItemObserver<E>> collectionObserverSet = new HashSet<>();
+	private MediatorLiveData<LiveData<E>> mediator = new MediatorLiveData<>();
 
 	LiveDataList()
 	{
@@ -59,11 +72,52 @@ class LiveDataList<E> implements Iterable<E>
 	LiveDataList(Collection<LiveData<E>> collection)
 	{
 		list = new ArrayList<>(collection);
+		for(int i = 0; i < list.size(); i++)
+		{
+			final LiveData<E> item = list.get(i);
+
+			liveDataMap.put(item, new LiveDataMapValue<E>(i));
+			mediator.addSource(item, new Observer<E>()
+			{
+				@Override
+				public void onChanged(@Nullable E e)
+				{
+					LiveDataMapValue<E> liveDataMapValue = liveDataMap.get(item);
+
+					for(Observer<E> observer: liveDataMapValue.itemObservers)
+						observer.onChanged(e);
+
+					for(ItemObserver<E> itemObserver: collectionObserverSet)
+						itemObserver.onItemChanged(e, liveDataMapValue.index);
+				}
+			});
+		}
 	}
 
 	E getValue(int index)
 	{
 		return list.get(index).getValue();
+	}
+
+	void add(final LiveData<E> item)
+	{
+		liveDataMap.put(item, new LiveDataMapValue<E>(list.size()));
+		mediator.addSource(item, new Observer<E>()
+		{
+			@Override
+			public void onChanged(@Nullable E e)
+			{
+				LiveDataMapValue<E> liveDataMapValue = liveDataMap.get(item);
+
+				for(Observer<E> observer: liveDataMapValue.itemObservers)
+					observer.onChanged(e);
+
+				for(ItemObserver<E> itemObserver: collectionObserverSet)
+					itemObserver.onItemChanged(e, liveDataMapValue.index);
+			}
+		});
+
+		list.add(item);
 	}
 
 	int size()
@@ -85,7 +139,8 @@ class LiveDataList<E> implements Iterable<E>
 			return;
 
 		LiveData<E> item = list.get(index);
-		itemObserverMap.add(Pair.create(item, observer));
+
+		liveDataMap.get(item).itemObservers.add(observer);
 		item.observe(owner, observer);
 	}
 
@@ -96,11 +151,8 @@ class LiveDataList<E> implements Iterable<E>
 			return;
 
 		LiveData<E> item = list.get(index);
-		Pair<LiveData<E>, Observer<E>> key = Pair.create(item, observer);
-		if(!itemObserverMap.contains(key))
-			return;
 
-		itemObserverMap.remove(key);
+		liveDataMap.get(item).itemObservers.remove(observer);
 		item.removeObserver(observer);
 
 	}
@@ -108,44 +160,13 @@ class LiveDataList<E> implements Iterable<E>
 	//adds an observer to all items in the collection, which this class manages as a collectionObserver
 	void observeCollection(LifecycleOwner owner, final ItemObserver<E> itemObserver)
 	{
-		ArrayList<Observer<E>> observers = new ArrayList<>(list.size());
-		for(int i = 0; i < list.size(); i++)
-		{
-			LiveData<E> item = list.get(i);
-			final int readOnlyI = i;
-
-			Observer<E> observer = new Observer<E>()
-			{
-				@Override
-				public void onChanged(@Nullable E e)
-				{
-					itemObserver.onItemChanged(e, readOnlyI);
-				}
-			};
-			item.observe(owner, observer);
-			observers.add(observer);
-		}
-
-		collectionObserverMap.put(itemObserver, observers);
+		collectionObserverSet.add(itemObserver);
 	}
 
 	//remove the collectionObserver and the observer associated with it
 	void removeCollectionObserver(ItemObserver<E> itemObserver)
 	{
-		if(!collectionObserverMap.containsKey(itemObserver))
-			return;
-
-		ArrayList<Observer<E>> observers = collectionObserverMap.remove(itemObserver);
-
-		Iterator<LiveData<E>> listIterator = list.iterator();
-		Iterator<Observer<E>> observerIterator = observers.iterator();
-		while(listIterator.hasNext() && observerIterator.hasNext())
-		{
-			LiveData<E> item = listIterator.next();
-			Observer<E> observer = observerIterator.next();
-
-			item.removeObserver(observer);
-		}
+		collectionObserverSet.remove(itemObserver);
 	}
 
 	//on garbage collection, we guarantee that we will remove all of the observers attached through our LiveDataList methods
@@ -154,13 +175,10 @@ class LiveDataList<E> implements Iterable<E>
 	@Override
 	protected void finalize() throws Throwable
 	{
-		//cleanup all of the itemObservers
-		for(Pair<LiveData<E>, Observer<E>> key: itemObserverMap)
-			key.first.removeObserver(key.second);
-
-		//cleanup all of the collectionObservers
-		for(ItemObserver<E> itemObserver: collectionObserverMap.keySet())
-			removeCollectionObserver(itemObserver);
+		//cleanup all of the itemObservers for each item
+		for(LiveData<E> item: list)
+			for(Observer<E> observer: liveDataMap.get(item).itemObservers)
+				item.removeObserver(observer);
 
 		super.finalize();
 	}
