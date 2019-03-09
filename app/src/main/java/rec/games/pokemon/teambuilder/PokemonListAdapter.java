@@ -49,7 +49,7 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 
 	public interface OnPokemonClickListener
 	{
-		void onPokemonClicked(int position);
+		void onPokemonClicked(int pokeId);
 	}
 
 	public void updatePokemon(LiveDataList<Pokemon> pokemon)
@@ -88,10 +88,10 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 		if(position > 0 && mPokemon != null)
 		{
 			Log.d(TAG, Integer.toString(mPokemon.getValue(position - 1).getId()));
-			return mPokemon.getValue(position - 1).getId(); //mPokemon ids start at 1
+			return mPokemon.getValue(position - 1).getId()+1; //mPokemon ids start at 1
 		}
 		else
-			return 0;
+			return 1;
 	}
 
 	private boolean checkDisplayImages(){

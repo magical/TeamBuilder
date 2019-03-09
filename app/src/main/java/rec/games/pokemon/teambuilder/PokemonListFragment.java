@@ -69,7 +69,7 @@ public class PokemonListFragment extends Fragment implements PokemonListAdapter.
 
 		if (getArguments() != null){
 			//Log.d(TAG, "Got arguments");
-			mTeamToAdd = getArguments().getString(getString(R.string.team_id_string));
+			mTeamToAdd = getArguments().getString(Team.TEAM_ID);
 		}
 
 		final PokemonListAdapter adapter = new PokemonListAdapter(new LiveDataList<Pokemon>(), this, this);
@@ -153,12 +153,12 @@ public class PokemonListFragment extends Fragment implements PokemonListAdapter.
 	//@Override
 	public void onPokemonClicked(int pokemonID)
 	{
-		Log.d(TAG, "ID of "+ pokemonID+1);
+		Log.d(TAG, "ID of "+ pokemonID);
 
 		Intent intent = new Intent(getContext(), PokemonItemDetailActivity.class);
-		intent.putExtra(PokeAPIUtils.POKE_ITEM, pokemonID+1); //assign id
+		intent.putExtra(PokeAPIUtils.POKE_ITEM, pokemonID); //assign id
 		if(mTeamToAdd != null)
-			intent.putExtra(getString(R.string.team_id_string), mTeamToAdd);
+			intent.putExtra(Team.TEAM_ID, mTeamToAdd);
 		startActivity(intent);
 	}
 

@@ -66,13 +66,12 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 				}
 			});
 
-			if (intent.hasExtra(getString(R.string.team_id_string))){
+			if (intent.hasExtra(Team.TEAM_ID)){
 				mItemFAB.show();
-				mTeamName = intent.getStringExtra(getString(R.string.team_id_string));
+				mTeamName = intent.getStringExtra(Team.TEAM_ID);
 				Log.d(TAG, "Have Team " + mTeamName);
 
 			}
-
 		}
 	}
 
@@ -101,7 +100,7 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 			@Override
 			public void onClick(View v)
 			{
-				ifItemAddedFAB();
+				itemFAB();
 			}
 		});
 	}
@@ -153,7 +152,7 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 		}
 	}
 
-	public void ifItemAddedFAB(){
+	public void itemFAB(){
 		if(!mItemAdded)
 		{
 			Log.d(TAG, "Added");

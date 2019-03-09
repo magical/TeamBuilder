@@ -87,7 +87,6 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder
         TeamMember mSavedTeamMember;
         private ImageView image;
         private TextView name;
-        //private Object mListener;
 
         TeamViewHolder(View v, OnTeamClickListener l, LifecycleOwner lifecycleOwner) {
             super(v);
@@ -103,7 +102,6 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder
 				{
 					mListener.onTeamMemberClicked(getTeamMemberId(getAdapterPosition()));
 					//Log.d(TAG, "Clicked + " + getTeamMemberId(getAdapterPosition()));
-
 				}
 			});
         }
