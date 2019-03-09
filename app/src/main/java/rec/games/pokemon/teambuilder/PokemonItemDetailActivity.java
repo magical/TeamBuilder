@@ -26,12 +26,15 @@ import java.util.HashMap;
 public class PokemonItemDetailActivity extends AppCompatActivity
 {
 	private static final String TAG = PokemonItemDetailActivity.class.getSimpleName();
+	private static final String TEAM_MEMBER = "rec.games.pokemon.teambuilder.Team"; //put somewhere else?
+
 	private int pokeId;
 	private Pokemon mPokemon;
 	private ImageView mArtwork;
 	private TextView mPokemonName;
 	private FloatingActionButton mItemFAB;
 	private boolean mItemAdded;
+	private String mTeamName;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -41,7 +44,7 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 		mArtwork = findViewById(R.id.iv_pokemon_detail_artwork);
 		mPokemonName = findViewById(R.id.tv_pokemon_detail_name);
 		mItemFAB = findViewById(R.id.item_add_FAB);
-		mItemFAB.show();
+		mItemFAB.hide();
 		mItemAdded = false;
 
 		Intent intent = getIntent();
@@ -64,8 +67,11 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 				}
 			});
 
-			if (intent.hasExtra("TEAM")){
-				Log.d(TAG, "Can do it!");
+			if (intent.hasExtra(TEAM_MEMBER)){
+				mItemFAB.show();
+				mTeamName = intent.getStringExtra(TEAM_MEMBER);
+				Log.d(TAG, "Have Team " + mTeamName);
+
 			}
 
 		}
