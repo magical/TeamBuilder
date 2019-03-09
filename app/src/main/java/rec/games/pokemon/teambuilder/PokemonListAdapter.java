@@ -14,7 +14,6 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonViewHolder>
 {
 	private LiveDataList<Pokemon> mPokemon;
 	private OnPokemonClickListener mListener;
-	private LifecycleOwner mOwner;
 
 	private final ItemObserver<Pokemon> cacheNotifier = new ItemObserver<Pokemon>()
 	{
@@ -26,13 +25,12 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonViewHolder>
 		}
 	};
 
-	PokemonListAdapter(LiveDataList<Pokemon> pokemon, OnPokemonClickListener l, LifecycleOwner owner)
+	PokemonListAdapter(LiveDataList<Pokemon> pokemon, OnPokemonClickListener l)
 	{
 		this.mPokemon = pokemon;
 		this.mListener = l;
-		this.mOwner = owner;
 
-		mPokemon.observeCollection(mOwner, cacheNotifier);
+		mPokemon.observeCollection(cacheNotifier);
 	}
 
 	public void updatePokemon(LiveDataList<Pokemon> pokemon)
@@ -40,7 +38,7 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonViewHolder>
 		this.mPokemon = pokemon;
 		notifyDataSetChanged();
 
-		mPokemon.observeCollection(mOwner, cacheNotifier);
+		mPokemon.observeCollection(cacheNotifier);
 	}
 
 	@NonNull

@@ -23,9 +23,7 @@ import android.widget.TextView;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class PokemonListFragment extends Fragment implements OnPokemonClickListener
 {
@@ -75,7 +73,7 @@ public class PokemonListFragment extends Fragment implements OnPokemonClickListe
 		mLoadingErrorLL = view.findViewById(R.id.ll_loading_error);
 		mLoadingErrorBtn = view.findViewById(R.id.btn_loading_error);
 
-		final PokemonListAdapter adapter = new PokemonListAdapter(new LiveDataList<Pokemon>(), this, this);
+		final PokemonListAdapter adapter = new PokemonListAdapter(new LiveDataList<Pokemon>(), this);
 
 		mViewModel = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
 		mViewModel.getPokemonCache().observe(this, new Observer<HashMap<Integer, LiveData<Pokemon>>>()
