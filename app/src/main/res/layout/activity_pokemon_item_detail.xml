@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -7,18 +7,45 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-     <ImageView
-         android:id="@+id/iv_pokemon_detail_artwork"
-         android:layout_gravity="center"
-         android:layout_width="200dp"
-         android:layout_height="200dp"
-         android:src="@drawable/ic_poke_unknown"/>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical">
+         <ImageView
+             android:id="@+id/iv_pokemon_detail_artwork"
+             android:layout_gravity="center"
+             android:layout_width="200dp"
+             android:layout_height="200dp"
+             android:src="@drawable/ic_poke_unknown"/>
 
-    <TextView
-        android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/tv_pokemon_detail_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:textSize="22sp"
+            android:text="@string/placeholder_pokemon_name"/>
+    </LinearLayout>
+
+    <!-- force at bottom -->
+    <LinearLayout
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:textSize="22sp"
-        android:text="Pokemon"/>
+        android:layout_alignParentBottom="true"
+        android:gravity="end"
+        android:orientation="horizontal">
 
-</LinearLayout>
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/item_add_FAB"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="20dp"
+            android:visibility="invisible"
+            app:fabSize="normal"
+            android:elevation="6dp"
+            android:src="@drawable/ic_action_add"
+            android:background="@color/colorPrimary"/>
+    </LinearLayout>
+
+</RelativeLayout>

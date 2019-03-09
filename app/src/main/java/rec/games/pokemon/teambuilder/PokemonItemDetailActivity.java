@@ -1,19 +1,36 @@
 package rec.games.pokemon.teambuilder;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ShareCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
+
+import java.util.HashMap;
 
 public class PokemonItemDetailActivity extends AppCompatActivity
 {
 	private static final String TAG = PokemonItemDetailActivity.class.getSimpleName();
 
-	private int tempArrayId; //replace with actual details of pokemon, is placeholder
+	private int pokeId;
+	private Pokemon mPokemon;
 	private ImageView mArtwork;
+	private TextView mPokemonName;
+	private FloatingActionButton mItemFAB;
+	private boolean mItemAdded;
+	private String mTeamName;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -21,14 +38,68 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_pokemon_item_detail);
 		mArtwork = findViewById(R.id.iv_pokemon_detail_artwork);
-		tempArrayId = -1;
+		mPokemonName = findViewById(R.id.tv_pokemon_detail_name);
+		mItemFAB = findViewById(R.id.item_add_FAB);
+		mItemFAB.hide();
+		mItemAdded = false;
 
 		Intent intent = getIntent();
 
-		if (intent != null && intent.hasExtra(PokeAPIUtils.POKE_ITEM)){
-			tempArrayId = intent.getIntExtra(PokeAPIUtils.POKE_ITEM, 25); //default to pikachu
-			GlideApp.with(this).load(PokeAPIUtils.getArtworkUrl(tempArrayId +1)).placeholder(R.drawable.ic_poke_unknown).into(mArtwork);
+		if (intent != null && intent.hasExtra(PokeAPIUtils.POKE_ITEM))
+		{
+			pokeId = intent.getIntExtra(PokeAPIUtils.POKE_ITEM, pokeId);
+
+			PokeAPIViewModel model = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
+
+			// Fill in with some fake data
+			model.getPokemonCache().observe(this, new Observer<HashMap<Integer, LiveData<Pokemon>>>() {
+				@Override
+				public void onChanged(@Nullable HashMap<Integer, LiveData<Pokemon>> list) {
+					Log.d(TAG, "Got value");
+					if(list != null)
+						mPokemon = list.get(pokeId).getValue();
+
+					fillLayout();
+				}
+			});
+
+			if (intent.hasExtra(Team.TEAM_ID)){
+				mItemFAB.show();
+				mTeamName = intent.getStringExtra(Team.TEAM_ID);
+				Log.d(TAG, "Have Team " + mTeamName);
+
+			}
 		}
+	}
+
+	private void fillLayout(){
+		if(pokeId > 0)
+		{
+			mPokemonName.setText(mPokemon.getName());
+
+			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+			if (prefs.getBoolean(this.getResources().getString(R.string.pref_image_key), true))
+			{
+				GlideApp.with(this).load(PokeAPIUtils.getArtworkUrl(pokeId))
+					.error(GlideApp.with(this).load(PokeAPIUtils.getSpriteUrl(pokeId))
+						.error(R.drawable.ic_poke_unknown))
+					.placeholder(R.drawable.ic_poke_unknown).into(mArtwork);
+			}
+			else
+			{
+				GlideApp.with(this).load(R.drawable.ic_poke_unknown).into(mArtwork);
+			}
+			setTitle(mPokemon.getName());
+		}
+
+		mItemFAB.setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				addOrRemovePokemonFromTeam();
+			}
+		});
 	}
 
 	@Override
@@ -54,9 +125,10 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 	}
 
 	public void sharePokeDetails(){
-		if(tempArrayId > -1) //fake null - TODO - replace
+		if(mPokemon != null) //fake null - TODO - replace
 		{
-			String pokeDetails = Integer.toString(tempArrayId);
+			String pokeDetails = mPokemon.getName() + " (" +
+				Integer.toString(mPokemon.getId()) + ")";
 
 			ShareCompat.IntentBuilder.from(this)
 				.setType("text/plain")
@@ -67,12 +139,28 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 	}
 
 	public void shareToBrowser(){
-		if(tempArrayId > 0) //placeholder data, need to replace
+		if(mPokemon != null) //placeholder data, need to replace
 		{
-			Intent intent = new Intent(Intent.ACTION_VIEW, PokeAPIUtils.getBulbapediaPage(Integer.toString(tempArrayId)));
+			Intent intent = new Intent(Intent.ACTION_VIEW,
+				PokeAPIUtils.getBulbapediaPage(mPokemon.getName()));
 			if(intent.resolveActivity(getPackageManager())!=null){
 				startActivity(intent);
 			}
+		}
+	}
+
+	public void addOrRemovePokemonFromTeam(){
+		if(!mItemAdded)
+		{
+			Log.d(TAG, "Added");
+			mItemFAB.setImageResource(R.drawable.ic_status_added); //add to SQL
+			mItemAdded = true;
+		}
+		else
+		{
+			Log.d(TAG, "Removed");
+			mItemFAB.setImageResource(R.drawable.ic_action_add); //remove
+			mItemAdded = false;
 		}
 	}
 }
