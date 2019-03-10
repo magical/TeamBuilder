@@ -1,4 +1,4 @@
-package rec.games.pokemon.teambuilder;
+package rec.games.pokemon.teambuilder.View;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

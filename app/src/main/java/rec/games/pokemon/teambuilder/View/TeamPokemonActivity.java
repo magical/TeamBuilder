@@ -1,14 +1,13 @@
-package rec.games.pokemon.teambuilder;
+package rec.games.pokemon.teambuilder.View;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.View;
-import android.widget.ProgressBar;
+
+import rec.games.pokemon.teambuilder.Model.Team;
+import rec.games.pokemon.teambuilder.R;
 
 public class TeamPokemonActivity extends AppCompatActivity
 {
@@ -21,7 +20,7 @@ public class TeamPokemonActivity extends AppCompatActivity
 
 		Bundle bundle = new Bundle();
 		Intent intent = getIntent();
-		if(intent !=null && intent.hasExtra(Team.TEAM_ID))
+		if(intent != null && intent.hasExtra(Team.TEAM_ID))
 		{
 			//Log.d(TAG, "Passing Team info");
 			bundle.putString(Team.TEAM_ID, intent.getStringExtra(Team.TEAM_ID));
@@ -30,7 +29,7 @@ public class TeamPokemonActivity extends AppCompatActivity
 		setContentView(R.layout.activity_team_pokemon_list);
 		//ProgressBar mLoadingPB = onCreateView().findViewById()
 		setTitle(getString(R.string.action_select_poke));
-		if(getSupportActionBar() != null) 				//no null pointer exception
+		if(getSupportActionBar() != null)                //no null pointer exception
 			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 		PokemonListFragment pokemonListFragment = new PokemonListFragment();

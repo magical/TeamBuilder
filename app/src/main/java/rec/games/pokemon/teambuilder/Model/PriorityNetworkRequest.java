@@ -1,4 +1,4 @@
-package rec.games.pokemon.teambuilder;
+package rec.games.pokemon.teambuilder.Model;
 
 import okhttp3.Callback;
 import okhttp3.Request;

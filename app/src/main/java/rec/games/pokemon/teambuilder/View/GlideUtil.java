@@ -1,4 +1,4 @@
-package rec.games.pokemon.teambuilder;
+package rec.games.pokemon.teambuilder.View;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -6,13 +6,13 @@ import android.util.Log;
 
 import com.bumptech.glide.GlideBuilder;
 import com.bumptech.glide.annotation.GlideModule;
-import com.bumptech.glide.load.engine.cache.InternalCacheDiskCacheFactory;
 import com.bumptech.glide.module.AppGlideModule;
 
 @GlideModule //hides warnings
 public class GlideUtil extends AppGlideModule
 {
 	private static final String TAG = GlideUtil.class.getSimpleName();
+
 	@Override
 	public void applyOptions(@NonNull Context context, @NonNull GlideBuilder builder)
 	{

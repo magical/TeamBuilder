@@ -1,65 +1,10 @@
-package rec.games.pokemon.teambuilder;
+package rec.games.pokemon.teambuilder.Model;
 
 import android.arch.lifecycle.LiveData;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
-// Pokemon is a data class representing a pokemon
-abstract class Pokemon
-{
-	protected int id;
-
-	public Pokemon(int id)
-	{
-		this.id = id;
-	}
-
-	public int getId()
-	{
-		return id;
-	}
-
-	public boolean isDeferred()
-	{
-		return this instanceof DeferredPokemonResource;
-	}
-
-	//subclasses may or may not have these. Or they could return different values
-	public abstract String getName();
-
-	public boolean isLoaded()
-	{
-		return false;
-	}
-}
-
-class DeferredPokemonResource extends Pokemon
-{
-	protected String resourceName;
-	protected String url;
-
-	public DeferredPokemonResource(int id, String resourceName, String url)
-	{
-		super(id);
-
-		this.resourceName = resourceName;
-		this.url = url;
-	}
-
-	@Override
-	public String getName()
-	{
-		return resourceName;
-	}
-
-	public String getUrl()
-	{
-		return url;
-	}
-}
-
-class PokemonResource extends Pokemon
+public class PokemonResource extends Pokemon
 {
 	//TODO: later down the road we should use the pokemon-species name or the pokemon-form name
 	protected String resourceName;
@@ -90,11 +35,11 @@ class PokemonResource extends Pokemon
 	@Override
 	public boolean isLoaded()
 	{
-		for(LiveData<PokemonType> pokemonTypeReference: types)
+		for(LiveData<PokemonType> pokemonTypeReference : types)
 			if(pokemonTypeReference.getValue() == null || pokemonTypeReference.getValue().isDeferred())
 				return false;
 
-		for(LiveData<PokemonMove> pokemonMoveReference: moves)
+		for(LiveData<PokemonMove> pokemonMoveReference : moves)
 			if(pokemonMoveReference.getValue() == null || pokemonMoveReference.getValue().isDeferred())
 				return false;
 

@@ -1,7 +1,6 @@
-package rec.games.pokemon.teambuilder;
+package rec.games.pokemon.teambuilder.Model;
 
 import android.net.Uri;
-import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -9,7 +8,7 @@ import java.io.Serializable;
 
 public class PokeAPIUtils
 {
-	public static final String POKE_ITEM = "rec.games.pokemon.teambuilder.PokeAPIUtils";
+	public static final String POKE_ITEM = "rec.games.pokemon.teambuilder.Model.PokeAPIUtils";
 	private final static String POKE_API_BASE_URL = "https://pokeapi.co/api/v2/";
 	private final static String POKE_API_LIMIT_PARAM = "limit";
 	private final static String POKE_API_OFFSET_PARAM = "offset";
@@ -26,79 +25,7 @@ public class PokeAPIUtils
 	private final static String POKE_BULBAPEDIA_URL = "https://bulbapedia.bulbagarden.net/wiki/";
 	private final static String POKE_BULBAPEDIA_END = "_(Pokémon)";
 
-	static class NamedAPIResourceList implements Serializable
-	{
-		NamedAPIResource[] results;
-		int count; 		//count is available
-	}
-
-	static class NamedAPIResource implements Serializable
-	{
-		String name;
-		String url;
-	}
-
-	static class Name implements Serializable
-	{
-		String name;
-		NamedAPIResource language;
-	}
-
-	static class Pokemon implements Serializable
-	{
-		int id;
-		String name;
-		PokemonMove[] moves;
-		PokemonSprites sprites;
-		PokemonType[] types;
-	}
-
-	static class PokemonMove implements Serializable
-	{
-		NamedAPIResource move;
-		//version_group_details is available
-	}
-
-	static class PokemonSprites implements Serializable
-	{
-		String front_default;
-		String back_default;
-	}
-
-	static class PokemonType implements Serializable
-	{
-		int slot;
-		NamedAPIResource type;
-	}
-
-	static class Move implements Serializable
-	{
-		int id;
-		String name;
-		int power;
-		Name[] names;
-		NamedAPIResource type;
-	}
-
-	static class Type implements Serializable
-	{
-		int id;
-		String name;
-		TypeRelations damage_relations;
-		Name[] names;
-	}
-
-	static class TypeRelations implements Serializable
-	{
-		NamedAPIResource[] no_damage_to;
-		NamedAPIResource[] half_damage_to;
-		NamedAPIResource[] double_damage_to;
-		NamedAPIResource[] no_damage_from;
-		NamedAPIResource[] half_damage_from;
-		NamedAPIResource[] double_damage_from;
-	}
-
-	static String buildNamedAPIResourceListURL(String endPoint, int limit, int offset)
+	public static String buildNamedAPIResourceListURL(String endPoint, int limit, int offset)
 	{
 		return Uri.parse(POKE_API_BASE_URL).buildUpon()
 			.appendPath(endPoint)
@@ -108,46 +35,46 @@ public class PokeAPIUtils
 			.toString();
 	}
 
-	static String buildPokemonListURL(int limit, int offset)
+	public static String buildPokemonListURL(int limit, int offset)
 	{
 		return buildNamedAPIResourceListURL(POKE_API_POKEMON_ENDPOINT, limit, offset);
 	}
 
-	static String buildTypeListURL(int limit, int offset)
+	public static String buildTypeListURL(int limit, int offset)
 	{
 		return buildNamedAPIResourceListURL(POKE_API_TYPE_ENDPOINT, limit, offset);
 	}
 
-	static String buildMoveListURL(int limit, int offset)
+	public static String buildMoveListURL(int limit, int offset)
 	{
 		return buildNamedAPIResourceListURL(POKE_API_MOVE_ENDPOINT, limit, offset);
 	}
 
-	static NamedAPIResourceList parseNamedAPIResourceListJSON(String namedAPIResourceListJSON)
+	public static NamedAPIResourceList parseNamedAPIResourceListJSON(String namedAPIResourceListJSON)
 	{
 		Gson gson = new Gson();
 		return gson.fromJson(namedAPIResourceListJSON, NamedAPIResourceList.class);
 	}
 
-	static Pokemon parsePokemonJSON(String pokemonJSON)
+	public static Pokemon parsePokemonJSON(String pokemonJSON)
 	{
 		Gson gson = new Gson();
 		return gson.fromJson(pokemonJSON, Pokemon.class);
 	}
 
-	static Move parseMoveJSON(String moveJSON)
+	public static Move parseMoveJSON(String moveJSON)
 	{
 		Gson gson = new Gson();
 		return gson.fromJson(moveJSON, Move.class);
 	}
 
-	static Type parseTypeJSON(String typeJSON)
+	public static Type parseTypeJSON(String typeJSON)
 	{
 		Gson gson = new Gson();
 		return gson.fromJson(typeJSON, Type.class);
 	}
 
-	static int getId(String url)
+	public static int getId(String url)
 	{
 		if(url == null)
 			return 0;
@@ -158,20 +85,95 @@ public class PokeAPIUtils
 		return 0;
 	}
 
-	static String getSpriteUrl(int id){
+	public static String getSpriteUrl(int id)
+	{
 		return Uri.parse(POKE_API_SPRITE_URL).buildUpon()
 			.appendEncodedPath(Integer.toString(id) + POKE_API_SPRITE_FILE_TYPE).build().toString();
 	}
 
-	static String getArtworkUrl(int id){
+	public static String getArtworkUrl(int id)
+	{
 		return Uri.parse(POKE_API_ARTWORK_URL).buildUpon()
 			.appendEncodedPath(Integer.toString(id) + POKE_API_SPRITE_FILE_TYPE).build().toString();
 	}
 
-	static Uri getBulbapediaPage(String poke){
+	public static Uri getBulbapediaPage(String poke)
+	{
 		//takes in string of Pokemon name
 		return Uri.parse(POKE_BULBAPEDIA_URL).buildUpon()
 			.appendEncodedPath(poke + POKE_BULBAPEDIA_END).build();
+	}
+
+	public static class NamedAPIResourceList implements Serializable
+	{
+		public NamedAPIResource[] results;
+		public int count;        //count is available
+	}
+
+	public static class NamedAPIResource implements Serializable
+	{
+		public String name;
+		public String url;
+	}
+
+	public static class Name implements Serializable
+	{
+		public String name;
+		public NamedAPIResource language;
+	}
+
+	public static class Pokemon implements Serializable
+	{
+		public int id;
+		public String name;
+		public PokemonMove[] moves;
+		public PokemonSprites sprites;
+		public PokemonType[] types;
+	}
+
+	public static class PokemonMove implements Serializable
+	{
+		public NamedAPIResource move;
+		//version_group_details is available
+	}
+
+	public static class PokemonSprites implements Serializable
+	{
+		public String front_default;
+		public String back_default;
+	}
+
+	public static class PokemonType implements Serializable
+	{
+		public int slot;
+		public NamedAPIResource type;
+	}
+
+	public static class Move implements Serializable
+	{
+		public int id;
+		public String name;
+		public int power;
+		public Name[] names;
+		public NamedAPIResource type;
+	}
+
+	public static class Type implements Serializable
+	{
+		public int id;
+		public String name;
+		public TypeRelations damage_relations;
+		public Name[] names;
+	}
+
+	public static class TypeRelations implements Serializable
+	{
+		public NamedAPIResource[] no_damage_to;
+		public NamedAPIResource[] half_damage_to;
+		public NamedAPIResource[] double_damage_to;
+		public NamedAPIResource[] no_damage_from;
+		public NamedAPIResource[] half_damage_from;
+		public NamedAPIResource[] double_damage_from;
 	}
 
 }

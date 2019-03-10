@@ -1,10 +1,11 @@
-package rec.games.pokemon.teambuilder;
+package rec.games.pokemon.teambuilder.View;
 
-import android.app.ActionBar;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.util.Log;
+
+import rec.games.pokemon.teambuilder.R;
 
 public class SettingsFragment extends PreferenceFragmentCompat
 	implements SharedPreferences.OnSharedPreferenceChangeListener
