@@ -2,6 +2,7 @@ package rec.games.pokemon.teambuilder;
 
 import android.arch.lifecycle.LiveData;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 // Pokemon is a data class representing a pokemon

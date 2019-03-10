@@ -1,7 +1,13 @@
 package rec.games.pokemon.teambuilder;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -10,15 +16,23 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
+	implements SharedPreferences.OnSharedPreferenceChangeListener
 {
 	private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -29,6 +43,8 @@ public class MainActivity extends AppCompatActivity
 	private TabLayout tabLayout;
 	private ViewPager viewPager;
 
+	private SharedPreferences preferences;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -38,12 +54,19 @@ public class MainActivity extends AppCompatActivity
 		toolbar = findViewById(R.id.main_toolbar);
 		setSupportActionBar(toolbar);
 
-		if(getSupportActionBar() != null)
+		if (getSupportActionBar() != null)
 		{
 			ActionBar actionBar = getSupportActionBar();
 			actionBar.setElevation(0);
 			actionBar.setHomeButtonEnabled(true);
 		}
+
+		RequestOptions requestOptions = new RequestOptions()
+			.placeholder(R.drawable.ic_poke_unknown)
+			.error(R.drawable.ic_poke_unknown)
+			.fallback(R.drawable.ic_poke_unknown)
+			.diskCacheStrategy(DiskCacheStrategy.ALL);
+		GlideApp.with(this).setDefaultRequestOptions(requestOptions);
 
 		viewPager = findViewById(R.id.main_viewpager);
 		ViewPagerAdapter adapterVP = new ViewPagerAdapter(getSupportFragmentManager());
@@ -54,6 +77,9 @@ public class MainActivity extends AppCompatActivity
 		tabLayout = findViewById(R.id.main_tabs);
 		tabLayout.setupWithViewPager(viewPager);
 		tabLayout.setSelectedTabIndicatorColor(ContextCompat.getColor(this, R.color.tabIndicatorColor)); //b/c API of just getColor() needs >=23
+
+		preferences = PreferenceManager.getDefaultSharedPreferences(this);
+		preferences.registerOnSharedPreferenceChangeListener(this);
 	}
 
 	class ViewPagerAdapter extends FragmentPagerAdapter
@@ -109,5 +135,18 @@ public class MainActivity extends AppCompatActivity
 			default:
 				return super.onOptionsItemSelected(item);
 		}
+	}
+
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
+	{
+		//placeholder, do nothing
+	}
+
+	@Override
+	protected void onDestroy()
+	{
+		PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
+		super.onDestroy();
 	}
 }
