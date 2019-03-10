@@ -1,7 +1,6 @@
 package rec.games.pokemon.teambuilder;
 
 import android.net.Uri;
-import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -25,6 +24,7 @@ public class PokeAPIUtils
 
 	private final static String POKE_BULBAPEDIA_URL = "https://bulbapedia.bulbagarden.net/wiki/";
 	private final static String POKE_BULBAPEDIA_END = "_(Pokémon)";
+	private final static String VEEKUN_POKEMON_URL = "https://veekun.com/dex/pokemon/";
 
 	static class NamedAPIResourceList implements Serializable
 	{
@@ -168,10 +168,22 @@ public class PokeAPIUtils
 			.appendEncodedPath(Integer.toString(id) + POKE_API_SPRITE_FILE_TYPE).build().toString();
 	}
 
-	static Uri getBulbapediaPage(String poke){
-		//takes in string of Pokemon name
+	/**
+	 * Constructs a url to the Bulbapedia page for a Pokémon
+	 * @param name the pokemon's resource name
+	 */
+	static Uri getBulbapediaPage(String name){
 		return Uri.parse(POKE_BULBAPEDIA_URL).buildUpon()
-			.appendEncodedPath(poke + POKE_BULBAPEDIA_END).build();
+			.appendEncodedPath(name + POKE_BULBAPEDIA_END).build();
 	}
 
+	/**
+	 * Constructs a url to the veekun page for a Pokémon
+	 * @param name the pokemon's resource name
+	 */
+	static Uri getVeekunUrl(String name) {
+		return Uri.parse(VEEKUN_POKEMON_URL).buildUpon()
+				.appendPath(name)
+				.build();
+	}
 }

@@ -119,6 +119,9 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 			case R.id.action_browser:
 				shareToBrowser();
 				return true;
+			case R.id.action_veekun:
+				openInVeekun();
+				return true;
 			default:
 				return super.onOptionsItemSelected(item);
 		}
@@ -138,16 +141,27 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 		}
 	}
 
-	public void shareToBrowser(){
-		if(mPokemon != null) //placeholder data, need to replace
-		{
+    public void shareToBrowser() {
+        if (mPokemon != null) //placeholder data, need to replace
+        {
 			Intent intent = new Intent(Intent.ACTION_VIEW,
 				PokeAPIUtils.getBulbapediaPage(mPokemon.getName()));
 			if(intent.resolveActivity(getPackageManager())!=null){
 				startActivity(intent);
 			}
-		}
-	}
+        }
+    }
+
+    public void openInVeekun() {
+        if (mPokemon != null) //placeholder data, need to replace
+        {
+            Intent intent = new Intent(Intent.ACTION_VIEW,
+				PokeAPIUtils.getVeekunUrl(mPokemon.getName()));
+            if (intent.resolveActivity(getPackageManager()) != null) {
+                startActivity(intent);
+            }
+        }
+    }
 
 	public void addOrRemovePokemonFromTeam(){
 		if(!mItemAdded)
