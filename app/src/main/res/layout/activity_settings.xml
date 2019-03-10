@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/settings_fragment"
-    android:name="rec.games.pokemon.teambuilder.View.SettingsFragment"
-    tools:context=".View.SettingsActivity"
+    android:name="rec.games.pokemon.teambuilder.view.SettingsFragment"
+    tools:context=".view.SettingsActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 

@@ -14,7 +14,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
-            android:name=".View.MainActivity"
+            android:name=".view.MainActivity"
             android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoToolbar">
             <intent-filter>
@@ -24,25 +24,25 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".View.PokemonItemDetailActivity"
-            android:parentActivityName=".View.MainActivity">
+            android:name=".view.PokemonItemDetailActivity"
+            android:parentActivityName=".view.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".View.MainActivity" />
+                android:value=".view.MainActivity" />
         </activity>
         <activity
-            android:name=".View.TeamPokemonActivity"
-            android:parentActivityName=".View.MainActivity">
+            android:name=".view.TeamPokemonActivity"
+            android:parentActivityName=".view.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".View.MainActivity"/>
+                android:value=".view.MainActivity"/>
         </activity>
         <activity
-            android:name=".View.SettingsActivity"
-            android:parentActivityName=".View.MainActivity">
+            android:name=".view.SettingsActivity"
+            android:parentActivityName=".view.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".View.MainActivity" />
+                android:value=".view.MainActivity" />
         </activity>
     </application>
 
