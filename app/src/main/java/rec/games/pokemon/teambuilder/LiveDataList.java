@@ -68,6 +68,13 @@ class LiveDataList<E> implements Iterable<E>
 	LiveDataList()
 	{
 		list = new ArrayList<>();
+
+		//mediator cannot observe its sources if it doesn't have its own active observer
+		mediator.observeForever(new Observer<LiveData<E>>()
+		{
+			@Override
+			public void onChanged(@Nullable LiveData<E> LiveData) {}
+		});
 	}
 
 	LiveDataList(Collection<LiveData<E>> collection)
@@ -95,6 +102,13 @@ class LiveDataList<E> implements Iterable<E>
 				}
 			});
 		}
+
+		//mediator cannot observe its sources if it doesn't have its own active observer
+		mediator.observeForever(new Observer<LiveData<E>>()
+		{
+			@Override
+			public void onChanged(@Nullable LiveData<E> LiveData) {}
+		});
 	}
 
 	E getValue(int index)
