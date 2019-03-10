@@ -27,13 +27,48 @@ public class TypeReportFragment extends Fragment {
 
         AssetManager assets = container.getContext().getAssets();
 
-        ImageView ivFlying = view.findViewById(R.id.iv_type_flying);
-        try {
-            InputStream stream = assets.open("types/flying.png");
-            Drawable drawable = Drawable.createFromStream(stream, "flying.png");
-            ivFlying.setImageDrawable(drawable);
-        } catch (IOException exc) {
-            ivFlying.setImageResource(R.drawable.ic_poke_unknown);
+        String typeNames[] = {
+                "bug",
+                "dark",
+                "dragon",
+                "electric",
+                "fairy",
+                "fighting",
+                "fire",
+                "flying",
+                "ghost",
+                "grass",
+                "ground",
+                "ice",
+                "normal",
+                "poison",
+                "psychic",
+                "rock",
+                "shadow",
+                "steel",
+                "unknown",
+                "water",
+        };
+
+        int width = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 32, getResources().getDisplayMetrics());
+        int height = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 14, getResources().getDisplayMetrics());
+        int margin = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 6, getResources().getDisplayMetrics());
+        for (String name : typeNames) {
+            ImageView im = new ImageView(container.getContext());
+            LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(width, height);
+            llp.setMargins(margin, margin, margin, 0);
+            im.setLayoutParams(llp);
+            im.setScaleType(ImageView.ScaleType.FIT_CENTER);
+
+            // TODO: extract this into a helper that loads an asset and returns a drawable
+            try {
+                InputStream stream = assets.open(String.format(Locale.US, "types/%s.png", name));
+                Drawable drawable = Drawable.createFromStream(stream, name+".png");
+                im.setImageDrawable(drawable);
+            } catch (IOException exc) {
+                im.setImageResource(R.drawable.ic_poke_unknown);
+            }
+            view.addView(im);
         }
 
         return view;
