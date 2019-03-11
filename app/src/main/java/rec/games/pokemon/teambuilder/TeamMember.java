@@ -3,5 +3,5 @@ package rec.games.pokemon.teambuilder;
 import android.arch.lifecycle.LiveData;
 
 public class TeamMember {
-    LiveData<Pokemon> pokemon;
+    public LiveData<Pokemon> pokemon;
 }

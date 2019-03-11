@@ -16,7 +16,7 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okhttp3.internal.annotations.EverythingIsNonNull;
 
-class PokeAPIViewModel extends ViewModel
+public class PokeAPIViewModel extends ViewModel
 {
 	private MutableLiveData<HashMap<Integer, LiveData<PokemonType>>> typeCache;
 	private MutableLiveData<HashMap<Integer, LiveData<PokemonMove>>> moveCache;
@@ -189,6 +189,35 @@ class PokeAPIViewModel extends ViewModel
 			return null;
 
 		return pokemonCache.getValue().get(id);
+	}
+
+	public LiveData<Pokemon> getPokemonById(final int id)
+	{
+		MutableLiveData<Pokemon> liveData = new MutableLiveData<>();
+
+		// Check cache
+		if(pokemonCache.getValue() != null)
+		{
+			LiveData<Pokemon> p = pokemonCache.getValue().get(id);
+			if(p == null)
+			{
+				return null; // id doesn't exist
+			}
+			// Only return if the full pokemon is loaded.
+			// If all we have is a DeferredPokemonResource we need to load the full one
+			if(p.getValue() != null && p.getValue() instanceof PokemonResource)
+			{
+				liveData.postValue(p.getValue());
+			}
+		}
+
+		int code = loadPokemon(id);
+		if(code != 0)
+		{
+			// FIXME uh-oh
+		}
+
+		return liveData;
 	}
 
 	/*

@@ -12,7 +12,7 @@ public abstract class AppDatabase extends RoomDatabase
 
 	private static AppDatabase INSTANCE;
 
-	static AppDatabase getDatabase(final Context context)
+	public static AppDatabase getDatabase(final Context context)
 	{
 		synchronized(AppDatabase.class)
 		{
