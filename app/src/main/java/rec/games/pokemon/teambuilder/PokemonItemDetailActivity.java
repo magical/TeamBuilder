@@ -5,6 +5,7 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -24,6 +25,10 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 {
 	private static final String TAG = PokemonItemDetailActivity.class.getSimpleName();
 
+	private final static String POKE_BULBAPEDIA_URL = "https://bulbapedia.bulbagarden.net/wiki/";
+	private final static String POKE_BULBAPEDIA_END = "_(Pokémon)";
+	private final static String VEEKUN_POKEMON_URL = "https://veekun.com/dex/pokemon/";
+
 	private int pokeId;
 	private Pokemon mPokemon;
 	private ImageView mArtwork;
@@ -31,6 +36,7 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 	private FloatingActionButton mItemFAB;
 	private boolean mItemAdded;
 	private String mTeamName;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -119,6 +125,9 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 			case R.id.action_browser:
 				shareToBrowser();
 				return true;
+			case R.id.action_veekun:
+				openInVeekun();
+				return true;
 			default:
 				return super.onOptionsItemSelected(item);
 		}
@@ -138,15 +147,45 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 		}
 	}
 
-	public void shareToBrowser(){
-		if(mPokemon != null) //placeholder data, need to replace
-		{
+    public void shareToBrowser() {
+        if (mPokemon != null) //placeholder data, need to replace
+        {
 			Intent intent = new Intent(Intent.ACTION_VIEW,
-				PokeAPIUtils.getBulbapediaPage(mPokemon.getName()));
+				getBulbapediaPage(mPokemon.getName()));
 			if(intent.resolveActivity(getPackageManager())!=null){
 				startActivity(intent);
 			}
-		}
+        }
+    }
+
+    public void openInVeekun() {
+        if (mPokemon != null) //placeholder data, need to replace
+        {
+            Intent intent = new Intent(Intent.ACTION_VIEW,
+				getVeekunUrl(mPokemon.getName()));
+            if (intent.resolveActivity(getPackageManager()) != null) {
+                startActivity(intent);
+            }
+        }
+    }
+
+	/**
+	 * Constructs a url to the Bulbapedia page for a Pokémon
+	 * @param name the pokemon's resource name
+	 */
+	private static Uri getBulbapediaPage(String name){
+		return Uri.parse(POKE_BULBAPEDIA_URL).buildUpon()
+			.appendEncodedPath(name + POKE_BULBAPEDIA_END).build();
+	}
+
+	/**
+	 * Constructs a url to the veekun page for a Pokémon
+	 * @param name the pokemon's resource name
+	 */
+	private static Uri getVeekunUrl(String name) {
+		return Uri.parse(VEEKUN_POKEMON_URL).buildUpon()
+			.appendPath(name)
+			.build();
 	}
 
 	public void addOrRemovePokemonFromTeam(){
