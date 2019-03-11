@@ -28,6 +28,7 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 	private Pokemon mPokemon;
 	private ImageView mArtwork;
 	private TextView mPokemonName;
+	private TextView mPokemonId;
 	private FloatingActionButton mItemFAB;
 	private boolean mItemAdded;
 	private String mTeamName;
@@ -39,6 +40,7 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 		setContentView(R.layout.activity_pokemon_item_detail);
 		mArtwork = findViewById(R.id.iv_pokemon_detail_artwork);
 		mPokemonName = findViewById(R.id.tv_pokemon_detail_name);
+		mPokemonId = findViewById(R.id.tv_pokemon_detail_id);
 		mItemFAB = findViewById(R.id.item_add_FAB);
 		mItemFAB.hide();
 		mItemAdded = false;
@@ -76,6 +78,7 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 		if(pokeId > 0)
 		{
 			mPokemonName.setText(mPokemon.getName());
+			mPokemonId.setText(String.valueOf(pokeId));
 
 			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 			if (prefs.getBoolean(this.getResources().getString(R.string.pref_image_key), true))
