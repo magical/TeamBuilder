@@ -21,11 +21,7 @@ public class PokeAPIUtils
 	private final static String POKE_API_ARTWORK_URL = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other-sprites/official-artwork/";
 	private final static String POKE_API_SPRITE_FILE_TYPE = ".png";
 
-
-	private final static String POKE_BULBAPEDIA_URL = "https://bulbapedia.bulbagarden.net/wiki/";
-	private final static String POKE_BULBAPEDIA_END = "_(Pokémon)";
-
-	public static String buildNamedAPIResourceListURL(String endPoint, int limit, int offset)
+	static String buildNamedAPIResourceListURL(String endPoint, int limit, int offset)
 	{
 		return Uri.parse(POKE_API_BASE_URL).buildUpon()
 			.appendPath(endPoint)
@@ -95,13 +91,6 @@ public class PokeAPIUtils
 	{
 		return Uri.parse(POKE_API_ARTWORK_URL).buildUpon()
 			.appendEncodedPath(Integer.toString(id) + POKE_API_SPRITE_FILE_TYPE).build().toString();
-	}
-
-	public static Uri getBulbapediaPage(String poke)
-	{
-		//takes in string of Pokemon name
-		return Uri.parse(POKE_BULBAPEDIA_URL).buildUpon()
-			.appendEncodedPath(poke + POKE_BULBAPEDIA_END).build();
 	}
 
 	public static class NamedAPIResourceList implements Serializable
@@ -175,5 +164,4 @@ public class PokeAPIUtils
 		public NamedAPIResource[] half_damage_from;
 		public NamedAPIResource[] double_damage_from;
 	}
-
 }

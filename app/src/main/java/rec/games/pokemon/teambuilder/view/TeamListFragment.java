@@ -19,11 +19,11 @@ import android.view.ViewGroup;
 
 import java.util.HashMap;
 
+import rec.games.pokemon.teambuilder.R;
 import rec.games.pokemon.teambuilder.model.PokeAPIUtils;
 import rec.games.pokemon.teambuilder.model.Pokemon;
 import rec.games.pokemon.teambuilder.model.Team;
 import rec.games.pokemon.teambuilder.model.TeamMember;
-import rec.games.pokemon.teambuilder.R;
 import rec.games.pokemon.teambuilder.viewmodel.PokeAPIViewModel;
 
 public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClickListener
