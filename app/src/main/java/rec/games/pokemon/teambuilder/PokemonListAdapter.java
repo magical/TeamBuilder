@@ -1,6 +1,5 @@
 package rec.games.pokemon.teambuilder;
 
-import android.arch.lifecycle.LifecycleOwner;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -14,21 +13,15 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
-
-import java.util.List;
-
 public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.PokemonViewHolder>
 {
 	private static final String TAG = PokemonListAdapter.class.getSimpleName();
 
 	private LiveDataList<Pokemon> mPokemon;
 	private OnPokemonClickListener mListener;
-	private LifecycleOwner mOwner;
 	Context context;
 
-	private final ItemObserver<Pokemon> cacheNotifier = new ItemObserver<Pokemon>()
+	private final CollectionObserver<Pokemon> cacheNotifier = new CollectionObserver<Pokemon>()
 	{
 		@Override
 		public void onItemChanged(@Nullable Pokemon pokemon, int index)
@@ -38,13 +31,12 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 		}
 	};
 
-	PokemonListAdapter(LiveDataList<Pokemon> pokemon, OnPokemonClickListener l, LifecycleOwner owner)
+	PokemonListAdapter(LiveDataList<Pokemon> pokemon, OnPokemonClickListener l)
 	{
 		this.mPokemon = pokemon;
 		this.mListener = l;
-		this.mOwner = owner;
 
-		mPokemon.observeCollection(mOwner, cacheNotifier);
+		mPokemon.observeCollection(cacheNotifier);
 	}
 
 	public interface OnPokemonClickListener
@@ -57,7 +49,7 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 		this.mPokemon = pokemon;
 		notifyDataSetChanged();
 
-		mPokemon.observeCollection(mOwner, cacheNotifier);
+		mPokemon.observeCollection(cacheNotifier);
 	}
 
 	@Override

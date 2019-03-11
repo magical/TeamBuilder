@@ -72,7 +72,7 @@ public class PokemonListFragment extends Fragment implements PokemonListAdapter.
 			mTeamToAdd = getArguments().getString(Team.TEAM_ID);
 		}
 
-		final PokemonListAdapter adapter = new PokemonListAdapter(new LiveDataList<Pokemon>(), this, this);
+		final PokemonListAdapter adapter = new PokemonListAdapter(new LiveDataList<Pokemon>(), this);
 
 		mViewModel = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
 		mViewModel.getPokemonCache().observe(this, new Observer<HashMap<Integer, LiveData<Pokemon>>>()

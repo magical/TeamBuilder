@@ -39,6 +39,7 @@
     
     <!-- Share actions -->
     <string name="action_browser">Open in Bulbapedia</string>
+    <string name="action_veekun">Open in Veekun</string>
     <string name="action_share_poke">Share PokéDetails</string>
     <string name="share_chooser_poke_details">Share Pokémon details</string>
     <string name="action_share_team">Share Team Details</string>

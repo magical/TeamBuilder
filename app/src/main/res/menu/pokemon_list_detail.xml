@@ -18,4 +18,12 @@
         android:orderInCategory="2"
         app:showAsAction="never"/>
 
+    <item
+        android:id="@+id/action_veekun"
+        android:icon="@drawable/ic_action_browser"
+        android:title="@string/action_veekun"
+        android:orderInCategory="2"
+        app:showAsAction="never"/>
+
+
 </menu>
