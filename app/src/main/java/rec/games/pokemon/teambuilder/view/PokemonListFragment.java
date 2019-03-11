@@ -1,4 +1,4 @@
-package rec.games.pokemon.teambuilder;
+package rec.games.pokemon.teambuilder.view;
 
 import android.app.AlertDialog;
 import android.arch.lifecycle.LiveData;
@@ -25,6 +25,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.HashMap;
+
+import rec.games.pokemon.teambuilder.R;
+import rec.games.pokemon.teambuilder.model.LiveDataList;
+import rec.games.pokemon.teambuilder.model.PokeAPIUtils;
+import rec.games.pokemon.teambuilder.model.Pokemon;
+import rec.games.pokemon.teambuilder.model.Team;
+import rec.games.pokemon.teambuilder.viewmodel.PokeAPIViewModel;
 
 public class PokemonListFragment extends Fragment implements PokemonListAdapter.OnPokemonClickListener
 {
@@ -67,7 +74,8 @@ public class PokemonListFragment extends Fragment implements PokemonListAdapter.
 		mListFAB = view.findViewById(R.id.pokemon_list_FAB);
 		mListFAB.hide();
 
-		if (getArguments() != null){
+		if(getArguments() != null)
+		{
 			//Log.d(TAG, "Got arguments");
 			mTeamToAdd = getArguments().getString(Team.TEAM_ID);
 		}
@@ -132,14 +140,14 @@ public class PokemonListFragment extends Fragment implements PokemonListAdapter.
 			@Override
 			public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy)
 			{
-				if ( dy > 0 || dy < 0 && mListFAB.isShown())
-					mListFAB.hide();							//hide if scrolling
+				if(dy > 0 || dy < 0 && mListFAB.isShown())
+					mListFAB.hide();                            //hide if scrolling
 			}
 
 			@Override
 			public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState)
 			{
-				if (newState == RecyclerView.SCROLL_STATE_IDLE)
+				if(newState == RecyclerView.SCROLL_STATE_IDLE)
 					mListFAB.show();
 				super.onScrollStateChanged(recyclerView, newState);
 			}
@@ -153,7 +161,7 @@ public class PokemonListFragment extends Fragment implements PokemonListAdapter.
 	//@Override
 	public void onPokemonClicked(int pokemonID)
 	{
-		Log.d(TAG, "ID of "+ pokemonID);
+		Log.d(TAG, "ID of " + pokemonID);
 
 		Intent intent = new Intent(getContext(), PokemonItemDetailActivity.class);
 		intent.putExtra(PokeAPIUtils.POKE_ITEM, pokemonID); //assign id
@@ -162,7 +170,8 @@ public class PokemonListFragment extends Fragment implements PokemonListAdapter.
 		startActivity(intent);
 	}
 
-	private void searchForPokemon(){
+	private void searchForPokemon()
+	{
 		AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 		builder.setTitle(R.string.action_search_title);
 		builder.setCancelable(true);
@@ -182,9 +191,9 @@ public class PokemonListFragment extends Fragment implements PokemonListAdapter.
 					String input = userInputText.getText().toString();
 					searchTerm = input;
 					Log.d(TAG, "Searched for: " + input);
-					if (!input.isEmpty())
+					if(!input.isEmpty())
 					{
-						if (input.matches("\\d+"))
+						if(input.matches("\\d+"))
 						{
 							int pokeSearchID = Integer.parseInt(input);
 							Log.d(TAG, "Is int " + pokeSearchID);
