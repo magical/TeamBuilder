@@ -6,8 +6,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
-import rec.games.pokemon.teambuilder.model.Team;
 import rec.games.pokemon.teambuilder.R;
+import rec.games.pokemon.teambuilder.model.Team;
 
 public class TeamPokemonActivity extends AppCompatActivity
 {
