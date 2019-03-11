@@ -1,4 +1,4 @@
-package rec.games.pokemon.teambuilder;
+package rec.games.pokemon.teambuilder.model;
 
 import android.support.annotation.NonNull;
 

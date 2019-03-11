@@ -1,4 +1,4 @@
-package rec.games.pokemon.teambuilder;
+package rec.games.pokemon.teambuilder.model;
 
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -44,37 +44,22 @@ public class NetworkUtils
 	 * However enqueue needs a Callback, which is an interface for when the call either succeeds or fails
 	 * Since this is a generic utility, pass it in and let caller implement what they need
 	 */
-	static void doHTTPGet(Request request, Callback callback)
+	public static void doHTTPGet(Request request, Callback callback)
 	{
 		mHttpClient.newCall(request).enqueue(callback);
 	}
 
-	static void doHTTPGet(String url, Callback callback)
+	public static void doHTTPGet(String url, Callback callback)
 	{
 		Request request = new Request.Builder().url(url).build();
 
 		doHTTPGet(request, callback);
 	}
 
-	enum NetworkPriority
-	{
-		CRITICAL,
-		USER_INTERACTION,
-		USER_IMPORTANT,
-		ABOVE_NORMAL,
-		NORMAL,
-		LOW
-	}
-
-	public interface OnCallStart
-	{
-		boolean onStart();
-	}
-
 	//priority: the priority of the request when added to our priority network queue
 	//callStart: interface to run some code before the call occurs, if it returns false then we will drop the call
 	//callback: callback that gets called when the priority network queue actually performs the request
-	static void doPriorityHTTPGet(String url, NetworkPriority priority, OnCallStart callStart, Callback callback)
+	public static void doPriorityHTTPGet(String url, NetworkPriority priority, OnCallStart callStart, Callback callback)
 	{
 		Request request = new Request.Builder().url(url).build();
 		PriorityNetworkRequest queueItem = new PriorityNetworkRequest(priority, request, callStart, callback);
@@ -97,7 +82,7 @@ public class NetworkUtils
 		PriorityNetworkRequest queueItem = networkPriorityQueue.peek();
 		NetworkPriority lowestPriority = queueItem.priority;
 		while(!networkPriorityQueue.isEmpty()
-			&& mDispatcher.queuedCallsCount() <= (2*mDispatcher.getMaxRequestsPerHost())
+			&& mDispatcher.queuedCallsCount() <= (2 * mDispatcher.getMaxRequestsPerHost())
 			&& queueItem.priority.compareTo(lowestPriority) <= 0)
 		{
 			if(queueItem.callStart.onStart())
@@ -108,5 +93,20 @@ public class NetworkUtils
 		}
 
 		flushLock.unlock();
+	}
+
+	enum NetworkPriority
+	{
+		CRITICAL,
+		USER_INTERACTION,
+		USER_IMPORTANT,
+		ABOVE_NORMAL,
+		NORMAL,
+		LOW
+	}
+
+	public interface OnCallStart
+	{
+		boolean onStart();
 	}
 }

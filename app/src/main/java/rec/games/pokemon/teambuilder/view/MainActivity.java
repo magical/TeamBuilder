@@ -1,13 +1,9 @@
-package rec.games.pokemon.teambuilder;
+package rec.games.pokemon.teambuilder.view;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -16,11 +12,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -28,8 +21,10 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+
+import rec.games.pokemon.teambuilder.R;
+import rec.games.pokemon.teambuilder.viewmodel.PokeAPIViewModel;
 
 public class MainActivity extends AppCompatActivity
 	implements SharedPreferences.OnSharedPreferenceChangeListener
@@ -54,7 +49,7 @@ public class MainActivity extends AppCompatActivity
 		toolbar = findViewById(R.id.main_toolbar);
 		setSupportActionBar(toolbar);
 
-		if (getSupportActionBar() != null)
+		if(getSupportActionBar() != null)
 		{
 			ActionBar actionBar = getSupportActionBar();
 			actionBar.setElevation(0);
@@ -80,40 +75,6 @@ public class MainActivity extends AppCompatActivity
 
 		preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		preferences.registerOnSharedPreferenceChangeListener(this);
-	}
-
-	class ViewPagerAdapter extends FragmentPagerAdapter
-	{
-		private final List<Fragment> mFragmentList = new ArrayList<>();
-		private final List<String> mFragmentTitleList = new ArrayList<>();
-
-		public ViewPagerAdapter(FragmentManager manager)
-		{
-			super(manager);
-		}
-
-		@Override
-		public Fragment getItem(int i)
-		{
-			return mFragmentList.get(i);
-		}
-
-		@Override
-		public int getCount()
-		{
-			return mFragmentList.size();
-		}
-
-		public void addFragment(Fragment fragment, String title)
-		{
-			mFragmentList.add(fragment);
-			mFragmentTitleList.add(title);
-		}
-
-		public CharSequence getPageTitle(int i)
-		{
-			return mFragmentTitleList.get(i);
-		}
 	}
 
 	@Override
@@ -148,5 +109,39 @@ public class MainActivity extends AppCompatActivity
 	{
 		PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
 		super.onDestroy();
+	}
+
+	class ViewPagerAdapter extends FragmentPagerAdapter
+	{
+		private final List<Fragment> mFragmentList = new ArrayList<>();
+		private final List<String> mFragmentTitleList = new ArrayList<>();
+
+		public ViewPagerAdapter(FragmentManager manager)
+		{
+			super(manager);
+		}
+
+		@Override
+		public Fragment getItem(int i)
+		{
+			return mFragmentList.get(i);
+		}
+
+		@Override
+		public int getCount()
+		{
+			return mFragmentList.size();
+		}
+
+		public void addFragment(Fragment fragment, String title)
+		{
+			mFragmentList.add(fragment);
+			mFragmentTitleList.add(title);
+		}
+
+		public CharSequence getPageTitle(int i)
+		{
+			return mFragmentTitleList.get(i);
+		}
 	}
 }
