@@ -229,7 +229,7 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 		else
 		{
 			Log.d(TAG, "Removed");
-			DBUtils.addPokemonToCurrentTeam(mSavedTeamRepo, prefs, mPokemon);
+			DBUtils.removePokemonFromCurrentTeam(mSavedTeamRepo, prefs, mPokemon);
 			mItemFAB.setImageResource(R.drawable.ic_action_add); //remove
 			mItemAdded = false;
 		}
