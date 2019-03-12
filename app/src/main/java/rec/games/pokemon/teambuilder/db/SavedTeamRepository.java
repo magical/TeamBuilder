@@ -16,31 +16,33 @@ public class SavedTeamRepository
 		mDao = db.savedTeamDao();
 	}
 
-	public void insertSavedTeam(SavedTeam team)
+	public void addTeamMember(SavedTeam team, int pokemonId)
 	{
-		new InsertAsyncTask(mDao).execute(team);
+		SavedTeamMemberEntity tm = new SavedTeamMemberEntity();
+		tm.teamId = team.id;
+		tm.pokemonId = pokemonId;
+		new InsertTeamMemberAsyncTask(mDao).execute(tm);
 	}
 
-	public void deleteSavedTeam(SavedTeam team)
+	public void removeTeamMember(SavedTeam team, int pokemonId)
 	{
-		new DeleteAsyncTask(mDao).execute(team);
+		SavedTeamMemberEntity tm = new SavedTeamMemberEntity();
+		tm.teamId = team.id;
+		tm.pokemonId = pokemonId;
+		new DeleteTeamMemberAsyncTask(mDao).execute(tm);
 	}
 
-	public LiveData<SavedTeam> getTeamById(int id)
-	{
-		return mDao.getTeamById(id);
-	}
+	public void createSavedTeam(SavedTeam team) { new CreateSavedTeamAsyncTask(mDao).execute(team); }
+	//public void deleteSavedTeam(SavedTeam team) { new DeleteSavedTeamEntityAsyncTask(mDao).execute(team); }
 
-	public LiveData<List<SavedTeam>> getAllTeams()
-	{
-		return mDao.getAllTeams();
-	}
+	public LiveData<SavedTeam> getTeamById(int id) { return mDao.getTeamById(id); }
+	public LiveData<List<SavedTeam>> getAllTeams() { return mDao.getAllTeams(); }
 
-	private static class InsertAsyncTask extends AsyncTask<SavedTeam, Void, Void>
+	private static class CreateSavedTeamAsyncTask extends AsyncTask<SavedTeam, Void, Void>
 	{
 		private SavedTeamDao mDao;
 
-		InsertAsyncTask(SavedTeamDao dao)
+		CreateSavedTeamAsyncTask(SavedTeamDao dao)
 		{
 			mDao = dao;
 		}
@@ -48,25 +50,43 @@ public class SavedTeamRepository
 		@Override
 		protected Void doInBackground(SavedTeam... savedTeams)
 		{
-			mDao.insertSavedTeam(savedTeams[0]);
+			mDao.createSavedTeam(savedTeams[0]);
 			return null;
 		}
 	}
 
-
-	private static class DeleteAsyncTask extends AsyncTask<SavedTeam, Void, Void>
+	private static class InsertTeamMemberAsyncTask extends AsyncTask<SavedTeamMemberEntity, Void, Void>
 	{
 		private SavedTeamDao mDao;
 
-		DeleteAsyncTask(SavedTeamDao dao)
+		InsertTeamMemberAsyncTask(SavedTeamDao dao)
 		{
 			mDao = dao;
 		}
 
 		@Override
-		protected Void doInBackground(SavedTeam... savedTeams)
+		protected Void doInBackground(SavedTeamMemberEntity... savedTeamMemberEntities)
 		{
-			mDao.deleteSavedTeam(savedTeams[0]);
+			SavedTeamMemberEntity tm = savedTeamMemberEntities[0];
+			mDao.insertSavedTeamMemberEntity(tm);
+			return null;
+		}
+	}
+
+	private static class DeleteTeamMemberAsyncTask extends AsyncTask<SavedTeamMemberEntity, Void, Void>
+	{
+		private SavedTeamDao mDao;
+
+		DeleteTeamMemberAsyncTask(SavedTeamDao dao)
+		{
+			mDao = dao;
+		}
+
+		@Override
+		protected Void doInBackground(SavedTeamMemberEntity... savedTeamMemberEntities)
+		{
+			SavedTeamMemberEntity tm = savedTeamMemberEntities[0];
+			mDao.removePokemonFromTeamById(tm.teamId, tm.pokemonId);
 			return null;
 		}
 	}

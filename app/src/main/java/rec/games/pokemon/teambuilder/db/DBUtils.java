@@ -1,13 +1,14 @@
 package rec.games.pokemon.teambuilder.db;
 
+import android.arch.core.util.Function;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Transformations;
 import android.content.SharedPreferences;
 
-import rec.games.pokemon.teambuilder.viewmodel.PokeAPIViewModel;
 import rec.games.pokemon.teambuilder.model.Pokemon;
 import rec.games.pokemon.teambuilder.model.Team;
 import rec.games.pokemon.teambuilder.model.TeamMember;
+import rec.games.pokemon.teambuilder.viewmodel.PokeAPIViewModel;
 
 public class DBUtils
 {
@@ -25,18 +26,27 @@ public class DBUtils
 	public static LiveData<Team> getTeam(PokeAPIViewModel viewModel, SavedTeamDao dao, int teamId)
 	{
 		final PokeAPIViewModel pokeapi = viewModel;
+		final SavedTeamDao finaldao = dao;
 		LiveData<SavedTeam> liveSavedTeam = dao.getTeamById(teamId);
-		return Transformations.map(liveSavedTeam, savedTeam ->
-		{
-			Team team = new Team();
-			for(int pokemonId : savedTeam.memberIds)
+		return Transformations.map(liveSavedTeam, new Function<SavedTeam, Team>()
 			{
-				TeamMember m = new TeamMember();
-				m.pokemon = pokeapi.getPokemonById(pokemonId);
-				team.members.add(m);
+				@Override
+				public Team apply(SavedTeam savedTeam)
+				{
+					Team team = new Team();
+					if (savedTeam != null && savedTeam.memberIds != null)
+					{
+						for(int pokemonId : savedTeam.memberIds)
+						{
+							TeamMember m = new TeamMember();
+							m.pokemon = pokeapi.getPokemonById(pokemonId);
+							team.members.add(m);
+						}
+					}
+					return team;
+				}
 			}
-			return team;
-		});
+		);
 	}
 
 	public static LiveData<Team> getCurrentTeam(PokeAPIViewModel viewModel, SavedTeamDao dao, SharedPreferences prefs)
@@ -50,40 +60,19 @@ public class DBUtils
 		return 1; // TODO: get from prefs
 	}
 
-	public static void addPokemonToCurrentTeam(SavedTeamDao dao, SharedPreferences prefs, Team team, Pokemon pokemon)
+	public static void addPokemonToCurrentTeam(SavedTeamRepository repo, SharedPreferences prefs, Pokemon pokemon)
 	{
 		SavedTeam savedTeam = new SavedTeam();
 		savedTeam.id = getCurrentTeamId(prefs);
-		for(TeamMember m : team.members)
-		{
-			if(m.pokemon.getValue() != null) // FIXME
-			{
-				savedTeam.memberIds.add(m.pokemon.getValue().getId());
-			}
-		}
-		savedTeam.memberIds.add(pokemon.getId());
-		savedTeam.id = getCurrentTeamId(prefs);
-		dao.deleteSavedTeam(savedTeam);
-		dao.insertSavedTeam(savedTeam);
+		//repo.createSavedTeam(savedTeam); // in case it hasn't been created yet
+		repo.addTeamMember(savedTeam, pokemon.getId());
 	}
 
-	public static void removePokemoFromCurrentTeam(SavedTeamDao dao, SharedPreferences prefs, Team team, Pokemon pokemon)
+	public static void removePokemonFromCurrentTeam(SavedTeamRepository repo, SharedPreferences prefs, Pokemon pokemon)
 	{
 		SavedTeam savedTeam = new SavedTeam();
 		savedTeam.id = getCurrentTeamId(prefs);
-		for(TeamMember m : team.members)
-		{
-			if(m.pokemon.getValue() != null)
-			{
-				if(m.pokemon.getValue().getId() != pokemon.getId())
-				{
-					savedTeam.memberIds.add(m.pokemon.getValue().getId());
-				}
-			}
-		}
-		savedTeam.id = getCurrentTeamId(prefs);
-		// it's probably a little roundabout to delete the hole team and re-add it, but hey
-		dao.deleteSavedTeam(savedTeam);
-		dao.insertSavedTeam(savedTeam);
+		//repo.createSavedTeam(savedTeam); // in case it hasn't been created yet
+		repo.removeTeamMember(savedTeam, pokemon.getId());
 	}
 }

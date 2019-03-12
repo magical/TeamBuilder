@@ -21,10 +21,9 @@ import android.widget.TextView;
 
 import java.util.HashMap;
 
-import rec.games.pokemon.teambuilder.db.AppDatabase;
-import rec.games.pokemon.teambuilder.db.DBUtils;
-import rec.games.pokemon.teambuilder.db.SavedTeamDao;
 import rec.games.pokemon.teambuilder.R;
+import rec.games.pokemon.teambuilder.db.DBUtils;
+import rec.games.pokemon.teambuilder.db.SavedTeamRepository;
 import rec.games.pokemon.teambuilder.model.PokeAPIUtils;
 import rec.games.pokemon.teambuilder.model.Pokemon;
 import rec.games.pokemon.teambuilder.model.Team;
@@ -46,7 +45,7 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 	private boolean mItemAdded;
 	private String mTeamName;
 
-	private SavedTeamDao mSavedTeamDao;
+	private SavedTeamRepository mSavedTeamRepo;
 	private PokeAPIViewModel mViewModel;
 
 	/**
@@ -115,7 +114,7 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 		}
 
 		mViewModel = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
-		mSavedTeamDao = AppDatabase.getDatabase(this).savedTeamDao();
+		mSavedTeamRepo = new SavedTeamRepository(this.getApplication());
 	}
 
 	private void fillLayout()
@@ -219,26 +218,18 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 	public void addOrRemovePokemonFromTeam()
 	{
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		LiveData<Team> liveTeam = DBUtils.getCurrentTeam(mViewModel, mSavedTeamDao, prefs);
+		//final LiveData<Team> liveTeam = DBUtils.getCurrentTeam(mViewModel, mSavedTeamDao, prefs);
 		if(!mItemAdded)
 		{
 			Log.d(TAG, "Added");
-			liveTeam.observe(this, team ->
-			{
-				DBUtils.addPokemonToCurrentTeam(mSavedTeamDao, prefs, team, mPokemon);
-				liveTeam.removeObservers(this); // only observe once
-			});
+			DBUtils.addPokemonToCurrentTeam(mSavedTeamRepo, prefs, mPokemon);
 			mItemFAB.setImageResource(R.drawable.ic_status_added); //add to SQL
 			mItemAdded = true;
 		}
 		else
 		{
 			Log.d(TAG, "Removed");
-			liveTeam.observe(this, team ->
-			{
-				DBUtils.addPokemonToCurrentTeam(mSavedTeamDao, prefs, team, mPokemon);
-				liveTeam.removeObservers(this); // only observe once
-			});
+			DBUtils.addPokemonToCurrentTeam(mSavedTeamRepo, prefs, mPokemon);
 			mItemFAB.setImageResource(R.drawable.ic_action_add); //remove
 			mItemAdded = false;
 		}
