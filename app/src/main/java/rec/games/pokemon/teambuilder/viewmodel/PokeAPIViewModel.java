@@ -59,7 +59,7 @@ public class PokeAPIViewModel extends ViewModel
 	 */
 	public int loadType(int id)
 	{
-		return PokeAPIRepository.loadType(id, NetworkUtils.NetworkPriority.USER_IMPORTANT);
+		return PokeAPIRepository.loadType(id, NetworkUtils.NetworkPriority.USER_INTERACTION);
 	}
 
 	/*
@@ -71,7 +71,7 @@ public class PokeAPIViewModel extends ViewModel
 	 */
 	public int loadMove(int id)
 	{
-		return PokeAPIRepository.loadMove(id, NetworkUtils.NetworkPriority.USER_IMPORTANT);
+		return PokeAPIRepository.loadMove(id, NetworkUtils.NetworkPriority.USER_INTERACTION);
 	}
 
 	/*
@@ -83,6 +83,6 @@ public class PokeAPIViewModel extends ViewModel
 	 */
 	public int loadPokemon(int id)
 	{
-		return PokeAPIRepository.loadPokemon(id, NetworkUtils.NetworkPriority.USER_IMPORTANT);
+		return PokeAPIRepository.loadPokemon(id, NetworkUtils.NetworkPriority.USER_INTERACTION);
 	}
 }
