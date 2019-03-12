@@ -180,8 +180,6 @@ public class PokemonListFragment extends Fragment implements PokemonListAdapter.
 		View itemView = inflater.inflate(R.layout.pokemon_list_search, null);
 		builder.setView(itemView);
 		final EditText userInputText = itemView.findViewById(R.id.pokemon_list_search);
-		if(searchTerm != null)
-			userInputText.setText(searchTerm); //show previous search term
 
 		builder.setPositiveButton(getString(R.string.action_search_submit), new DialogInterface.OnClickListener()
 			{
