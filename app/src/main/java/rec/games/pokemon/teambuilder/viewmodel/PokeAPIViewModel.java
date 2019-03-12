@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.HashMap;
 
 import rec.games.pokemon.teambuilder.model.LiveDataList;
+import rec.games.pokemon.teambuilder.model.NetworkUtils;
 import rec.games.pokemon.teambuilder.model.Pokemon;
 import rec.games.pokemon.teambuilder.model.PokemonMove;
 import rec.games.pokemon.teambuilder.model.PokemonType;
@@ -58,7 +59,7 @@ public class PokeAPIViewModel extends ViewModel
 	 */
 	public int loadType(int id)
 	{
-		return PokeAPIRepository.loadType(id);
+		return PokeAPIRepository.loadType(id, NetworkUtils.NetworkPriority.USER_IMPORTANT);
 	}
 
 	/*
@@ -70,7 +71,7 @@ public class PokeAPIViewModel extends ViewModel
 	 */
 	public int loadMove(int id)
 	{
-		return PokeAPIRepository.loadMove(id);
+		return PokeAPIRepository.loadMove(id, NetworkUtils.NetworkPriority.USER_IMPORTANT);
 	}
 
 	/*
@@ -82,6 +83,6 @@ public class PokeAPIViewModel extends ViewModel
 	 */
 	public int loadPokemon(int id)
 	{
-		return PokeAPIRepository.loadPokemon(id);
+		return PokeAPIRepository.loadPokemon(id, NetworkUtils.NetworkPriority.USER_IMPORTANT);
 	}
 }
