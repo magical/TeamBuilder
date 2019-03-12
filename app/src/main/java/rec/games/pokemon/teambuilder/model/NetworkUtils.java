@@ -61,10 +61,10 @@ public class NetworkUtils
 	//priority: the priority of the request when added to our priority network queue
 	//callStart: interface to run some code before the call occurs, if it returns false then we will drop the call
 	//callback: callback that gets called when the priority network queue actually performs the request
-	public static void doPriorityHTTPGet(String url, NetworkPriority priority, OnCallStart callStart, Callback callback)
+	public static void doPriorityHTTPGet(String url, NetworkPriority priority, PriorityCallback callback)
 	{
 		Request request = new Request.Builder().url(url).build();
-		PriorityNetworkRequest queueItem = new PriorityNetworkRequest(priority, request, callStart, callback);
+		PriorityNetworkRequest queueItem = new PriorityNetworkRequest(priority, request, callback);
 
 		networkPriorityQueue.offer(queueItem);
 		if(mDispatcher.queuedCallsCount() == 0)
@@ -87,7 +87,7 @@ public class NetworkUtils
 			&& mDispatcher.queuedCallsCount() <= (2 * mDispatcher.getMaxRequestsPerHost())
 			&& queueItem.priority.compareTo(lowestPriority) <= 0)
 		{
-			if(queueItem.callStart.onStart())
+			if(queueItem.callback.onStart())
 			{
 				Log.d("Hello World", "processing: " + queueItem.request.url().toString());
 				mHttpClient.newCall(queueItem.request).enqueue(queueItem.callback);
@@ -102,20 +102,5 @@ public class NetworkUtils
 		}
 
 		flushLock.unlock();
-	}
-
-	public enum NetworkPriority
-	{
-		CRITICAL,
-		USER_INTERACTION,
-		USER_IMPORTANT,
-		ABOVE_NORMAL,
-		NORMAL,
-		LOW
-	}
-
-	public interface OnCallStart
-	{
-		boolean onStart();
 	}
 }

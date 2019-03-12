@@ -10,13 +10,13 @@ import java.util.HashMap;
 import java.util.concurrent.Semaphore;
 
 import okhttp3.Call;
-import okhttp3.Callback;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okhttp3.internal.annotations.EverythingIsNonNull;
 import rec.games.pokemon.teambuilder.model.DeferredPokemonMoveResource;
 import rec.games.pokemon.teambuilder.model.DeferredPokemonResource;
 import rec.games.pokemon.teambuilder.model.DeferredPokemonTypeResource;
+import rec.games.pokemon.teambuilder.model.NetworkPriority;
 import rec.games.pokemon.teambuilder.model.NetworkUtils;
 import rec.games.pokemon.teambuilder.model.PokeAPIUtils;
 import rec.games.pokemon.teambuilder.model.Pokemon;
@@ -25,6 +25,7 @@ import rec.games.pokemon.teambuilder.model.PokemonMoveResource;
 import rec.games.pokemon.teambuilder.model.PokemonResource;
 import rec.games.pokemon.teambuilder.model.PokemonType;
 import rec.games.pokemon.teambuilder.model.PokemonTypeResource;
+import rec.games.pokemon.teambuilder.model.PriorityCallback;
 import rec.games.pokemon.teambuilder.viewmodel.PokeAPIViewModel;
 
 public class PokeAPIRepository
@@ -50,22 +51,15 @@ public class PokeAPIRepository
 		typeLock.acquireUninterruptibly();
 		moveLock.acquireUninterruptibly();
 
-		NetworkUtils.OnCallStart letThrough = new NetworkUtils.OnCallStart()
+		//asynchronously load the type list
+		NetworkUtils.doPriorityHTTPGet(PokeAPIUtils.buildTypeListURL(10000, 0), NetworkPriority.CRITICAL, new PriorityCallback()
 		{
 			@Override
 			public boolean onStart()
 			{
 				return true;
 			}
-		};
 
-		//asynchronously load the type list
-		NetworkUtils.doPriorityHTTPGet(
-			PokeAPIUtils.buildTypeListURL(10000, 0),
-			NetworkUtils.NetworkPriority.CRITICAL,
-			letThrough,
-			new Callback()
-		{
 			@EverythingIsNonNull
 			@Override
 			public void onFailure(Call call, IOException e)
@@ -106,17 +100,19 @@ public class PokeAPIRepository
 
 				//start loading the types
 				for(int key: tempTypeCache.keySet())
-					loadType(key, NetworkUtils.NetworkPriority.ABOVE_NORMAL);
+					loadType(key, NetworkPriority.ABOVE_NORMAL);
 			}
 		});
 
 		//asynchronously load the move list
-		NetworkUtils.doPriorityHTTPGet(
-			PokeAPIUtils.buildMoveListURL(10000, 0),
-			NetworkUtils.NetworkPriority.CRITICAL,
-			letThrough,
-			new Callback()
+		NetworkUtils.doPriorityHTTPGet(PokeAPIUtils.buildMoveListURL(10000, 0), NetworkPriority.CRITICAL, new PriorityCallback()
 		{
+			@Override
+			public boolean onStart()
+			{
+				return true;
+			}
+
 			@EverythingIsNonNull
 			@Override
 			public void onFailure(Call call, IOException e)
@@ -155,17 +151,19 @@ public class PokeAPIRepository
 				typeLock.acquireUninterruptibly();
 				typeLock.release();
 				for(int key: tempMoveCache.keySet())
-					loadMove(key, NetworkUtils.NetworkPriority.LOW);
+					loadMove(key, NetworkPriority.LOW);
 			}
 		});
 
 		//asynchronously load the pokemon list
-		NetworkUtils.doPriorityHTTPGet(
-			PokeAPIUtils.buildPokemonListURL(10000, 0),
-			NetworkUtils.NetworkPriority.CRITICAL,
-			letThrough,
-			new Callback()
+		NetworkUtils.doPriorityHTTPGet(PokeAPIUtils.buildPokemonListURL(10000, 0), NetworkPriority.CRITICAL, new PriorityCallback()
 		{
+			@Override
+			public boolean onStart()
+			{
+				return true;
+			}
+
 			@EverythingIsNonNull
 			@Override
 			public void onFailure(Call call, IOException e)
@@ -205,7 +203,7 @@ public class PokeAPIRepository
 				moveLock.acquireUninterruptibly();
 				moveLock.release();
 				for(int key: tempPokemonCache.keySet())
-					loadPokemon(key, NetworkUtils.NetworkPriority.NORMAL);
+					loadPokemon(key, NetworkPriority.NORMAL);
 			}
 		});
 	}
@@ -246,7 +244,7 @@ public class PokeAPIRepository
 	 * 2 - could not find LiveData reference, a bad id
 	 * 3 - LiveData is not Deferred. Hypothetically LiveData.getValue() could return null, but that would be a bug in the constructor
 	 */
-	public static int loadType(int id, NetworkUtils.NetworkPriority priority)
+	public static int loadType(int id, NetworkPriority priority)
 	{
 		if(typeCache.getValue() == null)
 			return 1;
@@ -259,17 +257,15 @@ public class PokeAPIRepository
 		if(pokemonType == null || !pokemonType.isDeferred())
 			return 3;
 
-		NetworkUtils.OnCallStart isAlreadyLoaded = new NetworkUtils.OnCallStart()
+		final DeferredPokemonTypeResource deferredPokemonType = (DeferredPokemonTypeResource) pokemonType;
+		NetworkUtils.doPriorityHTTPGet(deferredPokemonType.getUrl(), priority, new PriorityCallback()
 		{
 			@Override
 			public boolean onStart()
 			{
 				return pokemonType.isDeferred();
 			}
-		};
-		final DeferredPokemonTypeResource deferredPokemonType = (DeferredPokemonTypeResource) pokemonType;
-		NetworkUtils.doPriorityHTTPGet(deferredPokemonType.getUrl(), priority, isAlreadyLoaded, new Callback()
-		{
+
 			@EverythingIsNonNull
 			@Override
 			public void onFailure(Call call, IOException e)
@@ -310,7 +306,7 @@ public class PokeAPIRepository
 	 * 2 - could not find LiveData reference, a bad id
 	 * 3 - LiveData is not Deferred. Hypothetically LiveData.getValue() could return null, but that would be a bug in the constructor
 	 */
-	public static int loadMove(int id, NetworkUtils.NetworkPriority priority)
+	public static int loadMove(int id, NetworkPriority priority)
 	{
 		if(typeCache.getValue() == null || moveCache.getValue() == null)
 			return 1;
@@ -323,17 +319,15 @@ public class PokeAPIRepository
 		if(pokemonMove == null || !pokemonMove.isDeferred())
 			return 3;
 
-		NetworkUtils.OnCallStart isAlreadyLoaded = new NetworkUtils.OnCallStart()
+		final DeferredPokemonMoveResource deferredPokemonMove = (DeferredPokemonMoveResource) pokemonMove;
+		NetworkUtils.doPriorityHTTPGet(deferredPokemonMove.getUrl(), priority, new PriorityCallback()
 		{
 			@Override
 			public boolean onStart()
 			{
 				return pokemonMove.isDeferred();
 			}
-		};
-		final DeferredPokemonMoveResource deferredPokemonMove = (DeferredPokemonMoveResource) pokemonMove;
-		NetworkUtils.doPriorityHTTPGet(deferredPokemonMove.getUrl(), priority, isAlreadyLoaded, new Callback()
-		{
+
 			@EverythingIsNonNull
 			@Override
 			public void onFailure(Call call, IOException e)
@@ -372,7 +366,7 @@ public class PokeAPIRepository
 	 * 2 - could not find LiveData reference, a bad id
 	 * 3 - LiveData is not Deferred. Hypothetically LiveData.getValue() could return null, but that would be a bug in the constructor
 	 */
-	public static int loadPokemon(int id, NetworkUtils.NetworkPriority priority)
+	public static int loadPokemon(int id, NetworkPriority priority)
 	{
 		//have the dependencies loaded yet?
 		if(typeCache.getValue() == null || moveCache.getValue() == null || pokemonCache.getValue() == null)
@@ -389,17 +383,15 @@ public class PokeAPIRepository
 			return 3;
 
 		//so now we know it is deferred, we can make a request for the data
-		NetworkUtils.OnCallStart isAlreadyLoaded = new NetworkUtils.OnCallStart()
+		final DeferredPokemonResource deferredPokemon = (DeferredPokemonResource) pokemon;
+		NetworkUtils.doPriorityHTTPGet(deferredPokemon.getUrl(), priority, new PriorityCallback()
 		{
 			@Override
 			public boolean onStart()
 			{
 				return pokemon.isDeferred();
 			}
-		};
-		final DeferredPokemonResource deferredPokemon = (DeferredPokemonResource) pokemon;
-		NetworkUtils.doPriorityHTTPGet(deferredPokemon.getUrl(), priority, isAlreadyLoaded, new Callback()
-		{
+
 			@EverythingIsNonNull
 			@Override
 			public void onFailure(Call call, IOException e)
