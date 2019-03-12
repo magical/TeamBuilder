@@ -4,10 +4,10 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Transformations;
 import android.content.SharedPreferences;
 
-import rec.games.pokemon.teambuilder.PokeAPIViewModel;
-import rec.games.pokemon.teambuilder.Pokemon;
-import rec.games.pokemon.teambuilder.Team;
-import rec.games.pokemon.teambuilder.TeamMember;
+import rec.games.pokemon.teambuilder.viewmodel.PokeAPIViewModel;
+import rec.games.pokemon.teambuilder.model.Pokemon;
+import rec.games.pokemon.teambuilder.model.Team;
+import rec.games.pokemon.teambuilder.model.TeamMember;
 
 public class DBUtils
 {
