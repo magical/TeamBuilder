@@ -11,13 +11,35 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:orientation="vertical">
-         <ImageView
-             android:id="@+id/iv_pokemon_detail_artwork"
-             android:layout_gravity="center"
-             android:scaleType="fitXY"
-             android:layout_width="200dp"
-             android:layout_height="200dp"
-             android:src="@drawable/ic_poke_unknown"/>
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/iv_pokemon_detail_front_small"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:src="@drawable/ic_poke_unknown" />
+
+            <ImageView
+                android:id="@+id/iv_pokemon_detail_artwork"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:scaleType="fitXY"
+                android:layout_centerInParent="true"
+                android:src="@drawable/ic_poke_unknown"/>
+
+            <ImageView
+                android:id="@+id/iv_pokemon_detail_back_small"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:src="@drawable/ic_poke_unknown" />
+        </RelativeLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
