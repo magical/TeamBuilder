@@ -14,6 +14,7 @@
          <ImageView
              android:id="@+id/iv_pokemon_detail_artwork"
              android:layout_gravity="center"
+             android:scaleType="fitXY"
              android:layout_width="200dp"
              android:layout_height="200dp"
              android:src="@drawable/ic_poke_unknown"/>

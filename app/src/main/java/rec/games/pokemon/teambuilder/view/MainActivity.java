@@ -8,6 +8,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity
 	private Toolbar toolbar;
 	private TabLayout tabLayout;
 	private ViewPager viewPager;
+	private ViewPagerAdapter adapterVP;
 
 	private SharedPreferences preferences;
 
@@ -64,7 +66,7 @@ public class MainActivity extends AppCompatActivity
 		GlideApp.with(this).setDefaultRequestOptions(requestOptions);
 
 		viewPager = findViewById(R.id.main_viewpager);
-		ViewPagerAdapter adapterVP = new ViewPagerAdapter(getSupportFragmentManager());
+		adapterVP = new ViewPagerAdapter(getSupportFragmentManager());
 		adapterVP.addFragment(new TeamListFragment(), "Teams"); //tab
 		adapterVP.addFragment(new PokemonListFragment(), "Pokémon"); //tab, title in caps
 		viewPager.setAdapter(adapterVP);
@@ -101,7 +103,7 @@ public class MainActivity extends AppCompatActivity
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
 	{
-		//placeholder, do nothing
+		adapterVP.refreshFragment(); //refreshes all fragments
 	}
 
 	@Override
@@ -137,6 +139,16 @@ public class MainActivity extends AppCompatActivity
 		{
 			mFragmentList.add(fragment);
 			mFragmentTitleList.add(title);
+		}
+
+		public void refreshFragment()
+		{
+			for(Fragment fragment:mFragmentList)
+			{
+				getSupportFragmentManager().beginTransaction().setAllowOptimization(false)
+					.detach(fragment).attach(fragment).commitAllowingStateLoss();
+			}
+
 		}
 
 		public CharSequence getPageTitle(int i)
