@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity
 	private ViewPagerAdapter adapterVP;
 
 	private SharedPreferences preferences;
+	private boolean preferencesImage;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -77,6 +78,8 @@ public class MainActivity extends AppCompatActivity
 
 		preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		preferences.registerOnSharedPreferenceChangeListener(this);
+
+		preferencesImage = preferences.getBoolean(getString(R.string.pref_image_key), true); //default to show images
 	}
 
 	@Override
@@ -103,7 +106,12 @@ public class MainActivity extends AppCompatActivity
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
 	{
-		adapterVP.refreshFragment(); //refreshes all fragments
+		boolean newPrefImage = preferences.getBoolean(getString(R.string.pref_image_key), true);
+		if(newPrefImage != preferencesImage)
+		{
+			adapterVP.refreshFragment(); //refreshes all fragments
+			preferencesImage = newPrefImage;
+		}
 	}
 
 	@Override

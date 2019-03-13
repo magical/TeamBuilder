@@ -70,15 +70,18 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 			@Override
 			public void onChanged(@Nullable HashMap<Integer, LiveData<Pokemon>> list)
 			{
-				team = new Team();
+				if(list != null)
+				{
+					team = new Team();
 
-				team.members.add(newTeamMember(list.get(1))); // Bulbasaur
-				team.members.add(newTeamMember(list.get(133))); // Eevee
-				team.members.add(newTeamMember(list.get(25))); // Pikachu
-				team.members.add(newTeamMember(list.get(150))); // Mewtwo
-				team.members.add(newTeamMember(list.get(404))); // Not Found
-				team.members.add(newTeamMember(list.get(500))); // Internal Server Error
-				adapter.setTeam(team);
+					team.members.add(newTeamMember(list.get(1))); // Bulbasaur
+					team.members.add(newTeamMember(list.get(133))); // Eevee
+					team.members.add(newTeamMember(list.get(25))); // Pikachu
+					team.members.add(newTeamMember(list.get(150))); // Mewtwo
+					team.members.add(newTeamMember(list.get(404))); // Not Found
+					team.members.add(newTeamMember(list.get(500))); // Internal Server Error
+					adapter.setTeam(team);
+				}
 			}
 		});
 
