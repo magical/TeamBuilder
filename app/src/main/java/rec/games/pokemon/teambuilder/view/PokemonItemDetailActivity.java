@@ -208,7 +208,7 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 
 			ArrayList<String> moves = new ArrayList<>();
 			//temp setup
-			for(int i=0; i<10; i++)
+			for(int i=1; i<50; i++)
 			{
 				moves.add("Move " + String.valueOf(i));
 			}

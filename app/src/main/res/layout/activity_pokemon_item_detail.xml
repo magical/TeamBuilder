@@ -17,73 +17,69 @@
             android:layout_height="wrap_content">
 
             <ImageView
-                android:id="@+id/iv_pokemon_detail_front_small"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
-                android:src="@drawable/ic_poke_unknown" />
-
-            <ImageView
                 android:id="@+id/iv_pokemon_detail_artwork"
                 android:layout_width="154dp"
                 android:layout_height="154dp"
                 android:scaleType="fitXY"
-                android:layout_centerInParent="true"
+                android:adjustViewBounds="true"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
                 android:src="@drawable/ic_poke_unknown"/>
+
+            <ImageView
+                android:id="@+id/iv_pokemon_detail_front_small"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:adjustViewBounds="true"
+                android:layout_toRightOf="@+id/iv_pokemon_detail_artwork"
+                android:layout_toEndOf="@+id/iv_pokemon_detail_artwork"
+                android:layout_alignParentTop="true"
+                android:src="@drawable/ic_poke_unknown" />
 
             <ImageView
                 android:id="@+id/iv_pokemon_detail_back_small"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
+                android:adjustViewBounds="true"
+                android:layout_toRightOf="@+id/iv_pokemon_detail_artwork"
+                android:layout_toEndOf="@+id/iv_pokemon_detail_artwork"
+                android:layout_below="@+id/iv_pokemon_detail_front_small"
                 android:src="@drawable/ic_poke_unknown" />
-        </RelativeLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/tv_pokemon_detail_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="2dp"
-                android:layout_marginLeft="8dp"
+                android:layout_toRightOf="@+id/iv_pokemon_detail_front_small"
+                android:layout_toEndOf="@+id/iv_pokemon_detail_front_small"
                 android:textSize="22sp"
                 android:text="@string/placeholder_pokemon_name"/>
-
-            <!-- push to one side -->
-           <View
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
 
             <TextView
                 android:id="@+id/tv_pokemon_detail_id"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="2dp"
-                android:layout_marginRight="8dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
                 android:textSize="22sp"
                 android:text="0"/>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center">
 
             <TextView
                 android:id="@+id/tv_pokemon_type"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:padding="2dp"
+                android:layout_toRightOf="@+id/iv_pokemon_detail_back_small"
+                android:layout_toEndOf="@+id/iv_pokemon_detail_back_small"
+                android:layout_below="@id/tv_pokemon_detail_name"
                 android:textSize="22sp"
                 android:text="@string/move_type_class"/>
 
-        </LinearLayout>
+        </RelativeLayout>
 
         <LinearLayout
             android:orientation="horizontal"

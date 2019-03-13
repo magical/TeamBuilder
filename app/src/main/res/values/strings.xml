@@ -49,7 +49,7 @@
     <string name="move_pp">PP</string>
     <string name="move_power">Power</string>
     <string name="move_accuracy">Accuracy</string>
-    <string name="move_type_class">Type: Type1 / Type2</string>
+    <string name="move_type_class">Type1 / Type2</string>
     <string name="move_moves">Moves</string>
 
 </resources>
