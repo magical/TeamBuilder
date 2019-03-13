@@ -89,8 +89,8 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 		mPokemonName = findViewById(R.id.tv_pokemon_detail_name);
 		mPokemonId = findViewById(R.id.tv_pokemon_detail_id);
 		mArtwork = findViewById(R.id.iv_pokemon_detail_artwork);
-		mFrontSprite = findViewById(R.id.iv_pokemon_detail_front_small);
-		mBackSprite = findViewById(R.id.iv_pokemon_detail_back_small);
+		//mFrontSprite = findViewById(R.id.iv_pokemon_detail_front_small);
+		//mBackSprite = findViewById(R.id.iv_pokemon_detail_back_small);
 		mPokemonType = findViewById(R.id.tv_pokemon_type);
 
 		mItemFAB = findViewById(R.id.item_add_FAB);
@@ -233,15 +233,15 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 					.placeholder(R.drawable.ic_poke_unknown).into(mArtwork);
 
 				//sprites
-				GlideApp.with(this).load(PokeAPIUtils.getSpriteUrl(pokeId)).into(mFrontSprite);
-				GlideApp.with(this).load(PokeAPIUtils.getSpriteUrl(pokeId)).into(mBackSprite);
-				mBackSprite.setScaleX(-1); //rotates horizontal, could remove
+				//GlideApp.with(this).load(PokeAPIUtils.getSpriteUrl(pokeId)).into(mFrontSprite);
+				//GlideApp.with(this).load(PokeAPIUtils.getSpriteUrl(pokeId)).into(mBackSprite);
+				//mBackSprite.setScaleX(-1); //rotates horizontal, could remove
 			}
 			else
 			{
 				GlideApp.with(this).load(R.drawable.ic_poke_unknown).into(mArtwork);
-				mFrontSprite.setImageResource(android.R.color.transparent);
-				mBackSprite.setImageResource(android.R.color.transparent);
+				//mFrontSprite.setImageResource(android.R.color.transparent);
+				//mBackSprite.setImageResource(android.R.color.transparent);
 			}
 			setTitle(mPokemon.getName());
 
