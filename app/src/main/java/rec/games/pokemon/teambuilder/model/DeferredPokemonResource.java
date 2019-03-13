@@ -1,5 +1,7 @@
 package rec.games.pokemon.teambuilder.model;
 
+import java.util.ArrayList;
+
 public class DeferredPokemonResource extends Pokemon
 {
 	protected String resourceName;
@@ -23,4 +25,7 @@ public class DeferredPokemonResource extends Pokemon
 	{
 		return url;
 	}
+
+	public ArrayList getMoves() {return null; }
+	public ArrayList getTypes() {return null;}
 }

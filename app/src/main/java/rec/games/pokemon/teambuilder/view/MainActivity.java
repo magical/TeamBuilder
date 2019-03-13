@@ -153,7 +153,7 @@ public class MainActivity extends AppCompatActivity
 		{
 			for(Fragment fragment:mFragmentList)
 			{
-				getSupportFragmentManager().beginTransaction().setAllowOptimization(false)
+				getSupportFragmentManager().beginTransaction()
 					.detach(fragment).attach(fragment).commitAllowingStateLoss();
 			}
 		}

@@ -1,5 +1,7 @@
 package rec.games.pokemon.teambuilder.model;
 
+import android.util.Log;
+
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -12,6 +14,8 @@ import okhttp3.Request;
 
 public class NetworkUtils
 {
+	private static final String TAG = NetworkUtils.class.getSimpleName();
+
 	private static final OkHttpClient mHttpClient;
 	private static final Dispatcher mDispatcher;
 	private static final PriorityBlockingQueue<PriorityNetworkRequest> networkPriorityQueue;
@@ -53,6 +57,7 @@ public class NetworkUtils
 	{
 		Request request = new Request.Builder().url(url).build();
 
+		Log.d(TAG, request.toString());
 		doHTTPGet(request, callback);
 	}
 

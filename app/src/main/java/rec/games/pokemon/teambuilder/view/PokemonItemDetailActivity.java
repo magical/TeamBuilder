@@ -19,11 +19,14 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import rec.games.pokemon.teambuilder.R;
 import rec.games.pokemon.teambuilder.model.PokeAPIUtils;
 import rec.games.pokemon.teambuilder.model.Pokemon;
+import rec.games.pokemon.teambuilder.model.PokemonMove;
+import rec.games.pokemon.teambuilder.model.PokemonType;
 import rec.games.pokemon.teambuilder.model.Team;
 import rec.games.pokemon.teambuilder.viewmodel.PokeAPIViewModel;
 
@@ -45,6 +48,8 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 	private FloatingActionButton mItemFAB;
 	private boolean mItemAdded;
 	private String mTeamName;
+
+	private PokeAPIViewModel mPokeViewModel;
 
 	/**
 	 * Constructs a url to the Bulbapedia page for a Pokémon
@@ -90,19 +95,91 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 		{
 			pokeId = intent.getIntExtra(PokeAPIUtils.POKE_ITEM, pokeId);
 
-			PokeAPIViewModel model = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
+			mPokeViewModel = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
 
 			// Fill in with some fake data
-			model.getPokemonCache().observe(this, new Observer<HashMap<Integer, LiveData<Pokemon>>>()
+			mPokeViewModel.getPokemonCache().observe(this, new Observer<HashMap<Integer, LiveData<Pokemon>>>()
 			{
 				@Override
 				public void onChanged(@Nullable HashMap<Integer, LiveData<Pokemon>> list)
 				{
 					Log.d(TAG, "Got value");
 					if(list != null)
-						mPokemon = list.get(pokeId).getValue();
+					{
+						//mPokemon = list.get(pokeId).getValue();
+						mPokemon = mPokeViewModel.getPokemonReferenceFromCache(pokeId).getValue();
+						Log.d(TAG, "mPokemon is loaded is "+ mPokemon.isLoaded());
+						mPokeViewModel.getTypeCache();
+						mPokeViewModel.getMoveCache();
+						fillLayout();
+					}
+				}
+			});
 
-					fillLayout();
+			mPokeViewModel.getMoveCache().observe(this, new Observer<HashMap<Integer, LiveData<PokemonMove>>>()
+			{
+				@Override
+				public void onChanged(@Nullable HashMap<Integer, LiveData<PokemonMove>> list)
+				{
+					Log.d(TAG, "Got a value");
+					if(mPokemon != null)
+					{
+						//mPokemon = list.get(pokeId).getValue();
+						//mPokemon = mPokeViewModel.getPokemonReferenceFromCache(pokeId).getValue();
+						//fillLayout();
+						ArrayList mPokemonMoves = mPokemon.getMoves();
+						if(mPokemonMoves != null)
+						{
+							for(int i = 0; i < mPokemonMoves.size(); i++)
+							{
+								if(mPokemonMoves.get(i) != null)
+								{
+									String output = mPokemonMoves.get(i).toString();
+									Log.d(TAG, "Output: " + output);
+								}
+							}
+							Log.d(TAG, "Size " + mPokemonMoves.size());
+						}
+						else{
+							Log.d(TAG, "No moves");
+						}
+					}
+					else
+						Log.d(TAG, "is move null");
+				}
+			});
+
+			mPokeViewModel.getTypeCache().observe(this, new Observer<HashMap<Integer, LiveData<PokemonType>>>()
+			{
+				@Override
+				public void onChanged(@Nullable HashMap<Integer, LiveData<PokemonType>> list)
+				{
+					Log.d(TAG, "Got type value");
+					if(mPokemon != null)
+					{
+						//mPokemon = list.get(pokeId).getValue();
+						//mPokemon = mPokeViewModel.getPokemonReferenceFromCache(pokeId).getValue();
+						//fillLayout();
+						ArrayList mPokemonTypes = mPokemon.getTypes();
+						if(mPokemonTypes != null)
+						{
+							for(int i = 0; i < mPokemonTypes.size(); i++)
+							{
+								if(mPokemonTypes.get(i) != null)
+								{
+									String output = mPokemonTypes.get(i).toString();
+									Log.d(TAG, "Output: " + output);
+								}
+							}
+							Log.d(TAG, "Size " + mPokemonTypes.size());
+						}
+						else
+						{
+							Log.d(TAG, "No types");
+						}
+					}
+					else
+						Log.d(TAG, "is type null");
 				}
 			});
 
@@ -111,8 +188,9 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 				mItemFAB.show();
 				mTeamName = intent.getStringExtra(Team.TEAM_ID);
 				Log.d(TAG, "Have Team " + mTeamName);
-
 			}
+			else
+				Log.d(TAG, "Hiding FAB");
 		}
 	}
 
