@@ -31,28 +31,28 @@
            android:id="@+id/move_type"
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"
-           android:padding="8dp"
+           android:paddingRight="16dp"
            tools:text="Type"/>
 
         <TextView
             android:id="@+id/move_pp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="8dp"
+            android:paddingRight="16dp"
             tools:text="pp"/>
 
         <TextView
             android:id="@+id/move_power"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="8dp"
+            android:paddingRight="20dp"
             tools:text="power"/>
 
         <TextView
             android:id="@+id/move_accuracy"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="8dp"
+            android:padding="12dp"
             tools:text="100"/>
 
     </LinearLayout>

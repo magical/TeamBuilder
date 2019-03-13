@@ -44,4 +44,12 @@
     <string name="share_chooser_poke_details">Share Pokémon details</string>
     <string name="action_share_team">Share Team Details</string>
 
+    <!-- Move details -->
+    <string name="move_type">Type</string>
+    <string name="move_pp">PP</string>
+    <string name="move_power">Power</string>
+    <string name="move_accuracy">Accuracy</string>
+    <string name="move_type_class">Type: Type1 / Type2</string>
+    <string name="move_moves">Moves</string>
+
 </resources>

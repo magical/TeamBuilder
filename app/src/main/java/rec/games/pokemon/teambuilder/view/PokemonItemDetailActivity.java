@@ -245,7 +245,7 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 			}
 			setTitle(mPokemon.getName());
 
-			mPokemonType.setText("Type: Type1 / Type2");
+			mPokemonType.setText(getString(R.string.move_type_class)); //replace
 		}
 
 		mItemFAB.setOnClickListener(new View.OnClickListener()
