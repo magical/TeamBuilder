@@ -16,7 +16,9 @@
             android:id="@+id/move_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="8dp"
+            android:paddingLeft="8dp"
+            android:paddingBottom="4dp"
+            android:paddingTop="4dp"
             android:layout_gravity="start"
             android:textSize="22sp"
             tools:text="Move"/>
@@ -28,31 +30,38 @@
             android:layout_weight="1" />
 
         <TextView
-           android:id="@+id/move_type"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:paddingRight="16dp"
-           tools:text="Type"/>
+            android:id="@+id/move_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="80dp"
+            android:textSize="16sp"
+            tools:text="Type"/>
 
         <TextView
             android:id="@+id/move_pp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingRight="16dp"
-            tools:text="pp"/>
+            android:gravity="center"
+            android:minWidth="35dp"
+            android:textSize="16sp"
+            tools:text="10"/>
 
         <TextView
             android:id="@+id/move_power"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingRight="20dp"
-            tools:text="power"/>
+            android:gravity="center"
+            android:minWidth="60dp"
+            android:textSize="16sp"
+            tools:text="10"/>
 
         <TextView
             android:id="@+id/move_accuracy"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="12dp"
+            android:gravity="center"
+            android:minWidth="75dp"
+            android:textSize="16sp"
             tools:text="100"/>
 
     </LinearLayout>

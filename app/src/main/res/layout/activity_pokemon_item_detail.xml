@@ -53,7 +53,7 @@
                 android:id="@+id/tv_pokemon_detail_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="2dp"
+                android:padding="8dp"
                 android:layout_toRightOf="@+id/iv_pokemon_detail_artwork"
                 android:layout_toEndOf="@+id/iv_pokemon_detail_artwork"
                 android:textSize="22sp"
@@ -63,7 +63,8 @@
                 android:id="@+id/tv_pokemon_detail_id"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="2dp"
+                android:padding="8dp"
+                android:minWidth="12dp"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:textSize="22sp"
@@ -73,7 +74,7 @@
                 android:id="@+id/tv_pokemon_type"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="2dp"
+                android:padding="8dp"
                 android:layout_toRightOf="@+id/iv_pokemon_detail_artwork"
                 android:layout_below="@id/tv_pokemon_detail_name"
                 android:textSize="22sp"
@@ -92,7 +93,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
-                android:paddingLeft="8dp"
+                android:paddingLeft="12dp"
                 android:text="@string/move_moves"/>
 
             <!-- push to one side -->
@@ -105,27 +106,32 @@
                 android:id="@+id/item_move_type"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingRight="30dp"
+                android:minWidth="80dp"
+                android:textSize="16sp"
                 android:text="@string/move_type"/>
 
             <TextView
                 android:id="@+id/item_move_pp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingRight="8dp"
+                android:minWidth="35dp"
+                android:textSize="16sp"
                 android:text="@string/move_pp"/>
 
             <TextView
                 android:id="@+id/item_move_power"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingRight="8dp"
+                android:minWidth="60dp"
+                android:textSize="16sp"
                 android:text="@string/move_power"/>
 
             <TextView
                 android:id="@+id/item_move_accuracy"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:minWidth="60dp"
+                android:textSize="16sp"
                 android:paddingRight="8dp"
                 android:text="@string/move_accuracy"/>
         </LinearLayout>
