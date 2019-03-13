@@ -12,6 +12,9 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ShareCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,6 +24,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import rec.games.pokemon.teambuilder.R;
 import rec.games.pokemon.teambuilder.model.PokeAPIUtils;
@@ -30,7 +34,7 @@ import rec.games.pokemon.teambuilder.model.PokemonType;
 import rec.games.pokemon.teambuilder.model.Team;
 import rec.games.pokemon.teambuilder.viewmodel.PokeAPIViewModel;
 
-public class PokemonItemDetailActivity extends AppCompatActivity
+public class PokemonItemDetailActivity extends AppCompatActivity implements PokemonMoveAdapter.OnPokemonMoveClickListener
 {
 	private static final String TAG = PokemonItemDetailActivity.class.getSimpleName();
 
@@ -45,9 +49,12 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 	private ImageView mBackSprite;
 	private TextView mPokemonName;
 	private TextView mPokemonId;
+	private TextView mPokemonType;
 	private FloatingActionButton mItemFAB;
 	private boolean mItemAdded;
 	private String mTeamName;
+
+	private RecyclerView mMoveRV;
 
 	private PokeAPIViewModel mPokeViewModel;
 
@@ -84,10 +91,15 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 		mArtwork = findViewById(R.id.iv_pokemon_detail_artwork);
 		mFrontSprite = findViewById(R.id.iv_pokemon_detail_front_small);
 		mBackSprite = findViewById(R.id.iv_pokemon_detail_back_small);
+		mPokemonType = findViewById(R.id.tv_pokemon_type);
 
 		mItemFAB = findViewById(R.id.item_add_FAB);
 		mItemFAB.hide();
 		mItemAdded = false;
+
+		mMoveRV = findViewById(R.id.rv_moves);
+		mMoveRV.setLayoutManager(new LinearLayoutManager(this));
+		mMoveRV.setItemAnimator(new DefaultItemAnimator());
 
 		Intent intent = getIntent();
 
@@ -191,6 +203,17 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 			}
 			else
 				Log.d(TAG, "Hiding FAB");
+
+			final PokemonMoveAdapter adapter = new PokemonMoveAdapter(new ArrayList<String>(), this);
+
+			ArrayList<String> moves = new ArrayList<>();
+			//temp setup
+			for(int i=0; i<10; i++)
+			{
+				moves.add("Move " + String.valueOf(i));
+			}
+			adapter.updatePokemonMoves(moves);
+			mMoveRV.setAdapter(adapter);
 		}
 	}
 
@@ -221,6 +244,8 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 				mBackSprite.setImageResource(android.R.color.transparent);
 			}
 			setTitle(mPokemon.getName());
+
+			mPokemonType.setText("Type: Type1 / Type2");
 		}
 
 		mItemFAB.setOnClickListener(new View.OnClickListener()
@@ -314,5 +339,9 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 			mItemFAB.setImageResource(R.drawable.ic_action_add); //remove
 			mItemAdded = false;
 		}
+	}
+
+	public void onPokemonMoveClicked(int moveID){
+		Log.d(TAG, "Clicked" + moveID);
 	}
 }

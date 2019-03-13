@@ -24,12 +24,13 @@
             android:scrollbars="vertical"
             android:paddingBottom="42dp"
             android:clipToPadding="false"
-            android:visibility="invisible"
+            android:visibility="visible"
             android:id="@+id/rv_team_members" />
 
         <include layout="@layout/loading_error" />
 
     </LinearLayout>
+
 
     <!-- force at bottom -->
     <LinearLayout

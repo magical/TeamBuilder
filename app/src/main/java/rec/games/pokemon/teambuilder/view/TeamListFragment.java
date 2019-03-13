@@ -67,6 +67,7 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 		teamRV = view.findViewById(R.id.rv_team_members);
 		teamRV.setLayoutManager(new GridLayoutManager(view.getContext(), 2));
 		teamRV.setItemAnimator(new DefaultItemAnimator());
+		teamRV.setNestedScrollingEnabled(false);
 		teamRV.setAdapter(adapter);
 
 		//error button

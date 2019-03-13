@@ -26,8 +26,8 @@
 
             <ImageView
                 android:id="@+id/iv_pokemon_detail_artwork"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
+                android:layout_width="154dp"
+                android:layout_height="154dp"
                 android:scaleType="fitXY"
                 android:layout_centerInParent="true"
                 android:src="@drawable/ic_poke_unknown"/>
@@ -50,7 +50,8 @@
                 android:id="@+id/tv_pokemon_detail_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="16dp"
+                android:padding="2dp"
+                android:layout_marginLeft="8dp"
                 android:textSize="22sp"
                 android:text="@string/placeholder_pokemon_name"/>
 
@@ -64,10 +65,84 @@
                 android:id="@+id/tv_pokemon_detail_id"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="16dp"
+                android:padding="2dp"
+                android:layout_marginRight="8dp"
                 android:textSize="22sp"
                 android:text="0"/>
         </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/tv_pokemon_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="22sp"
+                android:text="Type: Type1 / Type2"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tv_pokemon_move"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:paddingLeft="16dp"
+                android:text="Moves:"/>
+
+            <!-- push to one side -->
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/item_move_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="8dp"
+                android:text="Type"/>
+
+            <TextView
+                android:id="@+id/item_move_pp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="8dp"
+                android:text="PP"/>
+
+            <TextView
+                android:id="@+id/item_move_power"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="8dp"
+                android:text="Power"/>
+
+            <TextView
+                android:id="@+id/item_move_accuracy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="8dp"
+                android:text="Accuracy"/>
+        </LinearLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:clipToPadding="false"
+            android:visibility="visible"
+            android:id="@+id/rv_moves" />
     </LinearLayout>
 
     <!-- force at bottom -->
