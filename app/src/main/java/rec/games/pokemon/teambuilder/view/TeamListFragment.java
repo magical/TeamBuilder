@@ -16,6 +16,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.util.HashMap;
 
@@ -36,6 +39,10 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 	private TeamAdapter adapter;
 	private RecyclerView teamRV;
 	private PokeAPIViewModel mViewModel;
+
+	private TextView mLoadingErrorMsgTV;
+	private LinearLayout mLoadingErrorLL;
+	private Button mLoadingErrorBtn;
 
 	private static TeamMember newTeamMember(LiveData<Pokemon> p)
 	{
@@ -58,9 +65,17 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 
 		adapter = new TeamAdapter(this, this);
 		teamRV = view.findViewById(R.id.rv_team_members);
-		teamRV.setAdapter(adapter);
 		teamRV.setLayoutManager(new GridLayoutManager(view.getContext(), 2));
 		teamRV.setItemAnimator(new DefaultItemAnimator());
+		teamRV.setAdapter(adapter);
+
+		//error button
+		mLoadingErrorMsgTV = view.findViewById(R.id.tv_loading_error);
+		mLoadingErrorLL = view.findViewById(R.id.ll_loading_error);
+		mLoadingErrorBtn = view.findViewById(R.id.btn_loading_error);
+
+		mTeamFAB = view.findViewById(R.id.team_FAB);
+		mTeamFAB.hide();
 
 		mViewModel = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
 
@@ -70,8 +85,26 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 			@Override
 			public void onChanged(@Nullable HashMap<Integer, LiveData<Pokemon>> list)
 			{
-				if(list != null)
+				if(list == null)
 				{
+					Log.d(TAG, "Could not load team member info");
+					teamRV.setVisibility(View.GONE);
+
+					mLoadingErrorMsgTV.setVisibility(View.VISIBLE);
+					mLoadingErrorLL.setVisibility(LinearLayout.VISIBLE);
+					mLoadingErrorBtn.setVisibility(View.VISIBLE);
+					mTeamFAB.hide();
+				}
+				else
+				{
+					teamRV.setVisibility(View.VISIBLE);
+
+					mLoadingErrorMsgTV.setVisibility(View.INVISIBLE);
+					mLoadingErrorLL.setVisibility(LinearLayout.INVISIBLE);
+					mLoadingErrorBtn.setVisibility(View.INVISIBLE);
+
+					mTeamFAB.show();
+
 					team = new Team();
 
 					team.members.add(newTeamMember(list.get(1))); // Bulbasaur
@@ -85,7 +118,16 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 			}
 		});
 
-		mTeamFAB = view.findViewById(R.id.team_FAB);
+		mLoadingErrorBtn.setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				Log.d(TAG, "Refreshing");
+				mViewModel.getNewPokemonList();
+			}
+		});
+
 		mTeamFAB.setOnClickListener(new View.OnClickListener()
 		{
 			@Override

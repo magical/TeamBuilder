@@ -156,7 +156,6 @@ public class MainActivity extends AppCompatActivity
 				getSupportFragmentManager().beginTransaction().setAllowOptimization(false)
 					.detach(fragment).attach(fragment).commitAllowingStateLoss();
 			}
-
 		}
 
 		public CharSequence getPageTitle(int i)
