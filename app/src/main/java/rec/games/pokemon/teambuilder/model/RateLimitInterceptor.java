@@ -9,16 +9,27 @@ import java.util.concurrent.TimeUnit;
 import okhttp3.Interceptor;
 import okhttp3.Response;
 
-class RateLimitInterceptor implements Interceptor
+public class RateLimitInterceptor implements Interceptor
 {
 	private Semaphore limiter;
+
+	private final int limit;
+	private final long timePeriod;
+
+	private long releaseTimeStamp;
+	private int permitsOnPause = 0;
 
 	//limit: maximum number of requests to handle over a given time period
 	//timePeriod: the time period in nanoseconds
 	//so the maximum call rate = limit/timePeriod
-	RateLimitInterceptor(final int limit, final long timePeriod)
+	public RateLimitInterceptor(final int limit, final long timePeriod, int startingPermits)
 	{
-		limiter = new Semaphore(limit);
+		this.limit = limit;
+		this.timePeriod = timePeriod;
+
+		limiter = new Semaphore(startingPermits);
+		releaseTimeStamp = System.nanoTime();
+
 		Thread thread = new Thread()
 		{
 			@Override
@@ -28,9 +39,9 @@ class RateLimitInterceptor implements Interceptor
 
 				limiter.drainPermits();
 				limiter.release(limit);
+				releaseTimeStamp = System.nanoTime();
 			}
 		};
-
 		thread.start();
 	}
 
@@ -41,6 +52,17 @@ class RateLimitInterceptor implements Interceptor
 		limiter.acquireUninterruptibly();
 
 		return chain.proceed(chain.request());
+	}
+
+	public int pause()
+	{
+		permitsOnPause = limiter.drainPermits();
+		return permitsOnPause;
+	}
+
+	public void unPause()
+	{
+		//if(limiter.availablePermits() > permitsOnPause)
 	}
 
 	//java makes no guarantees about how long a thread will sleep
@@ -67,5 +89,15 @@ class RateLimitInterceptor implements Interceptor
 				timeLeft = nanoseconds - elapsedTime;
 			}
 		}
+	}
+
+	public int currentPermits()
+	{
+		return limiter.availablePermits();
+	}
+
+	public long getReleaseTimeStamp()
+	{
+		return releaseTimeStamp;
 	}
 }

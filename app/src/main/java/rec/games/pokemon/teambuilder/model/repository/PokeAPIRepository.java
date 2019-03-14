@@ -7,7 +7,7 @@ import android.util.Log;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.concurrent.Semaphore;
+import java.util.concurrent.CountDownLatch;
 
 import okhttp3.Call;
 import okhttp3.Response;
@@ -45,11 +45,8 @@ public class PokeAPIRepository
 
 	public static void getNewPokemonList()
 	{
-		final Semaphore typeLock = new Semaphore(1);
-		final Semaphore moveLock = new Semaphore(1);
-
-		typeLock.acquireUninterruptibly();
-		moveLock.acquireUninterruptibly();
+		final CountDownLatch typeLock = new CountDownLatch(1);
+		final CountDownLatch moveLock = new CountDownLatch(1);
 
 		//asynchronously load the type list
 		NetworkUtils.doPriorityHTTPGet(PokeAPIUtils.buildTypeListURL(10000, 0), NetworkPriority.CRITICAL, new PriorityCallback()
@@ -96,11 +93,15 @@ public class PokeAPIRepository
 
 				//now we can finally post the value
 				typeCache.postValue(tempTypeCache);
-				typeLock.release();
+				typeLock.countDown();
 
 				//start loading the types
 				for(int key: tempTypeCache.keySet())
-					loadType(key, NetworkPriority.ABOVE_NORMAL);
+				{
+					int result = loadType(key, NetworkPriority.ABOVE_NORMAL);
+					if(result != 0)
+						Log.d("Hello World", "bad result " + result + " for type: " + key);
+				}
 			}
 		});
 
@@ -146,12 +147,23 @@ public class PokeAPIRepository
 				}
 
 				moveCache.postValue(tempMoveCache);
-				moveLock.release();
+				moveLock.countDown();
 
-				typeLock.acquireUninterruptibly();
-				typeLock.release();
+				try
+				{
+					typeLock.await();
+				}
+				catch(InterruptedException e)
+				{
+					e.printStackTrace();
+				}
+
 				for(int key: tempMoveCache.keySet())
-					loadMove(key, NetworkPriority.LOW);
+				{
+					int result = loadMove(key, NetworkPriority.LOW);
+					if(result != 0)
+						Log.d("Hello World", "bad result " + result + " for move: " + key);
+				}
 			}
 		});
 
@@ -198,12 +210,22 @@ public class PokeAPIRepository
 
 				pokemonCache.postValue(tempPokemonCache);
 
-				typeLock.acquireUninterruptibly();
-				typeLock.release();
-				moveLock.acquireUninterruptibly();
-				moveLock.release();
+				try
+				{
+					typeLock.await();
+					moveLock.await();
+				}
+				catch(InterruptedException e)
+				{
+					e.printStackTrace();
+				}
+
 				for(int key: tempPokemonCache.keySet())
-					loadPokemon(key, NetworkPriority.NORMAL);
+				{
+					int result = loadPokemon(key, NetworkPriority.NORMAL);
+					if(result != 0)
+						Log.d("Hello World", "bad result " + result + " for pokemon: " + key);
+				}
 			}
 		});
 	}

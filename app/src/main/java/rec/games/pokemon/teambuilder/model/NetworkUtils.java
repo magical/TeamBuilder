@@ -3,7 +3,6 @@ package rec.games.pokemon.teambuilder.model;
 import android.util.Log;
 
 import java.util.concurrent.PriorityBlockingQueue;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -11,6 +10,7 @@ import okhttp3.Callback;
 import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import rec.games.pokemon.teambuilder.GlobalApplication;
 
 public class NetworkUtils
 {
@@ -22,7 +22,7 @@ public class NetworkUtils
 	static
 	{
 		mHttpClient = new OkHttpClient.Builder()
-			.addInterceptor(new RateLimitInterceptor(100, TimeUnit.MINUTES.toNanos(1)))
+			.addInterceptor(GlobalApplication.getPokeAPILimiter())
 			.build();
 
 		networkPriorityQueue = new PriorityBlockingQueue<>();
