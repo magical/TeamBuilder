@@ -2,9 +2,7 @@ package rec.games.pokemon.teambuilder.view;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,7 +54,7 @@ public class PokemonMoveAdapter extends RecyclerView.Adapter<PokemonMoveAdapter.
 		return mPokemon.size();
 	}
 
-	public int getPokemonClickedId(int position)
+	public int getPokemonMoveClickId(int position)
 	{
 		if(mPokemon != null)
 		{
@@ -101,7 +99,7 @@ public class PokemonMoveAdapter extends RecyclerView.Adapter<PokemonMoveAdapter.
 				@Override
 				public void onClick(View v)
 				{
-					mListener.onPokemonMoveClicked(getPokemonClickedId(getAdapterPosition()));
+					mListener.onPokemonMoveClicked(getPokemonMoveClickId(getAdapterPosition()));
 				}
 			});
 		}

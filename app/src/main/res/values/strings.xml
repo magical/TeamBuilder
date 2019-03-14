@@ -12,6 +12,7 @@
     <string name="action_select_poke">"Select a Pokémon"</string>
     <string name="placeholder_pokemon_name">Pokémon</string>
     <string name="team_id_string">UniqueTeamString</string>
+    <string name="poke_icon_desc">Pokémon Icon</string>
 
     <!-- Search -->
     <string name="action_pokemon_list_search">Pokémon Name or Pokédex ID</string>
