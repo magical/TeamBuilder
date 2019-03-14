@@ -53,10 +53,11 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder
 
 	public int getTeamMemberId(int position)
 	{
-		if(position >= 0 && team.members != null)
+		if(position >= 0 && team != null && team.members != null)
+		{
 			return team.members.get(position).pokemon.getValue().getId();
-		else
-			return 0;
+		}
+		return 0;
 	}
 
 	@Override
@@ -122,9 +123,14 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder
 
 		void bind(TeamMember member)
 		{
+
 			if(mObserver != null)
 			{
 				mSavedTeamMember.pokemon.removeObserver(mObserver);
+			}
+			if (member == null || member.pokemon == null) {
+				mObserver = null;
+				return;
 			}
 			// set image to ic_poke_unknown - done, auto does it
 			name.setText(R.string.loading_msg_short);
