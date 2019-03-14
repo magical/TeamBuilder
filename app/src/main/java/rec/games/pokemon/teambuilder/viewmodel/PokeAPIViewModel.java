@@ -217,13 +217,17 @@ public class PokeAPIViewModel extends ViewModel
 			{
 				return null; // id doesn't exist
 			}
+			return p;/*
 			// Only return if the full pokemon is loaded.
 			// If all we have is a DeferredPokemonResource we need to load the full one
 			if(p.getValue() != null && p.getValue() instanceof PokemonResource)
 			{
 				liveData.postValue(p.getValue());
-			}
+				return liveData;
+			}*/
 		}
+		return null;
+		/*
 
 		int code = loadPokemon(id);
 		if(code != 0)
@@ -231,7 +235,7 @@ public class PokeAPIViewModel extends ViewModel
 			// FIXME uh-oh
 		}
 
-		return liveData;
+		return liveData;*/
 	}
 
 	/*
