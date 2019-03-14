@@ -80,18 +80,14 @@ public class PokemonMoveAdapter extends RecyclerView.Adapter<PokemonMoveAdapter.
 		private OnPokemonMoveClickListener mListener;
 		private TextView mName;
 		private TextView mType;
-		private TextView mPP;
 		private TextView mPower;
-		private TextView mAccuracy;
 
 		public PokemonViewHolder(View view, OnPokemonMoveClickListener l)
 		{
 			super(view);
 			mName = view.findViewById(R.id.move_name);
 			mType = view.findViewById(R.id.move_type);
-			mPP = view.findViewById(R.id.move_pp);
 			mPower = view.findViewById(R.id.move_power);
-			mAccuracy = view.findViewById(R.id.move_accuracy);
 			mListener = l;
 
 			view.setOnClickListener(new View.OnClickListener()
@@ -108,10 +104,7 @@ public class PokemonMoveAdapter extends RecyclerView.Adapter<PokemonMoveAdapter.
 		{
 			mName.setText(moveName);
 			mType.setText("Type1234");
-			mPP.setText(String.valueOf(35));
 			mPower.setText(String.valueOf(150));
-			String outputAccuracy = String.valueOf(100) + "%";
-			mAccuracy.setText(outputAccuracy);
 		}
 	}
 }

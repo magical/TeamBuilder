@@ -104,45 +104,23 @@
                 android:id="@+id/item_move_type"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toLeftOf="@+id/item_move_pp"
-                android:layout_toStartOf="@+id/item_move_pp"
-                android:layout_centerInParent="true"
-                android:minWidth="80dp"
-                android:textSize="16sp"
-                android:text="@string/move_type"/>
-
-            <TextView
-                android:id="@+id/item_move_pp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:layout_toLeftOf="@+id/item_move_power"
                 android:layout_toStartOf="@+id/item_move_power"
                 android:layout_centerInParent="true"
-                android:minWidth="30dp"
+                android:minWidth="100dp"
                 android:textSize="16sp"
-                android:text="@string/move_pp"/>
+                android:text="@string/move_type"/>
 
             <TextView
                 android:id="@+id/item_move_power"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toLeftOf="@+id/item_move_accuracy"
-                android:layout_toStartOf="@+id/item_move_accuracy"
-                android:layout_centerInParent="true"
-                android:minWidth="55dp"
-                android:textSize="16sp"
-                android:text="@string/move_power"/>
-
-            <TextView
-                android:id="@+id/item_move_accuracy"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
                 android:layout_centerInParent="true"
-                android:minWidth="40dp"
+                android:minWidth="65dp"
                 android:textSize="16sp"
-                android:text="@string/move_accuracy"/>
+                android:text="@string/move_power"/>
         </RelativeLayout>
 
         <android.support.v7.widget.RecyclerView
