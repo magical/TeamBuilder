@@ -1,51 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:orientation="vertical">
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="24sp"
-            android:layout_marginTop="8dp"
-            android:layout_gravity="center"
-            android:text="Team list"/>
-
-        <android.support.v7.widget.RecyclerView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scrollbars="vertical"
-            android:paddingBottom="42dp"
-            android:clipToPadding="false"
-            android:id="@+id/rv_team_members" />
+            android:orientation="vertical">
 
-    </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="24sp"
+                android:layout_marginTop="8dp"
+                android:layout_gravity="center"
+                android:text="Team list"/>
 
-    <!-- force at bottom -->
-    <LinearLayout
-        android:layout_width="fill_parent"
+            <android.support.v7.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbars="vertical"
+                android:clipToPadding="false"
+                android:id="@+id/rv_team_members"
+                android:nestedScrollingEnabled="false"/>
+            
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize" />
+
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+
+    <android.support.design.bottomappbar.BottomAppBar
+        android:id="@+id/team_BottomAppBar"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_gravity="bottom"
+        app:fabAlignmentMode="end"
+        android:backgroundTint="@color/colorPrimaryDark">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:paddingLeft="16dp"
+            android:layout_height="match_parent">
+
+            <Button
+                android:id="@+id/action_attack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:textColor="#fff"
+                android:drawableLeft="@drawable/ic_sword"
+                android:drawableStart="@drawable/ic_sword"
+                android:text="Atk"
+                android:background="@android:color/transparent"/>
+
+            <Button
+                android:id="@+id/action_defend"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/action_attack"
+                android:layout_toEndOf="@+id/action_attack"
+                android:padding="8dp"
+                android:textColor="#fff"
+                android:drawableLeft="@drawable/ic_shield"
+                android:drawableStart="@drawable/ic_shield"
+                android:text="Def"
+                android:background="@android:color/transparent"/>
+        </RelativeLayout>
+
+    </android.support.design.bottomappbar.BottomAppBar>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/team_FAB"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:gravity="end"
-        android:orientation="horizontal">
+        app:layout_anchor="@id/team_BottomAppBar"
+        app:layout_insetEdge="right"
+        app:fabSize="normal"
+        android:elevation="6dp"
+        android:src="@drawable/ic_action_add"
+        app:rippleColor="@color/colorSecondary"
+        android:background="@color/colorPrimary"/>
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/team_FAB"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|bottom"
-            android:layout_margin="20dp"
-            app:fabSize="normal"
-            android:elevation="6dp"
-            android:src="@drawable/ic_action_add"
-            android:background="@color/colorPrimary"/>
-    </LinearLayout>
-
-</RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

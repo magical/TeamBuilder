@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.bottomappbar.BottomAppBar;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -16,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import java.util.HashMap;
 
@@ -30,12 +32,16 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 {
 	private static final String TAG = TeamListFragment.class.getSimpleName();
 
-	private FloatingActionButton mTeamFAB;
 	private Team team;
 
 	private TeamAdapter adapter;
 	private RecyclerView teamRV;
 	private PokeAPIViewModel mViewModel;
+
+	private FloatingActionButton mTeamFAB;
+	private BottomAppBar mAppBar;
+	private Button mActionAttack;
+	private Button mActionDefend;
 
 	private static TeamMember newTeamMember(LiveData<Pokemon> p)
 	{
@@ -62,6 +68,11 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 		teamRV.setLayoutManager(new GridLayoutManager(view.getContext(), 2));
 		teamRV.setItemAnimator(new DefaultItemAnimator());
 
+		mTeamFAB = view.findViewById(R.id.team_FAB);
+		mAppBar = view.findViewById(R.id.team_BottomAppBar);
+		mActionAttack = view.findViewById(R.id.action_attack);
+		mActionDefend = view.findViewById(R.id.action_defend);
+
 		mViewModel = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
 
 		// Fill in with some fake data
@@ -82,7 +93,6 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 			}
 		});
 
-		mTeamFAB = view.findViewById(R.id.team_FAB);
 		mTeamFAB.setOnClickListener(new View.OnClickListener()
 		{
 			@Override
@@ -110,6 +120,27 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 				if(newState == RecyclerView.SCROLL_STATE_IDLE)
 					mTeamFAB.show();
 				super.onScrollStateChanged(recyclerView, newState);
+			}
+		});
+
+		mActionAttack.setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				Log.d(TAG, "Clicked");
+				Intent intent = new Intent(getContext(), TeamTypeAtkDef.class);
+				startActivity(intent);
+			}
+		});
+		mActionDefend.setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				Log.d(TAG, "Clicked");
+				Intent intent = new Intent(getContext(), TeamTypeAtkDef.class);
+				startActivity(intent);
 			}
 		});
 
