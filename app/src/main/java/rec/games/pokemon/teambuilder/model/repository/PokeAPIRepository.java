@@ -16,6 +16,7 @@ import okhttp3.internal.annotations.EverythingIsNonNull;
 import rec.games.pokemon.teambuilder.model.DeferredPokemonMoveResource;
 import rec.games.pokemon.teambuilder.model.DeferredPokemonResource;
 import rec.games.pokemon.teambuilder.model.DeferredPokemonTypeResource;
+import rec.games.pokemon.teambuilder.model.LiveDataList;
 import rec.games.pokemon.teambuilder.model.NetworkPriority;
 import rec.games.pokemon.teambuilder.model.NetworkUtils;
 import rec.games.pokemon.teambuilder.model.PokeAPIUtils;
@@ -28,17 +29,39 @@ import rec.games.pokemon.teambuilder.model.PokemonTypeResource;
 import rec.games.pokemon.teambuilder.model.PriorityCallback;
 import rec.games.pokemon.teambuilder.viewmodel.PokeAPIViewModel;
 
+class CacheEntry<E>
+{
+	E data;
+	MutableLiveData<E> liveObserver;
+
+	CacheEntry(E data)
+	{
+		this.data = data;
+
+		this.liveObserver = new MutableLiveData<>();
+		liveObserver.postValue(data);
+	}
+}
+
 public class PokeAPIRepository
 {
-	private static MutableLiveData<HashMap<Integer, LiveData<PokemonType>>> typeCache;
-	private static MutableLiveData<HashMap<Integer, LiveData<PokemonMove>>> moveCache;
-	private static MutableLiveData<HashMap<Integer, LiveData<Pokemon>>> pokemonCache;
+	private static HashMap<Integer, CacheEntry<PokemonType>> typeCache;
+	private static HashMap<Integer, CacheEntry<PokemonMove>> moveCache;
+	private static HashMap<Integer, CacheEntry<Pokemon>> pokemonCache;
+
+	private static MutableLiveData<Boolean> typeCacheObserver;
+	private static MutableLiveData<Boolean> moveCacheObserver;
+	private static MutableLiveData<Boolean> pokemonCacheObserver;
 
 	static
 	{
-		typeCache = new MutableLiveData<>();
-		moveCache = new MutableLiveData<>();
-		pokemonCache = new MutableLiveData<>();
+		typeCache = new HashMap<>();
+		moveCache = new HashMap<>();
+		pokemonCache = new HashMap<>();
+
+		typeCacheObserver = new MutableLiveData<>();
+		moveCacheObserver = new MutableLiveData<>();
+		pokemonCacheObserver = new MutableLiveData<>();
 
 		getNewPokemonList();
 	}
@@ -61,7 +84,7 @@ public class PokeAPIRepository
 			@Override
 			public void onFailure(Call call, IOException e)
 			{
-				typeCache.postValue(null);
+				typeCacheObserver.postValue(false);
 			}
 
 			@EverythingIsNonNull
@@ -71,7 +94,7 @@ public class PokeAPIRepository
 				ResponseBody body = response.body();
 				if(body == null)
 				{
-					typeCache.postValue(null);
+					typeCacheObserver.postValue(false);
 					return;
 				}
 
@@ -79,24 +102,20 @@ public class PokeAPIRepository
 				String typeListJSON = body.string();
 				PokeAPIUtils.NamedAPIResourceList typeList = PokeAPIUtils.parseNamedAPIResourceListJSON(typeListJSON);
 
-				//create a temporary variable, we don't want to post it until we are done processing
-				HashMap<Integer, LiveData<PokemonType>> tempTypeCache = new HashMap<>(typeList.results.length);
-				for(PokeAPIUtils.NamedAPIResource r : typeList.results)
+				for(PokeAPIUtils.NamedAPIResource namedResource : typeList.results)
 				{
-					MutableLiveData<PokemonType> pokemonType = new MutableLiveData<>();
+					int id = PokeAPIUtils.getId(namedResource.url);
+					PokemonType pokemonType = new DeferredPokemonTypeResource(id, namedResource.name, namedResource.url);
 
-					int id = PokeAPIUtils.getId(r.url);
-					pokemonType.postValue(new DeferredPokemonTypeResource(id, r.name, r.url));
-
-					tempTypeCache.put(id, pokemonType);
+					updatePokemonType(id, pokemonType);
 				}
 
-				//now we can finally post the value
-				typeCache.postValue(tempTypeCache);
+				//alert that the data has changed
+				typeCacheObserver.postValue(true);
 				typeLock.countDown();
 
 				//start loading the types
-				for(int key: tempTypeCache.keySet())
+				for(int key: typeCache.keySet())
 				{
 					int result = loadType(key, NetworkPriority.ABOVE_NORMAL);
 					if(result != 0)
@@ -118,7 +137,7 @@ public class PokeAPIRepository
 			@Override
 			public void onFailure(Call call, IOException e)
 			{
-				moveCache.postValue(null);
+				moveCacheObserver.postValue(false);
 			}
 
 			@EverythingIsNonNull
@@ -128,25 +147,22 @@ public class PokeAPIRepository
 				ResponseBody body = response.body();
 				if(body == null)
 				{
-					moveCache.postValue(null);
+					moveCacheObserver.postValue(false);
 					return;
 				}
 
 				String moveListJSON = body.string();
 				PokeAPIUtils.NamedAPIResourceList moveList = PokeAPIUtils.parseNamedAPIResourceListJSON(moveListJSON);
 
-				HashMap<Integer, LiveData<PokemonMove>> tempMoveCache = new HashMap<>(moveList.results.length);
 				for(PokeAPIUtils.NamedAPIResource r : moveList.results)
 				{
-					MutableLiveData<PokemonMove> pokemonMove = new MutableLiveData<>();
-
 					int id = PokeAPIUtils.getId(r.url);
-					pokemonMove.postValue(new DeferredPokemonMoveResource(id, r.name, r.url));
+					PokemonMove pokemonMove = new DeferredPokemonMoveResource(id, r.name, r.url);
 
-					tempMoveCache.put(id, pokemonMove);
+					updatePokemonMove(id, pokemonMove);
 				}
 
-				moveCache.postValue(tempMoveCache);
+				moveCacheObserver.postValue(true);
 				moveLock.countDown();
 
 				try
@@ -158,7 +174,7 @@ public class PokeAPIRepository
 					e.printStackTrace();
 				}
 
-				for(int key: tempMoveCache.keySet())
+				for(int key: moveCache.keySet())
 				{
 					int result = loadMove(key, NetworkPriority.LOW);
 					if(result != 0)
@@ -180,7 +196,7 @@ public class PokeAPIRepository
 			@Override
 			public void onFailure(Call call, IOException e)
 			{
-				pokemonCache.postValue(null);
+				pokemonCacheObserver.postValue(false);
 			}
 
 			@EverythingIsNonNull
@@ -190,25 +206,22 @@ public class PokeAPIRepository
 				ResponseBody body = response.body();
 				if(body == null)
 				{
-					pokemonCache.postValue(null);
+					pokemonCacheObserver.postValue(false);
 					return;
 				}
 
 				String pokemonListJSON = body.string();
 				PokeAPIUtils.NamedAPIResourceList pokemonList = PokeAPIUtils.parseNamedAPIResourceListJSON(pokemonListJSON);
 
-				HashMap<Integer, LiveData<Pokemon>> tempPokemonCache = new HashMap<>(pokemonList.results.length);
 				for(PokeAPIUtils.NamedAPIResource r : pokemonList.results)
 				{
-					MutableLiveData<Pokemon> pokemon = new MutableLiveData<>();
-
 					int id = PokeAPIUtils.getId(r.url);
-					pokemon.postValue(new DeferredPokemonResource(id, r.name, r.url));
+					Pokemon pokemon = new DeferredPokemonResource(id, r.name, r.url);
 
-					tempPokemonCache.put(id, pokemon);
+					updatePokemon(id, pokemon);
 				}
 
-				pokemonCache.postValue(tempPokemonCache);
+				pokemonCacheObserver.postValue(true);
 
 				try
 				{
@@ -220,7 +233,7 @@ public class PokeAPIRepository
 					e.printStackTrace();
 				}
 
-				for(int key: tempPokemonCache.keySet())
+				for(int key: pokemonCache.keySet())
 				{
 					int result = loadPokemon(key, NetworkPriority.NORMAL);
 					if(result != 0)
@@ -230,33 +243,69 @@ public class PokeAPIRepository
 		});
 	}
 
-	public static LiveData<HashMap<Integer, LiveData<Pokemon>>> getPokemonCache()
+	private static void updatePokemonType(int id, PokemonType type)
 	{
-		return pokemonCache;
+		CacheEntry<PokemonType> cacheItem = typeCache.get(id);
+		if(cacheItem == null)
+		{
+			typeCache.put(id, new CacheEntry<>(type));
+			return;
+		}
+
+		cacheItem.data = type;
+		cacheItem.liveObserver.postValue(type);
 	}
 
-	public static LiveData<PokemonType> getTypeReferenceFromCache(int id)
+	private static void updatePokemonMove(int id, PokemonMove move)
 	{
-		if(typeCache.getValue() == null)
-			return null;
+		CacheEntry<PokemonMove> cacheItem = moveCache.get(id);
+		if(cacheItem == null)
+		{
+			moveCache.put(id, new CacheEntry<>(move));
+			return;
+		}
 
-		return typeCache.getValue().get(id);
+		cacheItem.data = move;
+		cacheItem.liveObserver.postValue(move);
 	}
 
-	public static LiveData<PokemonMove> getMoveReferenceFromCache(int id)
+	private static void updatePokemon(int id, Pokemon pokemon)
 	{
-		if(moveCache.getValue() == null)
-			return null;
+		CacheEntry<Pokemon> cacheItem = pokemonCache.get(id);
+		if(cacheItem == null)
+		{
+			pokemonCache.put(id, new CacheEntry<>(pokemon));
+			return;
+		}
 
-		return moveCache.getValue().get(id);
+		cacheItem.data = pokemon;
+		cacheItem.liveObserver.postValue(pokemon);
 	}
 
-	public static LiveData<Pokemon> getPokemonReferenceFromCache(int id)
+	public static LiveData<Boolean> getPokemonListObserver()
 	{
-		if(pokemonCache.getValue() == null)
-			return null;
+		return pokemonCacheObserver;
+	}
 
-		return pokemonCache.getValue().get(id);
+	public static LiveData<PokemonType> getLiveType(int id)
+	{
+		CacheEntry<PokemonType> cacheEntry = typeCache.get(id);
+
+		return (cacheEntry == null)? null: cacheEntry.liveObserver;
+	}
+
+	public static LiveData<PokemonMove> getLiveMove(int id)
+	{
+		CacheEntry<PokemonMove> cacheEntry = moveCache.get(id);
+
+		return (cacheEntry == null)? null: cacheEntry.liveObserver;
+	}
+
+	public static LiveData<Pokemon> getLivePokemon(int id)
+	{
+		CacheEntry<Pokemon> cacheEntry = pokemonCache.get(id);
+
+		return (cacheEntry == null)? null: cacheEntry.liveObserver;
 	}
 
 	/*
@@ -268,31 +317,27 @@ public class PokeAPIRepository
 	 */
 	public static int loadType(int id, NetworkPriority priority)
 	{
-		if(typeCache.getValue() == null)
-			return 1;
-
-		final MutableLiveData<PokemonType> pokemonTypeReference = (MutableLiveData<PokemonType>) typeCache.getValue().get(id);
-		if(pokemonTypeReference == null)
+		final CacheEntry<PokemonType> cacheEntry = typeCache.get(id);
+		if(cacheEntry == null)
 			return 2;
 
-		final PokemonType pokemonType = pokemonTypeReference.getValue();
-		if(pokemonType == null || !pokemonType.isDeferred())
+		if(cacheEntry.data == null || !cacheEntry.data.isDeferred())
 			return 3;
 
-		final DeferredPokemonTypeResource deferredPokemonType = (DeferredPokemonTypeResource) pokemonType;
-		NetworkUtils.doPriorityHTTPGet(deferredPokemonType.getUrl(), priority, new PriorityCallback()
+		final String url = ((DeferredPokemonTypeResource)cacheEntry.data).getUrl();
+		NetworkUtils.doPriorityHTTPGet(url, priority, new PriorityCallback()
 		{
 			@Override
 			public boolean onStart()
 			{
-				return pokemonType.isDeferred();
+				return cacheEntry.data.isDeferred();
 			}
 
 			@EverythingIsNonNull
 			@Override
 			public void onFailure(Call call, IOException e)
 			{
-				Log.d(PokeAPIViewModel.class.getSimpleName(), "unable to request type at url: " + deferredPokemonType.getUrl());
+				Log.d(PokeAPIViewModel.class.getSimpleName(), "unable to request type at url: " + url);
 			}
 
 			@EverythingIsNonNull
@@ -312,9 +357,9 @@ public class PokeAPIRepository
 				PokemonTypeResource newPokemonType = new PokemonTypeResource(
 					typeData.id,
 					typeData.name,
-					PokemonTypeResource.generateDamageMultipliers(typeData.damage_relations, typeCache.getValue().keySet())
+					PokemonTypeResource.generateDamageMultipliers(typeData.damage_relations, typeCache.keySet())
 				);
-				pokemonTypeReference.postValue(newPokemonType);
+				updatePokemonType(newPokemonType.getId(), newPokemonType);
 			}
 		});
 
@@ -330,31 +375,27 @@ public class PokeAPIRepository
 	 */
 	public static int loadMove(int id, NetworkPriority priority)
 	{
-		if(typeCache.getValue() == null || moveCache.getValue() == null)
-			return 1;
-
-		final MutableLiveData<PokemonMove> pokemonMoveReference = (MutableLiveData<PokemonMove>) moveCache.getValue().get(id);
-		if(pokemonMoveReference == null)
+		final CacheEntry<PokemonMove> cacheEntry = moveCache.get(id);
+		if(cacheEntry == null)
 			return 2;
 
-		final PokemonMove pokemonMove = pokemonMoveReference.getValue();
-		if(pokemonMove == null || !pokemonMove.isDeferred())
+		if(cacheEntry.data == null || !cacheEntry.data.isDeferred())
 			return 3;
 
-		final DeferredPokemonMoveResource deferredPokemonMove = (DeferredPokemonMoveResource) pokemonMove;
-		NetworkUtils.doPriorityHTTPGet(deferredPokemonMove.getUrl(), priority, new PriorityCallback()
+		final String url = ((DeferredPokemonMoveResource)cacheEntry.data).getUrl();
+		NetworkUtils.doPriorityHTTPGet(url, priority, new PriorityCallback()
 		{
 			@Override
 			public boolean onStart()
 			{
-				return pokemonMove.isDeferred();
+				return cacheEntry.data.isDeferred();
 			}
 
 			@EverythingIsNonNull
 			@Override
 			public void onFailure(Call call, IOException e)
 			{
-				Log.d(PokeAPIViewModel.class.getSimpleName(), "unable to request type at url: " + deferredPokemonMove.getUrl());
+				Log.d(PokeAPIViewModel.class.getSimpleName(), "unable to request type at url: " + url);
 			}
 
 			@EverythingIsNonNull
@@ -373,8 +414,8 @@ public class PokeAPIRepository
 
 				int typeId = PokeAPIUtils.getId(moveData.type.url);
 
-				PokemonMoveResource newPokemonMove = new PokemonMoveResource(moveData.id, moveData.name, moveData.power, getTypeReferenceFromCache(typeId));
-				pokemonMoveReference.postValue(newPokemonMove);
+				PokemonMoveResource newPokemonMove = new PokemonMoveResource(moveData.id, moveData.name, moveData.power, getLiveType(typeId));
+				updatePokemonMove(newPokemonMove.getId(), newPokemonMove);
 			}
 		});
 
@@ -390,35 +431,30 @@ public class PokeAPIRepository
 	 */
 	public static int loadPokemon(int id, NetworkPriority priority)
 	{
-		//have the dependencies loaded yet?
-		if(typeCache.getValue() == null || moveCache.getValue() == null || pokemonCache.getValue() == null)
-			return 1;
-
 		//did they give us a bad id?
-		final MutableLiveData<Pokemon> pokemonReference = (MutableLiveData<Pokemon>) pokemonCache.getValue().get(id);
-		if(pokemonReference == null)
+		final CacheEntry<Pokemon> cacheEntry = pokemonCache.get(id);
+		if(cacheEntry == null)
 			return 2;
 
 		//is this thing actually deferred?
-		final Pokemon pokemon = pokemonReference.getValue();
-		if(pokemon == null || !pokemon.isDeferred())
+		if(cacheEntry.data == null || !cacheEntry.data.isDeferred())
 			return 3;
 
 		//so now we know it is deferred, we can make a request for the data
-		final DeferredPokemonResource deferredPokemon = (DeferredPokemonResource) pokemon;
-		NetworkUtils.doPriorityHTTPGet(deferredPokemon.getUrl(), priority, new PriorityCallback()
+		final String url = ((DeferredPokemonResource)cacheEntry.data).getUrl();
+		NetworkUtils.doPriorityHTTPGet(url, priority, new PriorityCallback()
 		{
 			@Override
 			public boolean onStart()
 			{
-				return pokemon.isDeferred();
+				return cacheEntry.data.isDeferred();
 			}
 
 			@EverythingIsNonNull
 			@Override
 			public void onFailure(Call call, IOException e)
 			{
-				Log.d(PokeAPIViewModel.class.getSimpleName(), "unable to request pokemon at url: " + deferredPokemon.getUrl());
+				Log.d(PokeAPIViewModel.class.getSimpleName(), "unable to request pokemon at url: " + url);
 			}
 
 			@EverythingIsNonNull
@@ -440,7 +476,7 @@ public class PokeAPIRepository
 				for(PokeAPIUtils.PokemonType pokeAPIType : pokemonData.types)
 				{
 					int typeId = PokeAPIUtils.getId(pokeAPIType.type.url);
-					types.add(getTypeReferenceFromCache(typeId));
+					types.add(getLiveType(typeId));
 				}
 
 				//grab the move references from the cache
@@ -448,15 +484,24 @@ public class PokeAPIRepository
 				for(PokeAPIUtils.PokemonMove pokeAPIMove : pokemonData.moves)
 				{
 					int moveId = PokeAPIUtils.getId(pokeAPIMove.move.url);
-					moves.add(getMoveReferenceFromCache(moveId));
+					moves.add(getLiveMove(moveId));
 				}
 
 				//create a non-deferred and post it to our LiveData
 				PokemonResource newPokemon = new PokemonResource(pokemonData.id, pokemonData.name, types, moves);
-				pokemonReference.postValue(newPokemon);
+				updatePokemon(newPokemon.getId(), newPokemon);
 			}
 		});
 
 		return 0;
+	}
+
+	public static LiveDataList<Pokemon> extractPokemonListFromCache()
+	{
+		LiveDataList<Pokemon> liveList = new LiveDataList<>();
+		for(CacheEntry<Pokemon> cacheEntry: pokemonCache.values())
+			liveList.add(cacheEntry.liveObserver);
+
+		return liveList;
 	}
 }

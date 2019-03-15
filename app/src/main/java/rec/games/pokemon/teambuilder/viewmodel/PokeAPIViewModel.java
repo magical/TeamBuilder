@@ -3,9 +3,6 @@ package rec.games.pokemon.teambuilder.viewmodel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
 
-import java.util.Collection;
-import java.util.HashMap;
-
 import rec.games.pokemon.teambuilder.model.LiveDataList;
 import rec.games.pokemon.teambuilder.model.NetworkPriority;
 import rec.games.pokemon.teambuilder.model.Pokemon;
@@ -22,32 +19,27 @@ public class PokeAPIViewModel extends ViewModel
 
 	public LiveDataList<Pokemon> extractPokemonListFromCache()
 	{
-		HashMap<Integer, LiveData<Pokemon>> pokemonCache = getPokemonCache().getValue();
-		if(pokemonCache == null)
-			return null;
-
-		Collection<LiveData<Pokemon>> pokemonReferences = pokemonCache.values();
-		return new LiveDataList<>(pokemonReferences);
+		return PokeAPIRepository.extractPokemonListFromCache();
 	}
 
-	public LiveData<HashMap<Integer, LiveData<Pokemon>>> getPokemonCache()
+	public LiveData<Boolean> getPokemonListCache()
 	{
-		return PokeAPIRepository.getPokemonCache();
+		return PokeAPIRepository.getPokemonListObserver();
 	}
 
-	public LiveData<PokemonType> getTypeReference(int id)
+	public LiveData<PokemonType> getLiveType(int id)
 	{
-		return PokeAPIRepository.getTypeReferenceFromCache(id);
+		return PokeAPIRepository.getLiveType(id);
 	}
 
-	public LiveData<PokemonMove> getMoveReference(int id)
+	public LiveData<PokemonMove> getLiveMove(int id)
 	{
-		return PokeAPIRepository.getMoveReferenceFromCache(id);
+		return PokeAPIRepository.getLiveMove(id);
 	}
 
-	public LiveData<Pokemon> getPokemonReference(int id)
+	public LiveData<Pokemon> getLivePokemon(int id)
 	{
-		return PokeAPIRepository.getPokemonReferenceFromCache(id);
+		return PokeAPIRepository.getLivePokemon(id);
 	}
 
 	/*

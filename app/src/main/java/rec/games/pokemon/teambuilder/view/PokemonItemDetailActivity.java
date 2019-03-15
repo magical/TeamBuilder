@@ -1,6 +1,5 @@
 package rec.games.pokemon.teambuilder.view;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -18,8 +17,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import java.util.HashMap;
 
 import rec.games.pokemon.teambuilder.R;
 import rec.games.pokemon.teambuilder.model.PokeAPIUtils;
@@ -83,17 +80,17 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 		{
 			pokeId = intent.getIntExtra(PokeAPIUtils.POKE_ITEM, pokeId);
 
-			PokeAPIViewModel model = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
+			final PokeAPIViewModel model = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
 
 			// Fill in with some fake data
-			model.getPokemonCache().observe(this, new Observer<HashMap<Integer, LiveData<Pokemon>>>()
+			model.getPokemonListCache().observe(this, new Observer<Boolean>()
 			{
 				@Override
-				public void onChanged(@Nullable HashMap<Integer, LiveData<Pokemon>> list)
+				public void onChanged(@Nullable Boolean listStatus)
 				{
 					Log.d(TAG, "Got value");
-					if(list != null)
-						mPokemon = list.get(pokeId).getValue();
+					if(listStatus != null)
+						mPokemon = model.getLivePokemon(pokeId).getValue();
 
 					fillLayout();
 				}
