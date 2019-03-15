@@ -32,6 +32,8 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 {
 	private static final String TAG = TeamListFragment.class.getSimpleName();
 
+	public static final String TEAM_ATK_DEF = "rec.games.pokemon.teambuilder.view.TeamListFragment";
+
 	private Team team;
 
 	private TeamAdapter adapter;
@@ -129,7 +131,8 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 			public void onClick(View v)
 			{
 				Log.d(TAG, "Clicked");
-				Intent intent = new Intent(getContext(), TeamTypeAtkDef.class);
+				Intent intent = new Intent(getContext(), TeamTypeActivity.class);
+				intent.putExtra(TeamListFragment.TEAM_ATK_DEF, "Strengths");
 				startActivity(intent);
 			}
 		});
@@ -139,7 +142,8 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 			public void onClick(View v)
 			{
 				Log.d(TAG, "Clicked");
-				Intent intent = new Intent(getContext(), TeamTypeAtkDef.class);
+				Intent intent = new Intent(getContext(), TeamTypeActivity.class);
+				intent.putExtra(TeamListFragment.TEAM_ATK_DEF, "Weaknesses");
 				startActivity(intent);
 			}
 		});

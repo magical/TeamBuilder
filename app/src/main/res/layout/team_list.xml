@@ -43,7 +43,7 @@
         android:layout_height="50dp"
         android:layout_gravity="bottom"
         app:fabAlignmentMode="end"
-        android:backgroundTint="@color/colorPrimaryDark">
+        android:backgroundTint="@color/colorPrimary">
 
         <RelativeLayout
             android:layout_width="match_parent"
