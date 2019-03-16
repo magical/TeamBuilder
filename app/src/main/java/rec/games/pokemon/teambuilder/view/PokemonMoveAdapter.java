@@ -23,11 +23,13 @@ public class PokemonMoveAdapter extends RecyclerView.Adapter<PokemonMoveAdapter.
 	private ArrayList<String> mPokemon;				//temporary placeholder
 	private OnPokemonMoveClickListener mListener;
 	private ArrayList<Integer> selected;
+	private boolean mAllowMovesSelected;
 
-	PokemonMoveAdapter(ArrayList<String> pokemon, OnPokemonMoveClickListener l)
+	PokemonMoveAdapter(ArrayList<String> pokemon, OnPokemonMoveClickListener l, boolean allowMovesSelected)
 	{
 		this.mPokemon = pokemon;
 		this.mListener = l;
+		mAllowMovesSelected = allowMovesSelected;
 
 		selected = new ArrayList<>();
 	}
@@ -73,11 +75,13 @@ public class PokemonMoveAdapter extends RecyclerView.Adapter<PokemonMoveAdapter.
 	@Override
 	public void onBindViewHolder(@NonNull PokemonViewHolder viewHolder, int i)
 	{
-
-		if (!selected.contains(i))
-			viewHolder.setColor(viewHolder.itemView, R.color.colorNormalBackground, R.color.colorNormalText); //not selected
-		else
-			viewHolder.setColor(viewHolder.itemView, R.color.colorHighlightBackground, R.color.colorHighlightText); //selected
+		if(mAllowMovesSelected)
+		{
+			if(!selected.contains(i))
+				viewHolder.setColor(viewHolder.itemView, R.color.colorNormalBackground, R.color.colorNormalText); //not selected
+			else
+				viewHolder.setColor(viewHolder.itemView, R.color.colorHighlightBackground, R.color.colorHighlightText); //selected
+		}
 
 		viewHolder.bind(mPokemon.get(i));
 	}
@@ -107,23 +111,24 @@ public class PokemonMoveAdapter extends RecyclerView.Adapter<PokemonMoveAdapter.
 				@Override
 				public void onClick(View v)
 				{
-
 					int position = getAdapterPosition();
-					Log.d(TAG, String.valueOf(position));
-					if (selected.contains(getAdapterPosition()))
-					{
-						setColor(v, R.color.colorHighlightBackground, R.color.colorHighlightText);
-						selected.remove(Integer.valueOf(position));
-					}
-					else
-					{
-						setColor(v, R.color.colorNormalBackground, R.color.colorNormalText);
-						selected.add(position);
-					}
 
+					if(mAllowMovesSelected)
+					{
+						if(selected.contains(getAdapterPosition()))
+						{
+							setColor(v, R.color.colorHighlightBackground, R.color.colorHighlightText);
+							selected.remove(Integer.valueOf(position));
+						}
+						else
+						{
+							setColor(v, R.color.colorNormalBackground, R.color.colorNormalText);
+							selected.add(position);
+						}
+
+						notifyItemChanged(position);
+					}
 					mListener.onPokemonMoveClicked(getPokemonMoveClickId(position));
-
-					notifyItemChanged(position);
 				}
 			});
 		}

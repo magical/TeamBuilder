@@ -166,7 +166,10 @@ public class PokemonListFragment extends Fragment implements PokemonListAdapter.
 		Intent intent = new Intent(getContext(), PokemonItemDetailActivity.class);
 		intent.putExtra(PokeAPIUtils.POKE_ITEM, pokemonID); //assign id
 		if(mTeamToAdd != null)
+		{
 			intent.putExtra(Team.TEAM_ID, mTeamToAdd);
+			intent.putExtra(TeamListFragment.TEAM_MOVE_ENABLE, true); //allow access to change moves
+		}
 		startActivity(intent);
 	}
 

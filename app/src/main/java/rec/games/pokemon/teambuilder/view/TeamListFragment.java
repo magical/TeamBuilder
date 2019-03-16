@@ -35,6 +35,7 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 	private static final String TAG = TeamListFragment.class.getSimpleName();
 
 	public static final String TEAM_TYPE_ANALYSIS = "rec.games.pokemon.teambuilder.view.TeamListFragment";
+	public static final String TEAM_MOVE_ENABLE = "rec.games.pokemon.teambuilder.view.TeamListFragment.Move.Enable";
 
 	private Team team;
 
@@ -151,6 +152,7 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 				Log.d(TAG, "FAB Clicked");
 				Intent intent = new Intent(getActivity(), TeamPokemonActivity.class);
 				intent.putExtra(Team.TEAM_ID, "Team1");
+				intent.putExtra(TeamListFragment.TEAM_MOVE_ENABLE, true); //allow access to change moves
 				startActivity(intent);
 			}
 		});
@@ -191,6 +193,8 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 	{
 		Intent intent = new Intent(getContext(), PokemonItemDetailActivity.class);
 		intent.putExtra(PokeAPIUtils.POKE_ITEM, pokeId); //temporary assignment
+		intent.putExtra(Team.TEAM_ID, "Team1"); 		//know which team is calling
+		intent.putExtra(TeamListFragment.TEAM_MOVE_ENABLE, true); //allow access to change moves
 		startActivity(intent);
 	}
 }

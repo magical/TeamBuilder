@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ShareCompat;
@@ -52,6 +53,7 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 	private TextView mPokemonType;
 	private FloatingActionButton mItemFAB;
 	private boolean mItemAdded;
+	private boolean mAllowMovesSelected;
 	private String mTeamName;
 
 	private RecyclerView mMoveRV;
@@ -92,6 +94,8 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 		//mFrontSprite = findViewById(R.id.iv_pokemon_detail_front_small);
 		//mBackSprite = findViewById(R.id.iv_pokemon_detail_back_small);
 		mPokemonType = findViewById(R.id.tv_pokemon_type);
+
+		mAllowMovesSelected = false; //default to false
 
 		mItemFAB = findViewById(R.id.item_add_FAB);
 		mItemFAB.hide();
@@ -200,11 +204,39 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 				mItemFAB.show();
 				mTeamName = intent.getStringExtra(Team.TEAM_ID);
 				Log.d(TAG, "Have Team " + mTeamName);
+
+				mMoveRV.addOnScrollListener(new RecyclerView.OnScrollListener()
+				{
+					@Override
+					public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy)
+					{
+						if(dy > 0 || dy < 0 && mItemFAB.isShown())
+							mItemFAB.hide();                            //hide if scrolling
+					}
+
+					@Override
+					public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState)
+					{
+						if(newState == RecyclerView.SCROLL_STATE_IDLE)
+							mItemFAB.show();
+						super.onScrollStateChanged(recyclerView, newState);
+					}
+				});
+
+				mMoveRV.setPadding(
+					mMoveRV.getPaddingLeft(),
+					mMoveRV.getPaddingTop(),
+					mMoveRV.getPaddingRight(),
+					getResources().getDimensionPixelOffset(R.dimen.rv_fab_padding));
+				mMoveRV.setClipToPadding(false);
 			}
 			else
 				Log.d(TAG, "Hiding FAB");
 
-			final PokemonMoveAdapter adapter = new PokemonMoveAdapter(new ArrayList<String>(), this);
+			if(intent.hasExtra(TeamListFragment.TEAM_MOVE_ENABLE))
+				mAllowMovesSelected = true;
+
+			final PokemonMoveAdapter adapter = new PokemonMoveAdapter(new ArrayList<String>(), this, mAllowMovesSelected);
 
 			ArrayList<String> moves = new ArrayList<>();
 			//temp setup
@@ -342,6 +374,6 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 	}
 
 	public void onPokemonMoveClicked(int moveID){
-		Log.d(TAG, "Clicked" + moveID);
+		//Log.d(TAG, "Clicked" + moveID);
 	}
 }
