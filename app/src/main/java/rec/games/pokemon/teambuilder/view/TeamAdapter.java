@@ -24,7 +24,7 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder
 {
 
 	private static final String TAG = TeamAdapter.class.getSimpleName();
-	Context context;
+	private Context context;
 	private LifecycleOwner mLifecycleOwner;
 	private Team team;
 	private OnTeamClickListener mListener;

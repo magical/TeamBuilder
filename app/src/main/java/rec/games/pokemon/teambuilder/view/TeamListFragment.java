@@ -119,6 +119,7 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 	{
 		Intent intent = new Intent(getContext(), PokemonItemDetailActivity.class);
 		intent.putExtra(PokeAPIUtils.POKE_ITEM, pokeId); //temporary assignment
+		intent.putExtra(Team.TEAM_ID, 1); // TODO
 		startActivity(intent);
 	}
 }
