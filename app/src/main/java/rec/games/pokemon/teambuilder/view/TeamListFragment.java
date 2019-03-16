@@ -82,7 +82,9 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 		mLoadingErrorBtn = view.findViewById(R.id.btn_loading_error);
 
 		mTeamFAB = view.findViewById(R.id.team_FAB);
+		mTeamFAB.hide();
 		mAppBar = view.findViewById(R.id.team_BottomAppBar);
+		mAppBar.setVisibility(View.INVISIBLE);
 		mActionTypeAnalysis = view.findViewById(R.id.action_type_analysis);
 		mActionTypeAnalysis.setClickable(true);
 
@@ -102,7 +104,9 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 					mLoadingErrorMsgTV.setVisibility(View.VISIBLE);
 					mLoadingErrorLL.setVisibility(LinearLayout.VISIBLE);
 					mLoadingErrorBtn.setVisibility(View.VISIBLE);
+
 					mTeamFAB.hide();
+					mAppBar.setVisibility(View.INVISIBLE);
 				}
 				else
 				{
@@ -113,6 +117,7 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 					mLoadingErrorBtn.setVisibility(View.INVISIBLE);
 
 					mTeamFAB.show();
+					mAppBar.setVisibility(View.VISIBLE);
 
 					team = new Team();
 

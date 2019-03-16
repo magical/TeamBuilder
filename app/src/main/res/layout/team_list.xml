@@ -35,11 +35,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize" />
 
-        <include layout="@layout/loading_error" />
-
-    </LinearLayout>
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
+
+    <include layout="@layout/loading_error" />
 
     <android.support.design.bottomappbar.BottomAppBar
         android:id="@+id/team_BottomAppBar"
