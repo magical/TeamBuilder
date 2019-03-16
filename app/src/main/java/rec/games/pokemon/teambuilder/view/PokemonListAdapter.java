@@ -1,6 +1,5 @@
-package rec.games.pokemon.teambuilder;
+package rec.games.pokemon.teambuilder.view;
 
-import android.arch.lifecycle.LifecycleOwner;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -14,21 +13,17 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
-
-import java.util.List;
+import rec.games.pokemon.teambuilder.R;
+import rec.games.pokemon.teambuilder.model.CollectionObserver;
+import rec.games.pokemon.teambuilder.model.LiveDataList;
+import rec.games.pokemon.teambuilder.model.PokeAPIUtils;
+import rec.games.pokemon.teambuilder.model.Pokemon;
+import rec.games.pokemon.teambuilder.model.PokemonResource;
 
 public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.PokemonViewHolder>
 {
 	private static final String TAG = PokemonListAdapter.class.getSimpleName();
-
-	private LiveDataList<Pokemon> mPokemon;
-	private OnPokemonClickListener mListener;
-	private LifecycleOwner mOwner;
-	Context context;
-
-	private final ItemObserver<Pokemon> cacheNotifier = new ItemObserver<Pokemon>()
+	private final CollectionObserver<Pokemon> cacheNotifier = new CollectionObserver<Pokemon>()
 	{
 		@Override
 		public void onItemChanged(@Nullable Pokemon pokemon, int index)
@@ -37,19 +32,16 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 				notifyItemChanged(index);
 		}
 	};
+	Context context;
+	private LiveDataList<Pokemon> mPokemon;
+	private OnPokemonClickListener mListener;
 
-	PokemonListAdapter(LiveDataList<Pokemon> pokemon, OnPokemonClickListener l, LifecycleOwner owner)
+	PokemonListAdapter(LiveDataList<Pokemon> pokemon, OnPokemonClickListener l)
 	{
 		this.mPokemon = pokemon;
 		this.mListener = l;
-		this.mOwner = owner;
 
-		mPokemon.observeCollection(mOwner, cacheNotifier);
-	}
-
-	public interface OnPokemonClickListener
-	{
-		void onPokemonClicked(int pokeId);
+		mPokemon.observeCollection(cacheNotifier);
 	}
 
 	public void updatePokemon(LiveDataList<Pokemon> pokemon)
@@ -57,7 +49,7 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 		this.mPokemon = pokemon;
 		notifyDataSetChanged();
 
-		mPokemon.observeCollection(mOwner, cacheNotifier);
+		mPokemon.observeCollection(cacheNotifier);
 	}
 
 	@Override
@@ -94,7 +86,8 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 			return 1;
 	}
 
-	private boolean checkDisplayImages(){
+	private boolean checkDisplayImages()
+	{
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		return prefs.getBoolean(context.getResources().getString(R.string.pref_image_key), true);
 	}
@@ -103,6 +96,11 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 	public void onBindViewHolder(@NonNull PokemonViewHolder viewHolder, int i)
 	{
 		viewHolder.bind(mPokemon.getValue(i));
+	}
+
+	public interface OnPokemonClickListener
+	{
+		void onPokemonClicked(int pokeId);
 	}
 
 	class PokemonViewHolder extends RecyclerView.ViewHolder
