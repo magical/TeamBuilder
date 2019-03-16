@@ -19,17 +19,35 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
+            android:layout_toLeftOf="@+id/type_weakness"
+            android:layout_toStartOf="@+id/type_weakness"
             android:textSize="22sp"
             tools:text="Type"/>
 
         <TextView
-            android:id="@+id/type_power"
+            android:id="@+id/type_weakness"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_toLeftOf="@+id/type_resistance"
+            android:layout_toStartOf="@+id/type_resistance"
+            android:gravity="center"
+            android:layout_marginRight="20dp"
+            android:minWidth="70dp"
+            android:textSize="22sp"
+            tools:text="4"/>
+
+        <TextView
+            android:id="@+id/type_resistance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:layout_centerInParent="true"
-            android:minWidth="65dp"
+            android:gravity="center"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:minWidth="70dp"
             android:textSize="22sp"
             tools:text="4"/>
 

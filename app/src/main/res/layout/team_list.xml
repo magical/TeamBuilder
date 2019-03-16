@@ -45,35 +45,31 @@
         app:fabAlignmentMode="end"
         android:backgroundTint="@color/colorPrimary">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:id="@+id/action_type_analysis"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:focusable="true"
+            android:clickable="true"
             android:paddingLeft="16dp"
-            android:layout_height="match_parent">
+            android:paddingRight="16dp">
 
-            <Button
-                android:id="@+id/action_attack"
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_sword_shield"
+                android:contentDescription="@string/type_title"/>
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="8dp"
-                android:textColor="#fff"
-                android:drawableLeft="@drawable/ic_sword"
-                android:drawableStart="@drawable/ic_sword"
-                android:text="Atk"
-                android:background="@android:color/transparent"/>
-
-            <Button
-                android:id="@+id/action_defend"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toRightOf="@+id/action_attack"
-                android:layout_toEndOf="@+id/action_attack"
-                android:padding="8dp"
-                android:textColor="#fff"
-                android:drawableLeft="@drawable/ic_shield"
-                android:drawableStart="@drawable/ic_shield"
-                android:text="Def"
-                android:background="@android:color/transparent"/>
-        </RelativeLayout>
+                android:paddingLeft="4dp"
+                android:paddingRight="4dp"
+                android:textSize="18dp"
+                android:textColor="@android:color/white"
+                android:text="@string/type_title" />
+        </LinearLayout>
 
     </android.support.design.bottomappbar.BottomAppBar>
 

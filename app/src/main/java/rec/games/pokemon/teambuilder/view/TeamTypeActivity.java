@@ -18,7 +18,7 @@ public class TeamTypeActivity extends AppCompatActivity implements PokemonTypeAd
 {
 	private static final String TAG = TeamTypeActivity.class.getSimpleName();
 
-	private String displayAtkDef;
+	private String actionBarTitle;
 	private TextView mTypePower;
 	private RecyclerView mTypeRV;
 
@@ -28,15 +28,14 @@ public class TeamTypeActivity extends AppCompatActivity implements PokemonTypeAd
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_team_type);
 		mTypeRV = findViewById(R.id.rv_types);
-		mTypePower = findViewById(R.id.tv_type_str);
+		mTypePower = findViewById(R.id.tv_type_resistance);
 
 		Intent intent = getIntent();
 
-		if (intent != null && intent.hasExtra(TeamListFragment.TEAM_ATK_DEF))
+		if (intent != null && intent.hasExtra(TeamListFragment.TEAM_TYPE_ANALYSIS))
 		{
-			displayAtkDef = intent.getStringExtra(TeamListFragment.TEAM_ATK_DEF);
-			setTitle(displayAtkDef);
-			mTypePower.setText(displayAtkDef);
+			actionBarTitle = intent.getStringExtra(TeamListFragment.TEAM_TYPE_ANALYSIS);
+			setTitle(actionBarTitle);
 
 			mTypeRV.setLayoutManager(new LinearLayoutManager(this));
 			mTypeRV.setItemAnimator(new DefaultItemAnimator());

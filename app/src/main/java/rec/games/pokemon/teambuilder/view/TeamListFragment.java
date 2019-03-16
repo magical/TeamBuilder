@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 
 import java.util.HashMap;
 
@@ -32,7 +33,7 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 {
 	private static final String TAG = TeamListFragment.class.getSimpleName();
 
-	public static final String TEAM_ATK_DEF = "rec.games.pokemon.teambuilder.view.TeamListFragment";
+	public static final String TEAM_TYPE_ANALYSIS = "rec.games.pokemon.teambuilder.view.TeamListFragment";
 
 	private Team team;
 
@@ -42,8 +43,7 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 
 	private FloatingActionButton mTeamFAB;
 	private BottomAppBar mAppBar;
-	private Button mActionAttack;
-	private Button mActionDefend;
+	private LinearLayout mActionTypeAnalysis;
 
 	private static TeamMember newTeamMember(LiveData<Pokemon> p)
 	{
@@ -72,8 +72,8 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 
 		mTeamFAB = view.findViewById(R.id.team_FAB);
 		mAppBar = view.findViewById(R.id.team_BottomAppBar);
-		mActionAttack = view.findViewById(R.id.action_attack);
-		mActionDefend = view.findViewById(R.id.action_defend);
+		mActionTypeAnalysis = view.findViewById(R.id.action_type_analysis);
+		mActionTypeAnalysis.setClickable(true);
 
 		mViewModel = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
 
@@ -125,25 +125,14 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 			}
 		});
 
-		mActionAttack.setOnClickListener(new View.OnClickListener()
+		mActionTypeAnalysis.setOnClickListener(new View.OnClickListener()
 		{
 			@Override
 			public void onClick(View v)
 			{
 				Log.d(TAG, "Clicked");
 				Intent intent = new Intent(getContext(), TeamTypeActivity.class);
-				intent.putExtra(TeamListFragment.TEAM_ATK_DEF, "Strengths");
-				startActivity(intent);
-			}
-		});
-		mActionDefend.setOnClickListener(new View.OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				Log.d(TAG, "Clicked");
-				Intent intent = new Intent(getContext(), TeamTypeActivity.class);
-				intent.putExtra(TeamListFragment.TEAM_ATK_DEF, "Weaknesses");
+				intent.putExtra(TeamListFragment.TEAM_TYPE_ANALYSIS, "Team1 Analysis");
 				startActivity(intent);
 			}
 		});

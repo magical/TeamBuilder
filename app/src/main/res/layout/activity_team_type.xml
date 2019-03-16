@@ -18,19 +18,33 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
+            android:layout_toLeftOf="@+id/tv_type_weakness"
+            android:layout_toStartOf="@+id/tv_type_weakness"
             android:textSize="24sp"
             android:text="@string/type_name"/>
 
         <TextView
-            android:id="@+id/tv_type_str"
+            android:id="@+id/tv_type_weakness"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/tv_type_resistance"
+            android:layout_toStartOf="@+id/tv_type_resistance"
+            android:layout_centerInParent="true"
+            android:minWidth="110dp"
+            android:textSize="22sp"
+            android:text="@string/type_weak"/>
+
+        <TextView
+            android:id="@+id/tv_type_resistance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:layout_centerInParent="true"
-            android:minWidth="100dp"
-            android:textSize="24sp"
-            android:text=""/>
+            android:minWidth="110dp"
+            android:textSize="22sp"
+            android:text="@string/type_res"/>
+
     </RelativeLayout>
 
     <android.support.v7.widget.RecyclerView

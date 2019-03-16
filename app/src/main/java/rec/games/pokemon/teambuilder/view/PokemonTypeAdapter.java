@@ -2,6 +2,7 @@ package rec.games.pokemon.teambuilder.view;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -79,13 +80,15 @@ public class PokemonTypeAdapter extends RecyclerView.Adapter<PokemonTypeAdapter.
 	{
 		private OnPokemonTypeClickListener mListener;
 		private TextView mTypeName;
-		private TextView mTypePower;
+		private TextView mTypeWeakness;
+		private TextView mTypeResistance;
 
 		public PokemonViewHolder(View view, OnPokemonTypeClickListener l)
 		{
 			super(view);
 			mTypeName = view.findViewById(R.id.type_name);
-			mTypePower = view.findViewById(R.id.type_power);
+			mTypeWeakness = view.findViewById(R.id.type_weakness);
+			mTypeResistance = view.findViewById(R.id.type_resistance);
 			mListener = l;
 
 			view.setOnClickListener(new View.OnClickListener()
@@ -100,8 +103,19 @@ public class PokemonTypeAdapter extends RecyclerView.Adapter<PokemonTypeAdapter.
 
 		public void bind(String typeName)
 		{
+			int typeWeak = 4;
 			mTypeName.setText(typeName);
-			mTypePower.setText("Strong");
+			mTypeWeakness.setText(String.valueOf(typeWeak));
+			mTypeResistance.setText("1/4");
+
+			if(typeWeak > 2){
+				mTypeWeakness.setBackgroundColor(ContextCompat.getColor(context, R.color.colorHighlightBackground));
+				mTypeWeakness.setTextColor(ContextCompat.getColor(context, R.color.colorHighlightText));
+			}
+			else {
+				mTypeWeakness.setBackgroundColor(ContextCompat.getColor(context, R.color.colorNormalBackground));
+				mTypeWeakness.setTextColor(ContextCompat.getColor(context, R.color.colorNormalText));
+			}
 		}
 	}
 
