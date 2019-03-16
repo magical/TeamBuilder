@@ -1,4 +1,4 @@
-package rec.games.pokemon.teambuilder;
+package rec.games.pokemon.teambuilder.view;
 
 import android.content.res.AssetManager;
 import android.graphics.drawable.Drawable;
@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Locale;
 
+import rec.games.pokemon.teambuilder.R;
+
 public class TypeReportFragment extends Fragment {
 
 
@@ -25,7 +27,7 @@ public class TypeReportFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         LinearLayout view = (LinearLayout)inflater.inflate(R.layout.type_report, container, false);
 
-        AssetManager assets = container.getContext().getAssets();
+        AssetManager assets = getContext().getAssets();
 
         String typeNames[] = {
                 "bug",
@@ -54,7 +56,7 @@ public class TypeReportFragment extends Fragment {
         int height = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 14, getResources().getDisplayMetrics());
         int margin = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 6, getResources().getDisplayMetrics());
         for (String name : typeNames) {
-            ImageView im = new ImageView(container.getContext());
+            ImageView im = new ImageView(getContext());
             LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(width, height);
             llp.setMargins(margin, margin, margin, 0);
             im.setLayoutParams(llp);
