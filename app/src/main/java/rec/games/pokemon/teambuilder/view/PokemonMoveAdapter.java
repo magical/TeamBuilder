@@ -1,8 +1,11 @@
 package rec.games.pokemon.teambuilder.view;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,14 +19,17 @@ public class PokemonMoveAdapter extends RecyclerView.Adapter<PokemonMoveAdapter.
 {
 	private static final String TAG = PokemonListAdapter.class.getSimpleName();
 
-	Context context;
+	private Context context;
 	private ArrayList<String> mPokemon;				//temporary placeholder
 	private OnPokemonMoveClickListener mListener;
+	private ArrayList<Integer> selected;
 
 	PokemonMoveAdapter(ArrayList<String> pokemon, OnPokemonMoveClickListener l)
 	{
 		this.mPokemon = pokemon;
 		this.mListener = l;
+
+		selected = new ArrayList<>();
 	}
 
 	public void updatePokemonMoves(ArrayList<String> pokemon)
@@ -67,6 +73,12 @@ public class PokemonMoveAdapter extends RecyclerView.Adapter<PokemonMoveAdapter.
 	@Override
 	public void onBindViewHolder(@NonNull PokemonViewHolder viewHolder, int i)
 	{
+
+		if (!selected.contains(i))
+			viewHolder.setColor(viewHolder.itemView, R.color.colorNormalBackground, R.color.colorNormalText); //not selected
+		else
+			viewHolder.setColor(viewHolder.itemView, R.color.colorHighlightBackground, R.color.colorHighlightText); //selected
+
 		viewHolder.bind(mPokemon.get(i));
 	}
 
@@ -95,9 +107,33 @@ public class PokemonMoveAdapter extends RecyclerView.Adapter<PokemonMoveAdapter.
 				@Override
 				public void onClick(View v)
 				{
-					mListener.onPokemonMoveClicked(getPokemonMoveClickId(getAdapterPosition()));
+
+					int position = getAdapterPosition();
+					Log.d(TAG, String.valueOf(position));
+					if (selected.contains(getAdapterPosition()))
+					{
+						setColor(v, R.color.colorHighlightBackground, R.color.colorHighlightText);
+						selected.remove(Integer.valueOf(position));
+					}
+					else
+					{
+						setColor(v, R.color.colorNormalBackground, R.color.colorNormalText);
+						selected.add(position);
+					}
+
+					mListener.onPokemonMoveClicked(getPokemonMoveClickId(position));
+
+					notifyItemChanged(position);
 				}
 			});
+		}
+
+		private void setColor(View v, int background, int text)
+		{
+			v.setBackgroundColor(ContextCompat.getColor(context, background));
+			mName.setTextColor(ContextCompat.getColor(context, text));
+			mType.setTextColor(ContextCompat.getColor(context, text));
+			mPower.setTextColor(ContextCompat.getColor(context, text));
 		}
 
 		public void bind(String moveName)
