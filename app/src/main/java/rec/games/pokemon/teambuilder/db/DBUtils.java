@@ -26,7 +26,6 @@ public class DBUtils
 	public static LiveData<Team> getTeam(PokeAPIViewModel viewModel, SavedTeamDao dao, int teamId)
 	{
 		final PokeAPIViewModel pokeapi = viewModel;
-		final SavedTeamDao finaldao = dao;
 		LiveData<SavedTeam> liveSavedTeam = dao.getTeamById(teamId);
 		return Transformations.map(liveSavedTeam, new Function<SavedTeam, Team>()
 			{
