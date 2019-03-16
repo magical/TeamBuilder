@@ -1,7 +1,9 @@
 package rec.games.pokemon.teambuilder.viewmodel;
 
+import android.arch.core.util.Function;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
 import android.util.Log;
 
@@ -15,7 +17,6 @@ import okhttp3.Callback;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okhttp3.internal.annotations.EverythingIsNonNull;
-
 import rec.games.pokemon.teambuilder.model.DeferredPokemonMoveResource;
 import rec.games.pokemon.teambuilder.model.DeferredPokemonResource;
 import rec.games.pokemon.teambuilder.model.DeferredPokemonTypeResource;
@@ -207,35 +208,21 @@ public class PokeAPIViewModel extends ViewModel
 
 	public LiveData<Pokemon> getPokemonById(final int id)
 	{
-		MutableLiveData<Pokemon> liveData = new MutableLiveData<>();
-
-		// Check cache
-		if(pokemonCache.getValue() != null)
+		return Transformations.switchMap(pokemonCache, new Function<HashMap<Integer, LiveData<Pokemon>>, LiveData<Pokemon>>()
 		{
-			LiveData<Pokemon> p = pokemonCache.getValue().get(id);
-			if(p == null)
+			@Override
+			public LiveData<Pokemon> apply(HashMap<Integer, LiveData<Pokemon>> pokemonCache)
 			{
-				return null; // id doesn't exist
+				return pokemonCache.get(id);
 			}
-			return p;/*
-			// Only return if the full pokemon is loaded.
-			// If all we have is a DeferredPokemonResource we need to load the full one
-			if(p.getValue() != null && p.getValue() instanceof PokemonResource)
-			{
-				liveData.postValue(p.getValue());
-				return liveData;
-			}*/
-		}
-		return null;
-		/*
-
-		int code = loadPokemon(id);
+		});
+		// TODO: should call loadPokemon to load more pokemon data in the background.
+		/*int code = loadPokemon(id);
 		if(code != 0)
 		{
 			// FIXME uh-oh
 		}
-
-		return liveData;*/
+		*/
 	}
 
 	/*
