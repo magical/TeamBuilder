@@ -14,6 +14,12 @@
     <string name="team_id_string">UniqueTeamString</string>
     <string name="poke_icon_desc">Pokémon Icon</string>
 
+    <!-- Team Type info -->
+    <string name="type_name">Type</string>
+    <string name="type_weak">Weakness</string>
+    <string name="type_res">Resistance</string>
+    <string name="type_title">Type Analysis</string>
+
     <!-- Search -->
     <string name="action_pokemon_list_search">Pokémon Name or Pokédex ID</string>
     <string name="action_search_title">Search</string>

@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.bottomappbar.BottomAppBar;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -33,7 +34,8 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 {
 	private static final String TAG = TeamListFragment.class.getSimpleName();
 
-	private FloatingActionButton mTeamFAB;
+	public static final String TEAM_TYPE_ANALYSIS = "rec.games.pokemon.teambuilder.view.TeamListFragment";
+
 	private Team team;
 
 	private TeamAdapter adapter;
@@ -43,6 +45,10 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 	private TextView mLoadingErrorMsgTV;
 	private LinearLayout mLoadingErrorLL;
 	private Button mLoadingErrorBtn;
+
+	private FloatingActionButton mTeamFAB;
+	private BottomAppBar mAppBar;
+	private LinearLayout mActionTypeAnalysis;
 
 	private static TeamMember newTeamMember(LiveData<Pokemon> p)
 	{
@@ -76,7 +82,9 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 		mLoadingErrorBtn = view.findViewById(R.id.btn_loading_error);
 
 		mTeamFAB = view.findViewById(R.id.team_FAB);
-		mTeamFAB.hide();
+		mAppBar = view.findViewById(R.id.team_BottomAppBar);
+		mActionTypeAnalysis = view.findViewById(R.id.action_type_analysis);
+		mActionTypeAnalysis.setClickable(true);
 
 		mViewModel = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
 
@@ -156,6 +164,18 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 				if(newState == RecyclerView.SCROLL_STATE_IDLE)
 					mTeamFAB.show();
 				super.onScrollStateChanged(recyclerView, newState);
+			}
+		});
+
+		mActionTypeAnalysis.setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				Log.d(TAG, "Clicked");
+				Intent intent = new Intent(getContext(), TeamTypeActivity.class);
+				intent.putExtra(TeamListFragment.TEAM_TYPE_ANALYSIS, "Team1 Analysis");
+				startActivity(intent);
 			}
 		});
 
