@@ -72,29 +72,6 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 
 	private PokeAPIViewModel mPokeViewModel;
 
-	/**
-	 * Constructs a url to the Bulbapedia page for a Pokémon
-	 *
-	 * @param name the pokemon's resource name
-	 */
-	private static Uri getBulbapediaPage(String name)
-	{
-		return Uri.parse(POKE_BULBAPEDIA_URL).buildUpon()
-			.appendEncodedPath(name + POKE_BULBAPEDIA_END).build();
-	}
-
-	/**
-	 * Constructs a url to the veekun page for a Pokémon
-	 *
-	 * @param name the pokemon's resource name
-	 */
-	private static Uri getVeekunUrl(String name)
-	{
-		return Uri.parse(VEEKUN_POKEMON_URL).buildUpon()
-			.appendPath(name)
-			.build();
-	}
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -151,7 +128,7 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 			if(intent.hasExtra(Team.TEAM_ID))
 			{
 				mItemFAB.show();
-				updateItemAddedStatus(true);
+				updateFABStatus(true);
 				//mTeamName = intent.getStringExtra(Team.TEAM_ID);
 				//Log.d(TAG, "Have Team " + mTeamName);
 
@@ -211,7 +188,7 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 			{
 			if (added != null)
 			{
-				updateItemAddedStatus(added);
+				updateFABStatus(added);
 			}
 			}
 		});
@@ -331,6 +308,18 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 		}
 	}
 
+	/**
+	 * Constructs a url to the Bulbapedia page for a Pokémon
+	 *
+	 * @param name the pokemon's resource name
+	 */
+	private static Uri getBulbapediaPage(String name)
+	{
+		return Uri.parse(POKE_BULBAPEDIA_URL).buildUpon()
+			.appendEncodedPath(name + POKE_BULBAPEDIA_END).build();
+	}
+
+
 	public void shareToBrowser()
 	{
 		if(mPokemon != null) //placeholder data, need to replace
@@ -342,6 +331,18 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 				startActivity(intent);
 			}
 		}
+	}
+
+	/**
+	 * Constructs a url to the veekun page for a Pokémon
+	 *
+	 * @param name the pokemon's resource name
+	 */
+	private static Uri getVeekunUrl(String name)
+	{
+		return Uri.parse(VEEKUN_POKEMON_URL).buildUpon()
+			.appendPath(name)
+			.build();
 	}
 
 	public void openInVeekun()
@@ -357,7 +358,7 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 		}
 	}
 
-	public void updateItemAddedStatus(boolean added) {
+	public void updateFABStatus(boolean added) {
 		if (added)
 		{
 			Log.d(TAG, "Added");
