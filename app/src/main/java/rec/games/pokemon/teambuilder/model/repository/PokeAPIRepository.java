@@ -334,12 +334,10 @@ public class PokeAPIRepository
 			@Override
 			public LiveData<Pokemon> apply(Boolean result)
 			{
-				Log.d("Hello World", "getLivePokemon: " + id);
 				CacheEntry<Pokemon> cacheEntry = pokemonCache.get(id);
 				if(cacheEntry == null)
 					return null;
 
-				Log.d("Hello World", "CacheEntry was not null");
 				return cacheEntry.liveObserver;
 			}
 		});
