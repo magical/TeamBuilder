@@ -56,7 +56,7 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:layout_centerInParent="true"
-            android:minWidth="65dp"
+            android:minWidth="55dp"
             android:textSize="16sp"
             tools:text="10"/>
 

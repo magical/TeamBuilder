@@ -14,6 +14,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ShareCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -70,29 +71,6 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 
 	private PokeAPIViewModel mPokeViewModel;
 
-	/**
-	 * Constructs a url to the Bulbapedia page for a Pokémon
-	 *
-	 * @param name the pokemon's resource name
-	 */
-	private static Uri getBulbapediaPage(String name)
-	{
-		return Uri.parse(POKE_BULBAPEDIA_URL).buildUpon()
-			.appendEncodedPath(name + POKE_BULBAPEDIA_END).build();
-	}
-
-	/**
-	 * Constructs a url to the veekun page for a Pokémon
-	 *
-	 * @param name the pokemon's resource name
-	 */
-	private static Uri getVeekunUrl(String name)
-	{
-		return Uri.parse(VEEKUN_POKEMON_URL).buildUpon()
-			.appendPath(name)
-			.build();
-	}
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -144,9 +122,11 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 			if(intent.hasExtra(Team.TEAM_ID))
 			{
 				mItemFAB.show();
+				updateFABStatus(true);
 				//mTeamName = intent.getStringExtra(Team.TEAM_ID);
 				//Log.d(TAG, "Have Team " + mTeamName);
 
+				//if team is showing, hide/show FAB and set padding
 				mMoveRV.addOnScrollListener(new RecyclerView.OnScrollListener()
 				{
 					@Override
@@ -200,10 +180,10 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 			@Override
 			public void onChanged(@Nullable Boolean added)
 			{
-				if (added != null)
-				{
-					updateItemAddedStatus(added);
-				}
+			if (added != null)
+			{
+				updateFABStatus(added);
+			}
 			}
 		});
 	}
@@ -322,6 +302,18 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 		}
 	}
 
+	/**
+	 * Constructs a url to the Bulbapedia page for a Pokémon
+	 *
+	 * @param name the pokemon's resource name
+	 */
+	private static Uri getBulbapediaPage(String name)
+	{
+		return Uri.parse(POKE_BULBAPEDIA_URL).buildUpon()
+			.appendEncodedPath(name + POKE_BULBAPEDIA_END).build();
+	}
+
+
 	public void shareToBrowser()
 	{
 		if(mPokemon != null) //placeholder data, need to replace
@@ -333,6 +325,18 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 				startActivity(intent);
 			}
 		}
+	}
+
+	/**
+	 * Constructs a url to the veekun page for a Pokémon
+	 *
+	 * @param name the pokemon's resource name
+	 */
+	private static Uri getVeekunUrl(String name)
+	{
+		return Uri.parse(VEEKUN_POKEMON_URL).buildUpon()
+			.appendPath(name)
+			.build();
 	}
 
 	public void openInVeekun()
@@ -348,16 +352,18 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 		}
 	}
 
-	public void updateItemAddedStatus(boolean added) {
+	public void updateFABStatus(boolean added) {
 		if (added)
 		{
 			Log.d(TAG, "Added");
-			mItemFAB.setImageResource(R.drawable.ic_status_added); //add to SQL
+			mItemFAB.setImageResource(R.drawable.ic_status_remove); //remove
+			mItemFAB.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.colorRemovePokemon));
 			mItemAdded = true;
 		} else
 		{
 			Log.d(TAG, "Removed");
-			mItemFAB.setImageResource(R.drawable.ic_action_add); //remove
+			mItemFAB.setImageResource(R.drawable.ic_action_add); //add to SQL
+			mItemFAB.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.colorPrimary));
 			mItemAdded = false;
 		}
 	}
