@@ -180,7 +180,7 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 			public void onClick(View v)
 			{
 				Log.d(TAG, "Clicked");
-				Intent intent = new Intent(getContext(), TeamTypeActivity.class);
+				Intent intent = new Intent(getContext(), TypeAnalysisActivity.class);
 				intent.putExtra(TeamListFragment.TEAM_TYPE_ANALYSIS, "Team1 Analysis");
 				startActivity(intent);
 			}

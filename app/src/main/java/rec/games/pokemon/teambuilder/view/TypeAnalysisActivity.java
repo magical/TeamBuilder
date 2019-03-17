@@ -15,9 +15,9 @@ import java.util.Arrays;
 
 import rec.games.pokemon.teambuilder.R;
 
-public class TeamTypeActivity extends AppCompatActivity implements PokemonTypeAdapter.OnPokemonTypeClickListener
+public class TypeAnalysisActivity extends AppCompatActivity implements PokemonTypeAdapter.OnPokemonTypeClickListener
 {
-	private static final String TAG = TeamTypeActivity.class.getSimpleName();
+	private static final String TAG = TypeAnalysisActivity.class.getSimpleName();
 
 	private String actionBarTitle;
 	private TextView mTypePower;
