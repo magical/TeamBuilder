@@ -29,25 +29,28 @@
                 android:src="@drawable/ic_poke_unknown"/>
 
             <TextView
-                android:id="@+id/tv_pokemon_detail_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="8dp"
-                android:layout_toRightOf="@+id/iv_pokemon_detail_artwork"
-                android:layout_toEndOf="@+id/iv_pokemon_detail_artwork"
-                android:textSize="22sp"
-                android:text="@string/placeholder_pokemon_name"/>
-
-            <TextView
                 android:id="@+id/tv_pokemon_detail_id"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="8dp"
+                android:paddingLeft="8dp"
+                android:paddingTop="4dp"
                 android:minWidth="12dp"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
+                android:layout_toRightOf="@+id/iv_pokemon_detail_artwork"
+                android:layout_toEndOf="@+id/iv_pokemon_detail_artwork"
                 android:textSize="22sp"
                 android:text="0"/>
+
+            <TextView
+                android:id="@+id/tv_pokemon_detail_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="8dp"
+                android:paddingBottom="8dp"
+                android:layout_toRightOf="@+id/iv_pokemon_detail_artwork"
+                android:layout_toEndOf="@+id/iv_pokemon_detail_artwork"
+                android:layout_below="@id/tv_pokemon_detail_id"
+                android:textSize="22sp"
+                android:text="@string/placeholder_pokemon_name"/>
 
             <TextView
                 android:id="@+id/tv_pokemon_type1"

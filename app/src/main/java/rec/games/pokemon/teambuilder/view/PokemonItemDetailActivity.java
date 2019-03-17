@@ -268,7 +268,8 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 		if(pokeId > 0)
 		{
 			mPokemonName.setText(mPokemon.getName());
-			mPokemonId.setText(String.valueOf(pokeId));
+			String pokemonDisplayId = "#" + pokeId;
+			mPokemonId.setText(pokemonDisplayId);
 
 			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 			if(prefs.getBoolean(this.getResources().getString(R.string.pref_image_key), true))
