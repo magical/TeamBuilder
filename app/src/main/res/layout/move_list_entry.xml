@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:clickable="true"
+    android:focusable="true"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="4dp"
+        android:paddingTop="4dp">
+
+        <TextView
+            android:id="@+id/move_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/move_type"
+            android:layout_toStartOf="@+id/move_type"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:textSize="22sp"
+            tools:text="Move"/>
+
+        <TextView
+            android:id="@+id/move_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/move_power"
+            android:layout_toStartOf="@+id/move_power"
+            android:layout_centerInParent="true"
+            android:minWidth="100dp"
+            android:textSize="16sp"
+            android:visibility="visible"
+            tools:text="Type"/>
+
+        <ImageView
+            android:id="@+id/move_type_iv"
+            android:layout_width="80dp"
+            android:layout_height="35dp"
+            android:layout_toLeftOf="@+id/move_power"
+            android:layout_toStartOf="@+id/move_power"
+            android:layout_marginRight="40dp"
+            android:visibility="gone"
+            android:src="@drawable/ic_poke_unknown"
+            android:contentDescription="Type"/>
+
+        <TextView
+            android:id="@+id/move_power"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_centerInParent="true"
+            android:minWidth="65dp"
+            android:textSize="16sp"
+            tools:text="10"/>
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:background="#dadada" />
+
+</LinearLayout>

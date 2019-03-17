@@ -23,7 +23,7 @@ public class TeamPokemonActivity extends AppCompatActivity
 		if(intent != null && intent.hasExtra(Team.TEAM_ID))
 		{
 			//Log.d(TAG, "Passing Team info");
-			bundle.putString(Team.TEAM_ID, intent.getStringExtra(Team.TEAM_ID));
+			bundle.putInt(Team.TEAM_ID, intent.getIntExtra(Team.TEAM_ID, 0));
 		}
 
 		setContentView(R.layout.activity_team_pokemon_list);

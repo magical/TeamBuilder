@@ -11,4 +11,9 @@
     <color name="titleTextColor">#FFFFFF</color>
     <color name="tabIndicatorColor">#FFFFFF</color>
     <color name="tabSelectedTextColor">#FFFFFF</color>
+
+    <color name="colorHighlightBackground">@color/colorPrimary</color>
+    <color name="colorHighlightText">@android:color/white</color>
+    <color name="colorNormalBackground">@android:color/transparent</color>
+    <color name="colorNormalText">@android:color/primary_text_light</color>
 </resources>
