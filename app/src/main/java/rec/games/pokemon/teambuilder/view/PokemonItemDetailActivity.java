@@ -139,77 +139,8 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 						//mPokemon = list.get(pokeId).getValue();
 						mPokemon = mPokeViewModel.getPokemonReferenceFromCache(pokeId).getValue();
 						Log.d(TAG, "mPokemon is loaded is "+ mPokemon.isLoaded());
-						mPokeViewModel.getTypeCache();
-						mPokeViewModel.getMoveCache();
 						fillLayout();
 					}
-				}
-			});
-
-			mPokeViewModel.getMoveCache().observe(this, new Observer<HashMap<Integer, LiveData<PokemonMove>>>()
-			{
-				@Override
-				public void onChanged(@Nullable HashMap<Integer, LiveData<PokemonMove>> list)
-				{
-					Log.d(TAG, "Got a value");
-					if(mPokemon != null)
-					{
-						//mPokemon = list.get(pokeId).getValue();
-						//mPokemon = mPokeViewModel.getPokemonReferenceFromCache(pokeId).getValue();
-						//fillLayout();
-						ArrayList mPokemonMoves = mPokemon.getMoves();
-						if(mPokemonMoves != null)
-						{
-							for(int i = 0; i < mPokemonMoves.size(); i++)
-							{
-								if(mPokemonMoves.get(i) != null)
-								{
-									String output = mPokemonMoves.get(i).toString();
-									Log.d(TAG, "Output: " + output);
-								}
-							}
-							Log.d(TAG, "Size " + mPokemonMoves.size());
-						}
-						else{
-							Log.d(TAG, "No moves");
-						}
-					}
-					else
-						Log.d(TAG, "is move null");
-				}
-			});
-
-			mPokeViewModel.getTypeCache().observe(this, new Observer<HashMap<Integer, LiveData<PokemonType>>>()
-			{
-				@Override
-				public void onChanged(@Nullable HashMap<Integer, LiveData<PokemonType>> list)
-				{
-					Log.d(TAG, "Got type value");
-					if(mPokemon != null)
-					{
-						//mPokemon = list.get(pokeId).getValue();
-						//mPokemon = mPokeViewModel.getPokemonReferenceFromCache(pokeId).getValue();
-						//fillLayout();
-						ArrayList mPokemonTypes = mPokemon.getTypes();
-						if(mPokemonTypes != null)
-						{
-							for(int i = 0; i < mPokemonTypes.size(); i++)
-							{
-								if(mPokemonTypes.get(i) != null)
-								{
-									String output = mPokemonTypes.get(i).toString();
-									Log.d(TAG, "Output: " + output);
-								}
-							}
-							Log.d(TAG, "Size " + mPokemonTypes.size());
-						}
-						else
-						{
-							Log.d(TAG, "No types");
-						}
-					}
-					else
-						Log.d(TAG, "is type null");
 				}
 			});
 
