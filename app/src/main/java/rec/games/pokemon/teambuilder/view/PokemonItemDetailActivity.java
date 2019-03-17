@@ -30,7 +30,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 
 import rec.games.pokemon.teambuilder.R;
@@ -38,8 +37,6 @@ import rec.games.pokemon.teambuilder.db.SavedTeamRepository;
 import rec.games.pokemon.teambuilder.db.TeamUtils;
 import rec.games.pokemon.teambuilder.model.PokeAPIUtils;
 import rec.games.pokemon.teambuilder.model.Pokemon;
-import rec.games.pokemon.teambuilder.model.PokemonMove;
-import rec.games.pokemon.teambuilder.model.PokemonType;
 import rec.games.pokemon.teambuilder.model.Team;
 import rec.games.pokemon.teambuilder.viewmodel.PokeAPIViewModel;
 
