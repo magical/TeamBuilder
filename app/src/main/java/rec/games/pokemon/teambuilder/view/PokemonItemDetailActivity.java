@@ -30,7 +30,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 
 import rec.games.pokemon.teambuilder.R;
@@ -38,8 +37,6 @@ import rec.games.pokemon.teambuilder.db.SavedTeamRepository;
 import rec.games.pokemon.teambuilder.db.TeamUtils;
 import rec.games.pokemon.teambuilder.model.PokeAPIUtils;
 import rec.games.pokemon.teambuilder.model.Pokemon;
-import rec.games.pokemon.teambuilder.model.PokemonMove;
-import rec.games.pokemon.teambuilder.model.PokemonType;
 import rec.games.pokemon.teambuilder.model.Team;
 import rec.games.pokemon.teambuilder.viewmodel.PokeAPIViewModel;
 
@@ -65,6 +62,7 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 	private ImageView mPokemonType2IV;
 	private FloatingActionButton mItemFAB;
 	private boolean mItemAdded;
+	private LiveData<Boolean> mLiveItemAdded;
 	private boolean mAllowMovesSelected;
 	private String mTeamName;
 
@@ -199,6 +197,21 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 		}
 
 		mSavedTeamRepo = new SavedTeamRepository(this.getApplication());
+
+		SharedPreferences prefs = android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(this);
+		int teamId = TeamUtils.getCurrentTeamId(prefs); // TODO remove me, pass team id via intent
+		mLiveItemAdded = mSavedTeamRepo.isPokemonInTeam(teamId, pokeId);
+		mLiveItemAdded.observe(this, new Observer<Boolean>()
+		{
+			@Override
+			public void onChanged(@Nullable Boolean added)
+			{
+				if (added != null)
+				{
+					updateItemAddedStatus(added);
+				}
+			}
+		});
 	}
 
 	private void fillLayout()
@@ -341,23 +354,33 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 		}
 	}
 
+	public void updateItemAddedStatus(boolean added) {
+		if (added)
+		{
+			Log.d(TAG, "Added");
+			mItemFAB.setImageResource(R.drawable.ic_status_added); //add to SQL
+			mItemAdded = true;
+		} else
+		{
+			Log.d(TAG, "Removed");
+			mItemFAB.setImageResource(R.drawable.ic_action_add); //remove
+			mItemAdded = false;
+		}
+	}
+
 	public void addOrRemovePokemonFromTeam()
 	{
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		//final LiveData<Team> liveTeam = TeamUtils.getCurrentTeam(mPokeViewModel, mSavedTeamDao, prefs);
 		if(!mItemAdded)
 		{
-			Log.d(TAG, "Added");
+			Log.d(TAG, String.format(Locale.US, "Adding %s...", mPokemon.getName()));
 			TeamUtils.addPokemonToCurrentTeam(mSavedTeamRepo, prefs, mPokemon);
-			mItemFAB.setImageResource(R.drawable.ic_status_added); //add to SQL
-			mItemAdded = true;
 		}
 		else
 		{
-			Log.d(TAG, "Removed");
+			Log.d(TAG,  String.format(Locale.US,"Removing %s...", mPokemon.getName()));
 			TeamUtils.removePokemonFromCurrentTeam(mSavedTeamRepo, prefs, mPokemon);
-			mItemFAB.setImageResource(R.drawable.ic_action_add); //remove
-			mItemAdded = false;
 		}
 	}
 

@@ -38,6 +38,9 @@ public class SavedTeamRepository
 	public LiveData<SavedTeam> getTeamById(int id) { return mDao.getTeamById(id); }
 	public LiveData<List<SavedTeam>> getAllTeams() { return mDao.getAllTeams(); }
 
+	public LiveData<Boolean> isPokemonInTeam(int teamId, int pokemonId) { return mDao.isPokemonInTeam(teamId, pokemonId); }
+	public boolean isPokemonInTeamSync(int teamId, int pokemonId) { return mDao.isPokemonInTeamSync(teamId, pokemonId); }
+
 	private static class CreateSavedTeamAsyncTask extends AsyncTask<SavedTeam, Void, Void>
 	{
 		private SavedTeamDao mDao;
