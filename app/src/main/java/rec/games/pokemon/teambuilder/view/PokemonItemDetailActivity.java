@@ -155,34 +155,34 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 				//mTeamName = intent.getStringExtra(Team.TEAM_ID);
 				//Log.d(TAG, "Have Team " + mTeamName);
 
+				//if team is showing, hide/show FAB and set padding
+				mMoveRV.addOnScrollListener(new RecyclerView.OnScrollListener()
+				{
+					@Override
+					public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy)
+					{
+						if(dy > 0 || dy < 0 && mItemFAB.isShown())
+							mItemFAB.hide();                            //hide if scrolling
+					}
+
+					@Override
+					public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState)
+					{
+						if(newState == RecyclerView.SCROLL_STATE_IDLE)
+							mItemFAB.show();
+						super.onScrollStateChanged(recyclerView, newState);
+					}
+				});
+
+				mMoveRV.setPadding(
+					mMoveRV.getPaddingLeft(),
+					mMoveRV.getPaddingTop(),
+					mMoveRV.getPaddingRight(),
+					getResources().getDimensionPixelOffset(R.dimen.rv_fab_padding));
+				mMoveRV.setClipToPadding(false);
 			}
 			else
 				Log.d(TAG, "Hiding FAB");
-
-			mMoveRV.addOnScrollListener(new RecyclerView.OnScrollListener()
-			{
-				@Override
-				public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy)
-				{
-					if(dy > 0 || dy < 0 && mItemFAB.isShown())
-						mItemFAB.hide();                            //hide if scrolling
-				}
-
-				@Override
-				public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState)
-				{
-					if(newState == RecyclerView.SCROLL_STATE_IDLE)
-						mItemFAB.show();
-					super.onScrollStateChanged(recyclerView, newState);
-				}
-			});
-
-			mMoveRV.setPadding(
-				mMoveRV.getPaddingLeft(),
-				mMoveRV.getPaddingTop(),
-				mMoveRV.getPaddingRight(),
-				getResources().getDimensionPixelOffset(R.dimen.rv_fab_padding));
-			mMoveRV.setClipToPadding(false);
 
 			if(intent.hasExtra(TeamListFragment.TEAM_MOVE_ENABLE))
 				mAllowMovesSelected = true;
