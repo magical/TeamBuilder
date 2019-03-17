@@ -181,6 +181,14 @@ public class PokeAPIViewModel extends ViewModel
 	{
 		return pokemonCache;
 	}
+	public LiveData<HashMap<Integer, LiveData<PokemonMove>>> getMoveCache()
+	{
+		return moveCache;
+	}
+	public LiveData<HashMap<Integer, LiveData<PokemonType>>> getTypeCache()
+	{
+		return typeCache;
+	}
 
 	public LiveData<PokemonType> getTypeReferenceFromCache(int id)
 	{

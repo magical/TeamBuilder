@@ -20,42 +20,13 @@
 
         <ProgressBar
             android:id="@+id/pb_loading_circle"
+            android:layout_centerHorizontal="true"
             android:layout_width="72dp"
             android:layout_height="72dp"
             android:layout_margin="32dp"
-            android:layout_gravity="top|center_horizontal"
             android:visibility="invisible"/>
 
-        <LinearLayout
-            android:id="@+id/ll_loading_error"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <TextView
-                android:id="@+id/tv_loading_error"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:textSize="24sp"
-                android:padding="16dp"
-                android:layout_margin="16dp"
-                android:background="@android:color/holo_red_dark"
-                android:textColor="#fff"
-                android:visibility="invisible"
-                android:text="@string/loading_error_msg"/>
-
-            <Button
-                android:id="@+id/btn_loading_error"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="@string/loading_error_button"
-                android:textSize="22sp"
-                android:layout_margin="4dp"
-                android:visibility="invisible"/>
-        </LinearLayout>
+        <include layout="@layout/loading_error" />
 
         <!-- force at bottom -->
         <LinearLayout
