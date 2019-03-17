@@ -8,7 +8,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
@@ -70,7 +69,6 @@ public class MainActivity extends AppCompatActivity
 		adapterVP = new ViewPagerAdapter(getSupportFragmentManager());
 		adapterVP.addFragment(new TeamListFragment(), "Teams"); //tab
 		adapterVP.addFragment(new PokemonListFragment(), "Pokémon"); //tab, title in caps
-		adapterVP.addFragment(new TypeReportFragment(), "Types");
 		viewPager.setAdapter(adapterVP);
 
 		tabLayout = findViewById(R.id.main_tabs);
