@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity
 		adapterVP = new ViewPagerAdapter(getSupportFragmentManager());
 		adapterVP.addFragment(new TeamListFragment(), "Teams"); //tab
 		adapterVP.addFragment(new PokemonListFragment(), "Pokémon"); //tab, title in caps
+		adapterVP.addFragment(new TypeReportFragment(), "Types");
 		viewPager.setAdapter(adapterVP);
 
 		tabLayout = findViewById(R.id.main_tabs);
