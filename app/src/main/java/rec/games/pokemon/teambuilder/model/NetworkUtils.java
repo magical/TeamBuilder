@@ -3,7 +3,6 @@ package rec.games.pokemon.teambuilder.model;
 import android.util.Log;
 
 import java.util.concurrent.PriorityBlockingQueue;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -11,6 +10,7 @@ import okhttp3.Callback;
 import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import rec.games.pokemon.teambuilder.GlobalApplication;
 
 public class NetworkUtils
 {
@@ -24,7 +24,7 @@ public class NetworkUtils
 	static
 	{
 		mHttpClient = new OkHttpClient.Builder()
-			.addInterceptor(new RateLimitInterceptor(100, TimeUnit.MINUTES.toNanos(1)))
+			.addInterceptor(GlobalApplication.getPokeAPILimiter())
 			.build();
 
 		networkPriorityQueue = new PriorityBlockingQueue<>();
@@ -64,10 +64,10 @@ public class NetworkUtils
 	//priority: the priority of the request when added to our priority network queue
 	//callStart: interface to run some code before the call occurs, if it returns false then we will drop the call
 	//callback: callback that gets called when the priority network queue actually performs the request
-	public static void doPriorityHTTPGet(String url, NetworkPriority priority, OnCallStart callStart, Callback callback)
+	public static void doPriorityHTTPGet(String url, NetworkPriority priority, PriorityCallback callback)
 	{
 		Request request = new Request.Builder().url(url).build();
-		PriorityNetworkRequest queueItem = new PriorityNetworkRequest(priority, request, callStart, callback);
+		PriorityNetworkRequest queueItem = new PriorityNetworkRequest(priority, request, callback);
 
 		networkPriorityQueue.offer(queueItem);
 		if(mDispatcher.queuedCallsCount() == 0)
@@ -90,7 +90,7 @@ public class NetworkUtils
 			&& mDispatcher.queuedCallsCount() <= (2 * mDispatcher.getMaxRequestsPerHost())
 			&& queueItem.priority.compareTo(lowestPriority) <= 0)
 		{
-			if(queueItem.callStart.onStart())
+			if(queueItem.callback.onStart())
 				mHttpClient.newCall(queueItem.request).enqueue(queueItem.callback);
 
 			networkPriorityQueue.poll();
@@ -98,20 +98,5 @@ public class NetworkUtils
 		}
 
 		flushLock.unlock();
-	}
-
-	enum NetworkPriority
-	{
-		CRITICAL,
-		USER_INTERACTION,
-		USER_IMPORTANT,
-		ABOVE_NORMAL,
-		NORMAL,
-		LOW
-	}
-
-	public interface OnCallStart
-	{
-		boolean onStart();
 	}
 }

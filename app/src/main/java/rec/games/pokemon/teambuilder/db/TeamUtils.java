@@ -37,7 +37,7 @@ public class TeamUtils
 						for(int pokemonId : savedTeam.memberIds)
 						{
 							TeamMember m = new TeamMember();
-							m.pokemon = pokeapi.getPokemonById(pokemonId);
+							m.pokemon = pokeapi.getLivePokemon(pokemonId);
 							team.members.add(m);
 						}
 					}

@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Locale;
 
 import rec.games.pokemon.teambuilder.R;
@@ -130,20 +129,15 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 		{
 			pokeId = intent.getIntExtra(PokeAPIUtils.POKE_ITEM, pokeId);
 
-			// Fill in with some fake data
-			mPokeViewModel.getPokemonCache().observe(this, new Observer<HashMap<Integer, LiveData<Pokemon>>>()
+			final PokeAPIViewModel model = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
+
+			model.getLivePokemon(pokeId).observe(this, new Observer<Pokemon>()
 			{
 				@Override
-				public void onChanged(@Nullable HashMap<Integer, LiveData<Pokemon>> list)
+				public void onChanged(@Nullable Pokemon pokemon)
 				{
-					Log.d(TAG, "Got value");
-					if(list != null)
-					{
-						//mPokemon = list.get(pokeId).getValue();
-						mPokemon = mPokeViewModel.getPokemonReferenceFromCache(pokeId).getValue();
-						Log.d(TAG, "mPokemon is loaded is "+ mPokemon.isLoaded());
-						fillLayout();
-					}
+					mPokemon = pokemon;
+					fillLayout();
 				}
 			});
 

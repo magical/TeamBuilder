@@ -1,24 +1,40 @@
 package rec.games.pokemon.teambuilder.model;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import java.io.IOException;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import okhttp3.Interceptor;
+import okhttp3.Request;
 import okhttp3.Response;
 
-class RateLimitInterceptor implements Interceptor
+public class RateLimitInterceptor implements Interceptor
 {
 	private Semaphore limiter;
+	private long releaseTimeStamp;
+
+	private boolean isPaused;
+	private Lock pauseLock;
+	private Condition pauseCondition;
 
 	//limit: maximum number of requests to handle over a given time period
 	//timePeriod: the time period in nanoseconds
 	//so the maximum call rate = limit/timePeriod
-	RateLimitInterceptor(final int limit, final long timePeriod)
+	public RateLimitInterceptor(final int limit, final long timePeriod, int startingPermits)
 	{
-		limiter = new Semaphore(limit);
+		limiter = new Semaphore(startingPermits);
+		releaseTimeStamp = System.nanoTime();
+
+		isPaused = false;
+		pauseLock = new ReentrantLock();
+		pauseCondition = pauseLock.newCondition();
+
 		Thread thread = new Thread()
 		{
 			@Override
@@ -28,9 +44,9 @@ class RateLimitInterceptor implements Interceptor
 
 				limiter.drainPermits();
 				limiter.release(limit);
+				releaseTimeStamp = System.nanoTime();
 			}
 		};
-
 		thread.start();
 	}
 
@@ -38,9 +54,33 @@ class RateLimitInterceptor implements Interceptor
 	@Override
 	public Response intercept(@NonNull Chain chain) throws IOException
 	{
+		pauseLock.lock();
+		while(isPaused)
+			pauseCondition.awaitUninterruptibly();
+		pauseLock.unlock();
+
 		limiter.acquireUninterruptibly();
 
-		return chain.proceed(chain.request());
+		Request request = chain.request();
+		Log.d(RateLimitInterceptor.class.getSimpleName(), "processing: " + request.url());
+		Response response = chain.proceed(request);
+		if(!response.isSuccessful())
+			Log.d(RateLimitInterceptor.class.getSimpleName(), "error code: " + response.code() + ", request: " + request.url());
+
+		return response;
+	}
+
+	public void pause()
+	{
+		isPaused = true;
+	}
+
+	public void unPause()
+	{
+		pauseLock.lock();
+		isPaused = false;
+		pauseCondition.signal();
+		pauseLock.unlock();
 	}
 
 	//java makes no guarantees about how long a thread will sleep
@@ -67,5 +107,15 @@ class RateLimitInterceptor implements Interceptor
 				timeLeft = nanoseconds - elapsedTime;
 			}
 		}
+	}
+
+	public int currentPermits()
+	{
+		return limiter.availablePermits();
+	}
+
+	public long getReleaseTimeStamp()
+	{
+		return releaseTimeStamp;
 	}
 }

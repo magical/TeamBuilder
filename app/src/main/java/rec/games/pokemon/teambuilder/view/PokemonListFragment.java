@@ -1,7 +1,6 @@
 package rec.games.pokemon.teambuilder.view;
 
 import android.app.AlertDialog;
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
@@ -23,8 +22,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
-import java.util.HashMap;
 
 import rec.games.pokemon.teambuilder.R;
 import rec.games.pokemon.teambuilder.model.LiveDataList;
@@ -83,12 +80,12 @@ public class PokemonListFragment extends Fragment implements PokemonListAdapter.
 		final PokemonListAdapter adapter = new PokemonListAdapter(new LiveDataList<Pokemon>(), this);
 
 		mViewModel = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
-		mViewModel.getPokemonCache().observe(this, new Observer<HashMap<Integer, LiveData<Pokemon>>>()
+		mViewModel.getPokemonListCache().observe(this, new Observer<Boolean>()
 		{
 			@Override
-			public void onChanged(@Nullable HashMap<Integer, LiveData<Pokemon>> pokemonCache)
+			public void onChanged(@Nullable Boolean listStatus)
 			{
-				if(pokemonCache == null)
+				if(listStatus == null)
 				{
 					Log.d(TAG, "Could not load PokemonList JSON");
 					listRV.setVisibility(View.INVISIBLE);

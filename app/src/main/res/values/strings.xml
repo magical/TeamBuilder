@@ -55,6 +55,11 @@
     <string name="pref_limit_key" translatable="false">pref_limit</string>
     <string name="pref_limit_summary">Show Pokémon IDs greater than 10,000</string>
     <string name="pref_limit_title">Limit IDs</string>
+
+    <!-- PokeAPI rate limiting data -->
+    <string name="pref_pokeapi_limiter_permits_key" translatable="false">pref_pokeapi_limiter_permits</string>
+    <string name="pref_pokeapi_limiter_permits_default" translatable="false">100</string>
+    <string name="pref_pokeapi_limiter_release_timestamp_key" translatable="false">pref_pokeapi_limiter_release_timestamp</string>
     
     <!-- Share actions -->
     <string name="action_browser">Open in Bulbapedia</string>
