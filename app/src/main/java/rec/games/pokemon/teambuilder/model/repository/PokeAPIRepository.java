@@ -1,7 +1,9 @@
 package rec.games.pokemon.teambuilder.model.repository;
 
+import android.arch.core.util.Function;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.Transformations;
 import android.util.Log;
 
 import java.io.IOException;
@@ -293,25 +295,54 @@ public class PokeAPIRepository
 		return pokemonCacheObserver.liveObserver;
 	}
 
-	public static LiveData<PokemonType> getLiveType(int id)
+	public static LiveData<PokemonType> getLiveType(final int id)
 	{
-		CacheEntry<PokemonType> cacheEntry = typeCache.get(id);
+		return Transformations.switchMap(typeCacheObserver.liveObserver, new Function<Boolean, LiveData<PokemonType>>()
+		{
+			@Override
+			public LiveData<PokemonType> apply(Boolean input)
+			{
+				CacheEntry<PokemonType> cacheEntry = typeCache.get(id);
+				if(cacheEntry == null)
+					return null;
 
-		return (cacheEntry == null)? null: cacheEntry.liveObserver;
+				return cacheEntry.liveObserver;
+			}
+		});
 	}
 
-	public static LiveData<PokemonMove> getLiveMove(int id)
+	public static LiveData<PokemonMove> getLiveMove(final int id)
 	{
-		CacheEntry<PokemonMove> cacheEntry = moveCache.get(id);
+		return Transformations.switchMap(moveCacheObserver.liveObserver, new Function<Boolean, LiveData<PokemonMove>>()
+		{
+			@Override
+			public LiveData<PokemonMove> apply(Boolean result)
+			{
+				CacheEntry<PokemonMove> cacheEntry = moveCache.get(id);
+				if(cacheEntry == null)
+					return null;
 
-		return (cacheEntry == null)? null: cacheEntry.liveObserver;
+				return cacheEntry.liveObserver;
+			}
+		});
 	}
 
-	public static LiveData<Pokemon> getLivePokemon(int id)
+	public static LiveData<Pokemon> getLivePokemon(final int id)
 	{
-		CacheEntry<Pokemon> cacheEntry = pokemonCache.get(id);
+		return Transformations.switchMap(pokemonCacheObserver.liveObserver, new Function<Boolean, LiveData<Pokemon>>()
+		{
+			@Override
+			public LiveData<Pokemon> apply(Boolean result)
+			{
+				Log.d("Hello World", "getLivePokemon: " + id);
+				CacheEntry<Pokemon> cacheEntry = pokemonCache.get(id);
+				if(cacheEntry == null)
+					return null;
 
-		return (cacheEntry == null)? null: cacheEntry.liveObserver;
+				Log.d("Hello World", "CacheEntry was not null");
+				return cacheEntry.liveObserver;
+			}
+		});
 	}
 
 	/*

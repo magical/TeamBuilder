@@ -4,11 +4,13 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,6 +20,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import rec.games.pokemon.teambuilder.R;
+import rec.games.pokemon.teambuilder.db.AppDatabase;
+import rec.games.pokemon.teambuilder.db.SavedTeamDao;
+import rec.games.pokemon.teambuilder.db.TeamUtils;
 import rec.games.pokemon.teambuilder.model.PokeAPIUtils;
 import rec.games.pokemon.teambuilder.model.Pokemon;
 import rec.games.pokemon.teambuilder.model.Team;
@@ -29,11 +34,12 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 	private static final String TAG = TeamListFragment.class.getSimpleName();
 
 	private FloatingActionButton mTeamFAB;
-	private Team team;
+	private LiveData<Team> mLiveTeam;
 
-	private TeamAdapter adapter;
+	private TeamAdapter mTeamAdapter;
 	private RecyclerView teamRV;
 	private PokeAPIViewModel mViewModel;
+	private SavedTeamDao mSavedTeamDao;
 
 	private static TeamMember newTeamMember(LiveData<Pokemon> p)
 	{
@@ -54,32 +60,24 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 	{
 		View view = inflater.inflate(R.layout.team_list, container, false);
 
-		adapter = new TeamAdapter(this, this);
+		mTeamAdapter = new TeamAdapter(this, this);
 		teamRV = view.findViewById(R.id.rv_team_members);
-		teamRV.setAdapter(adapter);
+		teamRV.setAdapter(mTeamAdapter);
 		teamRV.setLayoutManager(new GridLayoutManager(view.getContext(), 2));
 		teamRV.setItemAnimator(new DefaultItemAnimator());
 
 		mViewModel = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
+		mSavedTeamDao = AppDatabase.getDatabase(this.getContext()).savedTeamDao();
 
-		// Fill in with some fake data
-		mViewModel.getPokemonListCache().observe(this, new Observer<Boolean>()
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.getContext());
+		mLiveTeam = TeamUtils.getCurrentTeam(mViewModel, mSavedTeamDao, prefs);
+
+		mLiveTeam.observe(this, new Observer<Team>()
 		{
 			@Override
-			public void onChanged(@Nullable Boolean listStatus)
+			public void onChanged(@Nullable Team team)
 			{
-				if(listStatus != null)
-				{
-					team = new Team();
-
-					team.members.add(newTeamMember(mViewModel.getLivePokemon(1))); // Bulbasaur
-					team.members.add(newTeamMember(mViewModel.getLivePokemon(133))); // Eevee
-					team.members.add(newTeamMember(mViewModel.getLivePokemon(25))); // Pikachu
-					team.members.add(newTeamMember(mViewModel.getLivePokemon(150))); // Mewtwo
-					team.members.add(newTeamMember(mViewModel.getLivePokemon(404))); // Not Found
-					team.members.add(newTeamMember(mViewModel.getLivePokemon(500))); // Internal Server Error
-					adapter.setTeam(team);
-				}
+				mTeamAdapter.setTeam(team);
 			}
 		});
 
@@ -121,6 +119,7 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 	{
 		Intent intent = new Intent(getContext(), PokemonItemDetailActivity.class);
 		intent.putExtra(PokeAPIUtils.POKE_ITEM, pokeId); //temporary assignment
+		intent.putExtra(Team.TEAM_ID, 1); // TODO
 		startActivity(intent);
 	}
 }

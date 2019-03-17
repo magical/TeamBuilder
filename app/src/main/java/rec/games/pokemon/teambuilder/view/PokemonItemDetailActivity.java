@@ -1,5 +1,6 @@
 package rec.games.pokemon.teambuilder.view;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -19,6 +20,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import rec.games.pokemon.teambuilder.R;
+import rec.games.pokemon.teambuilder.db.SavedTeamRepository;
+import rec.games.pokemon.teambuilder.db.TeamUtils;
 import rec.games.pokemon.teambuilder.model.PokeAPIUtils;
 import rec.games.pokemon.teambuilder.model.Pokemon;
 import rec.games.pokemon.teambuilder.model.Team;
@@ -39,6 +42,9 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 	private FloatingActionButton mItemFAB;
 	private boolean mItemAdded;
 	private String mTeamName;
+
+	private SavedTeamRepository mSavedTeamRepo;
+	private PokeAPIViewModel mViewModel;
 
 	/**
 	 * Constructs a url to the Bulbapedia page for a Pokémon
@@ -82,16 +88,13 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 
 			final PokeAPIViewModel model = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
 
-			// Fill in with some fake data
-			model.getPokemonListCache().observe(this, new Observer<Boolean>()
+			model.getLivePokemon(pokeId).observe(this, new Observer<Pokemon>()
 			{
 				@Override
-				public void onChanged(@Nullable Boolean listStatus)
+				public void onChanged(@Nullable Pokemon pokemon)
 				{
-					Log.d(TAG, "Got value");
-					if(listStatus != null)
-						mPokemon = model.getLivePokemon(pokeId).getValue();
-
+					Log.d("Hello World", "changing pokemon");
+					mPokemon = pokemon;
 					fillLayout();
 				}
 			});
@@ -104,6 +107,9 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 
 			}
 		}
+
+		mViewModel = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
+		mSavedTeamRepo = new SavedTeamRepository(this.getApplication());
 	}
 
 	private void fillLayout()
@@ -206,15 +212,19 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 
 	public void addOrRemovePokemonFromTeam()
 	{
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		//final LiveData<Team> liveTeam = TeamUtils.getCurrentTeam(mViewModel, mSavedTeamDao, prefs);
 		if(!mItemAdded)
 		{
 			Log.d(TAG, "Added");
+			TeamUtils.addPokemonToCurrentTeam(mSavedTeamRepo, prefs, mPokemon);
 			mItemFAB.setImageResource(R.drawable.ic_status_added); //add to SQL
 			mItemAdded = true;
 		}
 		else
 		{
 			Log.d(TAG, "Removed");
+			TeamUtils.removePokemonFromCurrentTeam(mSavedTeamRepo, prefs, mPokemon);
 			mItemFAB.setImageResource(R.drawable.ic_action_add); //remove
 			mItemAdded = false;
 		}
