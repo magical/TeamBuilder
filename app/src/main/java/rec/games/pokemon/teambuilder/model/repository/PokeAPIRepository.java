@@ -111,6 +111,9 @@ public class PokeAPIRepository
 				for(PokeAPIUtils.NamedAPIResource namedResource : typeList.results)
 				{
 					int id = PokeAPIUtils.getId(namedResource.url);
+					if(id >= 10000)
+						continue;
+
 					PokemonType pokemonType = new DeferredPokemonTypeResource(id, namedResource.name, namedResource.url);
 
 					updatePokemonType(id, pokemonType);

@@ -62,6 +62,7 @@ public class RateLimitInterceptor implements Interceptor
 		limiter.acquireUninterruptibly();
 
 		Request request = chain.request();
+		Log.d(RateLimitInterceptor.class.getSimpleName(), "processing: " + request.url());
 		Response response = chain.proceed(request);
 		if(!response.isSuccessful())
 			Log.d(RateLimitInterceptor.class.getSimpleName(), "error code: " + response.code() + ", request: " + request.url());
