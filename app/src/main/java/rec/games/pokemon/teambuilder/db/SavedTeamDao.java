@@ -25,6 +25,12 @@ public abstract class SavedTeamDao
 	@Delete
 	public abstract void deleteSavedTeamMember(SavedTeamMemberEntity m);
 
+	@Query("SELECT EXISTS (SELECT 1 FROM team_members WHERE team_id = :teamId AND pokemon_id = :pokemonId)")
+	public abstract boolean isPokemonInTeamSync(int teamId, int pokemonId);
+
+	@Query("SELECT EXISTS (SELECT 1 FROM team_members WHERE team_id = :teamId AND pokemon_id = :pokemonId)")
+	public abstract LiveData<Boolean> isPokemonInTeam(int teamId, int pokemonId);
+
 	@Transaction
 	@Query("SELECT * from teams WHERE id = :id")
 	public abstract LiveData<SavedTeam> getTeamById(int id);

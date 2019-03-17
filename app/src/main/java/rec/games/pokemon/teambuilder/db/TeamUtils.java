@@ -16,15 +16,10 @@ import rec.games.pokemon.teambuilder.viewmodel.PokeAPIViewModel;
  */
 public class TeamUtils
 {
-	public static boolean isPokemonInCurrentTeam(SharedPreferences prefs, int pokemonId)
+	public static boolean isPokemonInCurrentTeam(SavedTeamRepository repo, SharedPreferences prefs, int pokemonId)
 	{
 		int currentTeamId = getCurrentTeamId(prefs);
-		return isPokemonInTeam(currentTeamId, pokemonId);
-	}
-
-	public static boolean isPokemonInTeam(int teamId, int pokemonId)
-	{
-		return false; // TODO
+		return repo.isPokemonInTeamSync(currentTeamId, pokemonId);
 	}
 
 	public static LiveData<Team> getTeam(PokeAPIViewModel viewModel, SavedTeamDao dao, int teamId)
@@ -58,7 +53,7 @@ public class TeamUtils
 		return getTeam(viewModel, dao, currentTeamId);
 	}
 
-	private static int getCurrentTeamId(SharedPreferences prefs)
+	public static int getCurrentTeamId(SharedPreferences prefs)
 	{
 		return 1; // TODO: get from prefs
 	}

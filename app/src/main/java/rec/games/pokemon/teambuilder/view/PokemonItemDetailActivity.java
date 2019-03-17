@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.HashMap;
+import java.util.Locale;
 
 import rec.games.pokemon.teambuilder.R;
 import rec.games.pokemon.teambuilder.db.SavedTeamRepository;
@@ -43,6 +44,7 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 	private TextView mPokemonName;
 	private FloatingActionButton mItemFAB;
 	private boolean mItemAdded;
+	private LiveData<Boolean> mLiveItemAdded;
 	private String mTeamName;
 
 	private SavedTeamRepository mSavedTeamRepo;
@@ -115,6 +117,21 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 
 		mViewModel = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
 		mSavedTeamRepo = new SavedTeamRepository(this.getApplication());
+
+		SharedPreferences prefs = android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(this);
+		int teamId = TeamUtils.getCurrentTeamId(prefs); // TODO remove me, pass team id via intent
+		mLiveItemAdded = mSavedTeamRepo.isPokemonInTeam(teamId, pokeId);
+		mLiveItemAdded.observe(this, new Observer<Boolean>()
+		{
+			@Override
+			public void onChanged(@Nullable Boolean added)
+			{
+				if (added != null)
+				{
+					updateItemAddedStatus(added);
+				}
+			}
+		});
 	}
 
 	private void fillLayout()
@@ -215,23 +232,33 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 		}
 	}
 
+	public void updateItemAddedStatus(boolean added) {
+		if (added)
+		{
+			Log.d(TAG, "Added");
+			mItemFAB.setImageResource(R.drawable.ic_status_added); //add to SQL
+			mItemAdded = true;
+		} else
+		{
+			Log.d(TAG, "Removed");
+			mItemFAB.setImageResource(R.drawable.ic_action_add); //remove
+			mItemAdded = false;
+		}
+	}
+
 	public void addOrRemovePokemonFromTeam()
 	{
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		//final LiveData<Team> liveTeam = TeamUtils.getCurrentTeam(mViewModel, mSavedTeamDao, prefs);
 		if(!mItemAdded)
 		{
-			Log.d(TAG, "Added");
+			Log.d(TAG, String.format(Locale.US, "Adding %s...", mPokemon.getName()));
 			TeamUtils.addPokemonToCurrentTeam(mSavedTeamRepo, prefs, mPokemon);
-			mItemFAB.setImageResource(R.drawable.ic_status_added); //add to SQL
-			mItemAdded = true;
 		}
 		else
 		{
-			Log.d(TAG, "Removed");
+			Log.d(TAG,  String.format(Locale.US,"Removing %s...", mPokemon.getName()));
 			TeamUtils.removePokemonFromCurrentTeam(mSavedTeamRepo, prefs, mPokemon);
-			mItemFAB.setImageResource(R.drawable.ic_action_add); //remove
-			mItemAdded = false;
 		}
 	}
 }
