@@ -14,6 +14,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ShareCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -150,36 +151,38 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 			if(intent.hasExtra(Team.TEAM_ID))
 			{
 				mItemFAB.show();
+				updateItemAddedStatus(true);
 				//mTeamName = intent.getStringExtra(Team.TEAM_ID);
 				//Log.d(TAG, "Have Team " + mTeamName);
 
-				mMoveRV.addOnScrollListener(new RecyclerView.OnScrollListener()
-				{
-					@Override
-					public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy)
-					{
-						if(dy > 0 || dy < 0 && mItemFAB.isShown())
-							mItemFAB.hide();                            //hide if scrolling
-					}
-
-					@Override
-					public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState)
-					{
-						if(newState == RecyclerView.SCROLL_STATE_IDLE)
-							mItemFAB.show();
-						super.onScrollStateChanged(recyclerView, newState);
-					}
-				});
-
-				mMoveRV.setPadding(
-					mMoveRV.getPaddingLeft(),
-					mMoveRV.getPaddingTop(),
-					mMoveRV.getPaddingRight(),
-					getResources().getDimensionPixelOffset(R.dimen.rv_fab_padding));
-				mMoveRV.setClipToPadding(false);
 			}
 			else
 				Log.d(TAG, "Hiding FAB");
+
+			mMoveRV.addOnScrollListener(new RecyclerView.OnScrollListener()
+			{
+				@Override
+				public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy)
+				{
+					if(dy > 0 || dy < 0 && mItemFAB.isShown())
+						mItemFAB.hide();                            //hide if scrolling
+				}
+
+				@Override
+				public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState)
+				{
+					if(newState == RecyclerView.SCROLL_STATE_IDLE)
+						mItemFAB.show();
+					super.onScrollStateChanged(recyclerView, newState);
+				}
+			});
+
+			mMoveRV.setPadding(
+				mMoveRV.getPaddingLeft(),
+				mMoveRV.getPaddingTop(),
+				mMoveRV.getPaddingRight(),
+				getResources().getDimensionPixelOffset(R.dimen.rv_fab_padding));
+			mMoveRV.setClipToPadding(false);
 
 			if(intent.hasExtra(TeamListFragment.TEAM_MOVE_ENABLE))
 				mAllowMovesSelected = true;
@@ -206,10 +209,10 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 			@Override
 			public void onChanged(@Nullable Boolean added)
 			{
-				if (added != null)
-				{
-					updateItemAddedStatus(added);
-				}
+			if (added != null)
+			{
+				updateItemAddedStatus(added);
+			}
 			}
 		});
 	}
@@ -358,12 +361,14 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 		if (added)
 		{
 			Log.d(TAG, "Added");
-			mItemFAB.setImageResource(R.drawable.ic_status_added); //add to SQL
+			mItemFAB.setImageResource(R.drawable.ic_status_remove); //remove
+			mItemFAB.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.colorRemovePokemon));
 			mItemAdded = true;
 		} else
 		{
 			Log.d(TAG, "Removed");
-			mItemFAB.setImageResource(R.drawable.ic_action_add); //remove
+			mItemFAB.setImageResource(R.drawable.ic_action_add); //add to SQL
+			mItemFAB.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.colorPrimary));
 			mItemAdded = false;
 		}
 	}

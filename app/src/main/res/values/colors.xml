@@ -16,4 +16,6 @@
     <color name="colorHighlightText">@android:color/white</color>
     <color name="colorNormalBackground">@android:color/transparent</color>
     <color name="colorNormalText">@android:color/primary_text_light</color>
+
+    <color name="colorRemovePokemon">@android:color/darker_gray</color>
 </resources>
