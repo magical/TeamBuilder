@@ -2,7 +2,6 @@ package rec.games.pokemon.teambuilder.viewmodel;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
-import android.util.Log;
 
 import rec.games.pokemon.teambuilder.model.LiveDataList;
 import rec.games.pokemon.teambuilder.model.NetworkPriority;

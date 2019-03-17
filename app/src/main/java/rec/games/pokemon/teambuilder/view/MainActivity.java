@@ -37,8 +37,10 @@ public class MainActivity extends AppCompatActivity
 	private Toolbar toolbar;
 	private TabLayout tabLayout;
 	private ViewPager viewPager;
+	private ViewPagerAdapter adapterVP;
 
 	private SharedPreferences preferences;
+	private boolean preferencesImage;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -64,10 +66,9 @@ public class MainActivity extends AppCompatActivity
 		GlideApp.with(this).setDefaultRequestOptions(requestOptions);
 
 		viewPager = findViewById(R.id.main_viewpager);
-		ViewPagerAdapter adapterVP = new ViewPagerAdapter(getSupportFragmentManager());
+		adapterVP = new ViewPagerAdapter(getSupportFragmentManager());
 		adapterVP.addFragment(new TeamListFragment(), "Teams"); //tab
 		adapterVP.addFragment(new PokemonListFragment(), "Pokémon"); //tab, title in caps
-		adapterVP.addFragment(new TypeReportFragment(), "Types");
 		viewPager.setAdapter(adapterVP);
 
 		tabLayout = findViewById(R.id.main_tabs);
@@ -76,6 +77,8 @@ public class MainActivity extends AppCompatActivity
 
 		preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		preferences.registerOnSharedPreferenceChangeListener(this);
+
+		preferencesImage = preferences.getBoolean(getString(R.string.pref_image_key), true); //default to show images
 	}
 
 	@Override
@@ -102,7 +105,12 @@ public class MainActivity extends AppCompatActivity
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
 	{
-		//placeholder, do nothing
+		boolean newPrefImage = preferences.getBoolean(getString(R.string.pref_image_key), true);
+		if(newPrefImage != preferencesImage)
+		{
+			adapterVP.refreshFragment(); //refreshes all fragments
+			preferencesImage = newPrefImage;
+		}
 	}
 
 	@Override
@@ -138,6 +146,15 @@ public class MainActivity extends AppCompatActivity
 		{
 			mFragmentList.add(fragment);
 			mFragmentTitleList.add(title);
+		}
+
+		public void refreshFragment()
+		{
+			for(Fragment fragment:mFragmentList)
+			{
+				getSupportFragmentManager().beginTransaction()
+					.detach(fragment).attach(fragment).commitAllowingStateLoss();
+			}
 		}
 
 		public CharSequence getPageTitle(int i)

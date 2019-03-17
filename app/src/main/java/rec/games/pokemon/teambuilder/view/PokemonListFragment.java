@@ -42,7 +42,7 @@ public class PokemonListFragment extends Fragment implements PokemonListAdapter.
 	private LinearLayout mLoadingErrorLL;
 	private Button mLoadingErrorBtn;
 	private FloatingActionButton mListFAB;
-	private String mTeamToAdd;
+	private int mTeamToAdd;
 	private String searchTerm;
 
 	@Override
@@ -74,7 +74,7 @@ public class PokemonListFragment extends Fragment implements PokemonListAdapter.
 		if(getArguments() != null)
 		{
 			//Log.d(TAG, "Got arguments");
-			mTeamToAdd = getArguments().getString(Team.TEAM_ID);
+			mTeamToAdd = getArguments().getInt(Team.TEAM_ID, 0);
 		}
 
 		final PokemonListAdapter adapter = new PokemonListAdapter(new LiveDataList<Pokemon>(), this);
@@ -162,8 +162,11 @@ public class PokemonListFragment extends Fragment implements PokemonListAdapter.
 
 		Intent intent = new Intent(getContext(), PokemonItemDetailActivity.class);
 		intent.putExtra(PokeAPIUtils.POKE_ITEM, pokemonID); //assign id
-		if(mTeamToAdd != null)
+		if(mTeamToAdd > 0)
+		{
 			intent.putExtra(Team.TEAM_ID, mTeamToAdd);
+			intent.putExtra(TeamListFragment.TEAM_MOVE_ENABLE, true); //allow access to change moves
+		}
 		startActivity(intent);
 	}
 
@@ -171,13 +174,14 @@ public class PokemonListFragment extends Fragment implements PokemonListAdapter.
 	{
 		AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 		builder.setTitle(R.string.action_search_title);
+		builder.setCancelable(true);
 
 		LayoutInflater inflater = LayoutInflater.from(getContext());
 		View itemView = inflater.inflate(R.layout.pokemon_list_search, null);
 		builder.setView(itemView);
 		final EditText userInputText = itemView.findViewById(R.id.pokemon_list_search);
-		builder.setCancelable(true)
-			.setPositiveButton(getString(R.string.action_search_submit), new DialogInterface.OnClickListener()
+
+		builder.setPositiveButton(getString(R.string.action_search_submit), new DialogInterface.OnClickListener()
 			{
 				@Override
 				public void onClick(DialogInterface dialog, int which)

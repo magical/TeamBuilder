@@ -5,19 +5,31 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.AssetManager;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ShareCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Locale;
 
 import rec.games.pokemon.teambuilder.R;
 import rec.games.pokemon.teambuilder.db.SavedTeamRepository;
@@ -27,7 +39,7 @@ import rec.games.pokemon.teambuilder.model.Pokemon;
 import rec.games.pokemon.teambuilder.model.Team;
 import rec.games.pokemon.teambuilder.viewmodel.PokeAPIViewModel;
 
-public class PokemonItemDetailActivity extends AppCompatActivity
+public class PokemonItemDetailActivity extends AppCompatActivity implements PokemonMoveAdapter.OnPokemonMoveClickListener
 {
 	private static final String TAG = PokemonItemDetailActivity.class.getSimpleName();
 
@@ -38,13 +50,25 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 	private int pokeId;
 	private Pokemon mPokemon;
 	private ImageView mArtwork;
+	private ImageView mFrontSprite;
+	private ImageView mBackSprite;
 	private TextView mPokemonName;
+	private TextView mPokemonId;
+	private TextView mPokemonType1;
+	private ImageView mPokemonType1IV;
+	private TextView mPokemonTypeSeperator;
+	private TextView mPokemonType2;
+	private ImageView mPokemonType2IV;
 	private FloatingActionButton mItemFAB;
 	private boolean mItemAdded;
+	private LiveData<Boolean> mLiveItemAdded;
+	private boolean mAllowMovesSelected;
 	private String mTeamName;
 
 	private SavedTeamRepository mSavedTeamRepo;
-	private PokeAPIViewModel mViewModel;
+	private RecyclerView mMoveRV;
+
+	private PokeAPIViewModel mPokeViewModel;
 
 	/**
 	 * Constructs a url to the Bulbapedia page for a Pokémon
@@ -74,13 +98,32 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_pokemon_item_detail);
-		mArtwork = findViewById(R.id.iv_pokemon_detail_artwork);
 		mPokemonName = findViewById(R.id.tv_pokemon_detail_name);
+		mPokemonId = findViewById(R.id.tv_pokemon_detail_id);
+		mArtwork = findViewById(R.id.iv_pokemon_detail_artwork);
+		//mFrontSprite = findViewById(R.id.iv_pokemon_detail_front_small);
+		//mBackSprite = findViewById(R.id.iv_pokemon_detail_back_small);
+		mPokemonType1 = findViewById(R.id.tv_pokemon_type1);
+		mPokemonType1IV = findViewById(R.id.iv_pokemon_type1);
+		mPokemonTypeSeperator = findViewById(R.id.tv_pokemon_type_seperator);
+		mPokemonType2 = findViewById(R.id.tv_pokemon_type2);
+		mPokemonType2IV = findViewById(R.id.iv_pokemon_type2);
+
+		mAllowMovesSelected = false; //default to false
+
 		mItemFAB = findViewById(R.id.item_add_FAB);
 		mItemFAB.hide();
 		mItemAdded = false;
 
+		mMoveRV = findViewById(R.id.rv_moves);
+		mMoveRV.setLayoutManager(new LinearLayoutManager(this));
+		mMoveRV.setItemAnimator(new DefaultItemAnimator());
+
 		Intent intent = getIntent();
+
+
+		mPokeViewModel = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
+
 
 		if(intent != null && intent.hasExtra(PokeAPIUtils.POKE_ITEM))
 		{
@@ -93,7 +136,6 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 				@Override
 				public void onChanged(@Nullable Pokemon pokemon)
 				{
-					Log.d("Hello World", "changing pokemon");
 					mPokemon = pokemon;
 					fillLayout();
 				}
@@ -102,14 +144,68 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 			if(intent.hasExtra(Team.TEAM_ID))
 			{
 				mItemFAB.show();
-				mTeamName = intent.getStringExtra(Team.TEAM_ID);
-				Log.d(TAG, "Have Team " + mTeamName);
+				//mTeamName = intent.getStringExtra(Team.TEAM_ID);
+				//Log.d(TAG, "Have Team " + mTeamName);
 
+				mMoveRV.addOnScrollListener(new RecyclerView.OnScrollListener()
+				{
+					@Override
+					public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy)
+					{
+						if(dy > 0 || dy < 0 && mItemFAB.isShown())
+							mItemFAB.hide();                            //hide if scrolling
+					}
+
+					@Override
+					public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState)
+					{
+						if(newState == RecyclerView.SCROLL_STATE_IDLE)
+							mItemFAB.show();
+						super.onScrollStateChanged(recyclerView, newState);
+					}
+				});
+
+				mMoveRV.setPadding(
+					mMoveRV.getPaddingLeft(),
+					mMoveRV.getPaddingTop(),
+					mMoveRV.getPaddingRight(),
+					getResources().getDimensionPixelOffset(R.dimen.rv_fab_padding));
+				mMoveRV.setClipToPadding(false);
 			}
+			else
+				Log.d(TAG, "Hiding FAB");
+
+			if(intent.hasExtra(TeamListFragment.TEAM_MOVE_ENABLE))
+				mAllowMovesSelected = true;
+
+			final PokemonMoveAdapter adapter = new PokemonMoveAdapter(new ArrayList<String>(), this, mAllowMovesSelected);
+
+			String typeNames[] = {"bug","dark","dragon","electric","fairy",
+				"fighting","fire","flying","ghost","grass","ground","ice",
+				"normal","poison","psychic","rock","shadow","steel","unknown","water",
+			}; //very temporary
+
+			ArrayList<String> moves = new ArrayList<>(Arrays.asList(typeNames));
+			adapter.updatePokemonMoves(moves);
+			mMoveRV.setAdapter(adapter);
 		}
 
-		mViewModel = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
 		mSavedTeamRepo = new SavedTeamRepository(this.getApplication());
+
+		SharedPreferences prefs = android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(this);
+		int teamId = TeamUtils.getCurrentTeamId(prefs); // TODO remove me, pass team id via intent
+		mLiveItemAdded = mSavedTeamRepo.isPokemonInTeam(teamId, pokeId);
+		mLiveItemAdded.observe(this, new Observer<Boolean>()
+		{
+			@Override
+			public void onChanged(@Nullable Boolean added)
+			{
+				if (added != null)
+				{
+					updateItemAddedStatus(added);
+				}
+			}
+		});
 	}
 
 	private void fillLayout()
@@ -117,6 +213,8 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 		if(pokeId > 0)
 		{
 			mPokemonName.setText(mPokemon.getName());
+			String pokemonDisplayId = "#" + pokeId;
+			mPokemonId.setText(pokemonDisplayId);
 
 			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 			if(prefs.getBoolean(this.getResources().getString(R.string.pref_image_key), true))
@@ -125,12 +223,52 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 					.error(GlideApp.with(this).load(PokeAPIUtils.getSpriteUrl(pokeId))
 						.error(R.drawable.ic_poke_unknown))
 					.placeholder(R.drawable.ic_poke_unknown).into(mArtwork);
+
+				//sprites
+				//GlideApp.with(this).load(PokeAPIUtils.getSpriteUrl(pokeId)).into(mFrontSprite);
+				//GlideApp.with(this).load(PokeAPIUtils.getSpriteUrl(pokeId)).into(mBackSprite);
+				//mBackSprite.setScaleX(-1); //rotates horizontal, could remove
 			}
 			else
 			{
 				GlideApp.with(this).load(R.drawable.ic_poke_unknown).into(mArtwork);
+				//mFrontSprite.setImageResource(android.R.color.transparent);
+				//mBackSprite.setImageResource(android.R.color.transparent);
 			}
 			setTitle(mPokemon.getName());
+
+			mPokemonType1.setText("unknown"); //replace
+
+			AssetManager assets = this.getAssets();
+
+			try {
+				mPokemonType1.setVisibility(View.GONE);
+				mPokemonType1IV.setVisibility(View.VISIBLE);
+				InputStream stream = assets.open(String.format(Locale.US, "types/%s.png", "unknown"));
+				Drawable drawable = Drawable.createFromStream(stream, "unknown"+".png");
+				mPokemonType1IV.setImageDrawable(drawable);
+			} catch (IOException exc) {
+				mPokemonType1IV.setImageResource(R.drawable.ic_poke_unknown);
+				mPokemonType1IV.setVisibility(View.GONE);
+				mPokemonType1.setVisibility(View.VISIBLE);
+			}
+
+			if(pokeId%2 == 1) //random, replace
+			{
+				try {
+					mPokemonTypeSeperator.setVisibility(View.VISIBLE);
+					mPokemonType2.setVisibility(View.GONE);
+					mPokemonType2IV.setVisibility(View.VISIBLE);
+					InputStream stream = assets.open(String.format(Locale.US, "types/%s.png", "unknown"));
+					Drawable drawable = Drawable.createFromStream(stream, "unknown"+".png");
+					mPokemonType2IV.setImageDrawable(drawable);
+				} catch (IOException exc) {
+					mPokemonTypeSeperator.setVisibility(View.GONE); //else overlaps type1 in text mode
+					mPokemonType2IV.setImageResource(R.drawable.ic_poke_unknown);
+					mPokemonType2IV.setVisibility(View.GONE);
+					mPokemonType2.setVisibility(View.VISIBLE);
+				}
+			}
 		}
 
 		mItemFAB.setOnClickListener(new View.OnClickListener()
@@ -210,23 +348,37 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 		}
 	}
 
-	public void addOrRemovePokemonFromTeam()
-	{
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		//final LiveData<Team> liveTeam = TeamUtils.getCurrentTeam(mViewModel, mSavedTeamDao, prefs);
-		if(!mItemAdded)
+	public void updateItemAddedStatus(boolean added) {
+		if (added)
 		{
 			Log.d(TAG, "Added");
-			TeamUtils.addPokemonToCurrentTeam(mSavedTeamRepo, prefs, mPokemon);
 			mItemFAB.setImageResource(R.drawable.ic_status_added); //add to SQL
 			mItemAdded = true;
-		}
-		else
+		} else
 		{
 			Log.d(TAG, "Removed");
-			TeamUtils.removePokemonFromCurrentTeam(mSavedTeamRepo, prefs, mPokemon);
 			mItemFAB.setImageResource(R.drawable.ic_action_add); //remove
 			mItemAdded = false;
 		}
+	}
+
+	public void addOrRemovePokemonFromTeam()
+	{
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		//final LiveData<Team> liveTeam = TeamUtils.getCurrentTeam(mPokeViewModel, mSavedTeamDao, prefs);
+		if(!mItemAdded)
+		{
+			Log.d(TAG, String.format(Locale.US, "Adding %s...", mPokemon.getName()));
+			TeamUtils.addPokemonToCurrentTeam(mSavedTeamRepo, prefs, mPokemon);
+		}
+		else
+		{
+			Log.d(TAG,  String.format(Locale.US,"Removing %s...", mPokemon.getName()));
+			TeamUtils.removePokemonFromCurrentTeam(mSavedTeamRepo, prefs, mPokemon);
+		}
+	}
+
+	public void onPokemonMoveClicked(int moveID){
+		//Log.d(TAG, "Clicked" + moveID);
 	}
 }
