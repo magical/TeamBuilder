@@ -62,7 +62,7 @@ public class TeamUtils
 	{
 		SavedTeam savedTeam = new SavedTeam();
 		savedTeam.id = getCurrentTeamId(prefs);
-		//repo.createSavedTeam(savedTeam); // in case it hasn't been created yet
+		repo.createSavedTeam(savedTeam); // in case it hasn't been created yet
 		repo.addTeamMember(savedTeam, pokemon.getId());
 	}
 

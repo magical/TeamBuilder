@@ -37,6 +37,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".view.MainActivity"/>
         </activity>
+        <activity android:name=".view.TypeAnalysisActivity"
+            android:parentActivityName=".view.MainActivity"/>
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".view.MainActivity"/>
         <activity
             android:name=".view.SettingsActivity"
             android:parentActivityName=".view.MainActivity">
