@@ -22,8 +22,8 @@ import android.widget.TextView;
 import java.util.HashMap;
 
 import rec.games.pokemon.teambuilder.R;
-import rec.games.pokemon.teambuilder.db.DBUtils;
 import rec.games.pokemon.teambuilder.db.SavedTeamRepository;
+import rec.games.pokemon.teambuilder.db.TeamUtils;
 import rec.games.pokemon.teambuilder.model.PokeAPIUtils;
 import rec.games.pokemon.teambuilder.model.Pokemon;
 import rec.games.pokemon.teambuilder.model.Team;
@@ -218,18 +218,18 @@ public class PokemonItemDetailActivity extends AppCompatActivity
 	public void addOrRemovePokemonFromTeam()
 	{
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		//final LiveData<Team> liveTeam = DBUtils.getCurrentTeam(mViewModel, mSavedTeamDao, prefs);
+		//final LiveData<Team> liveTeam = TeamUtils.getCurrentTeam(mViewModel, mSavedTeamDao, prefs);
 		if(!mItemAdded)
 		{
 			Log.d(TAG, "Added");
-			DBUtils.addPokemonToCurrentTeam(mSavedTeamRepo, prefs, mPokemon);
+			TeamUtils.addPokemonToCurrentTeam(mSavedTeamRepo, prefs, mPokemon);
 			mItemFAB.setImageResource(R.drawable.ic_status_added); //add to SQL
 			mItemAdded = true;
 		}
 		else
 		{
 			Log.d(TAG, "Removed");
-			DBUtils.removePokemonFromCurrentTeam(mSavedTeamRepo, prefs, mPokemon);
+			TeamUtils.removePokemonFromCurrentTeam(mSavedTeamRepo, prefs, mPokemon);
 			mItemFAB.setImageResource(R.drawable.ic_action_add); //remove
 			mItemAdded = false;
 		}

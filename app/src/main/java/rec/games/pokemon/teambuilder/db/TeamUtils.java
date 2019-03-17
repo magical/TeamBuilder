@@ -10,7 +10,7 @@ import rec.games.pokemon.teambuilder.model.Team;
 import rec.games.pokemon.teambuilder.model.TeamMember;
 import rec.games.pokemon.teambuilder.viewmodel.PokeAPIViewModel;
 
-public class DBUtils
+public class TeamUtils
 {
 	public static boolean isPokemonInCurrentTeam(SharedPreferences prefs, int pokemonId)
 	{

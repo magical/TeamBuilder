@@ -21,8 +21,8 @@ import android.view.ViewGroup;
 
 import rec.games.pokemon.teambuilder.R;
 import rec.games.pokemon.teambuilder.db.AppDatabase;
-import rec.games.pokemon.teambuilder.db.DBUtils;
 import rec.games.pokemon.teambuilder.db.SavedTeamDao;
+import rec.games.pokemon.teambuilder.db.TeamUtils;
 import rec.games.pokemon.teambuilder.model.PokeAPIUtils;
 import rec.games.pokemon.teambuilder.model.Pokemon;
 import rec.games.pokemon.teambuilder.model.Team;
@@ -70,7 +70,7 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 		mSavedTeamDao = AppDatabase.getDatabase(this.getContext()).savedTeamDao();
 
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.getContext());
-		mLiveTeam = DBUtils.getCurrentTeam(mViewModel, mSavedTeamDao, prefs);
+		mLiveTeam = TeamUtils.getCurrentTeam(mViewModel, mSavedTeamDao, prefs);
 
 		mLiveTeam.observe(this, new Observer<Team>()
 		{
