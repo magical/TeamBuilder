@@ -28,27 +28,6 @@
                 android:layout_alignParentStart="true"
                 android:src="@drawable/ic_poke_unknown"/>
 
-            <!--
-            <ImageView
-                android:id="@+id/iv_pokemon_detail_front_small"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:adjustViewBounds="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentTop="true"
-                android:src="@drawable/ic_poke_unknown" />
-
-            <ImageView
-                android:id="@+id/iv_pokemon_detail_back_small"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:adjustViewBounds="true"
-                android:layout_toRightOf="@+id/iv_pokemon_detail_artwork"
-                android:layout_toEndOf="@+id/iv_pokemon_detail_artwork"
-                android:layout_below="@+id/iv_pokemon_detail_front_small"
-                android:src="@drawable/ic_poke_unknown" /> -->
-
             <TextView
                 android:id="@+id/tv_pokemon_detail_name"
                 android:layout_width="wrap_content"
@@ -71,14 +50,65 @@
                 android:text="0"/>
 
             <TextView
-                android:id="@+id/tv_pokemon_type"
+                android:id="@+id/tv_pokemon_type1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
                 android:layout_toRightOf="@+id/iv_pokemon_detail_artwork"
+                android:layout_toEndOf="@+id/iv_pokemon_detail_artwork"
                 android:layout_below="@id/tv_pokemon_detail_name"
+                android:visibility="visible"
                 android:textSize="22sp"
-                android:text="@string/move_type_class"/>
+                tools:text="Type1"/>
+
+            <ImageView
+                android:id="@+id/iv_pokemon_type1"
+                android:layout_width="80dp"
+                android:layout_height="35dp"
+                android:foregroundGravity="left"
+                android:layout_toRightOf="@+id/iv_pokemon_detail_artwork"
+                android:layout_toEndOf="@+id/iv_pokemon_detail_artwork"
+                android:layout_below="@id/tv_pokemon_detail_name"
+                android:visibility="gone"
+                android:src="@drawable/ic_poke_unknown"
+                android:contentDescription="Type"/>
+
+            <TextView
+                android:id="@+id/tv_pokemon_type_seperator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:layout_toRightOf="@+id/iv_pokemon_type1"
+                android:layout_toEndOf="@+id/iv_pokemon_type1"
+                android:layout_below="@id/tv_pokemon_detail_name"
+                android:visibility="gone"
+                android:layout_centerInParent="true"
+                android:textSize="22sp"
+                android:text="@string/type_seperator"/>
+
+            <TextView
+                android:id="@+id/tv_pokemon_type2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:layout_toRightOf="@+id/tv_pokemon_type_seperator"
+                android:layout_toEndOf="@+id/tv_pokemon_type_seperator"
+                android:layout_below="@id/tv_pokemon_detail_name"
+                android:visibility="gone"
+                android:textSize="22sp"
+                tools:text="Type2"/>
+
+            <ImageView
+                android:id="@+id/iv_pokemon_type2"
+                android:layout_width="80dp"
+                android:layout_height="35dp"
+                android:foregroundGravity="left"
+                android:layout_toRightOf="@+id/tv_pokemon_type_seperator"
+                android:layout_toEndOf="@+id/tv_pokemon_type_seperator"
+                android:layout_below="@id/tv_pokemon_detail_name"
+                android:visibility="gone"
+                android:src="@drawable/ic_poke_unknown"
+                android:contentDescription="Type"/>
 
         </RelativeLayout>
 

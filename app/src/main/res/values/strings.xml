@@ -11,14 +11,26 @@
     <!-- Misc -->
     <string name="action_select_poke">"Select a Pokémon"</string>
     <string name="placeholder_pokemon_name">Pokémon</string>
+
+    <!-- Pokemon Item info -->
     <string name="team_id_string">UniqueTeamString</string>
     <string name="poke_icon_desc">Pokémon Icon</string>
+    <string name="type_seperator" translatable="false"> / </string>
 
     <!-- Team Type info -->
     <string name="type_name">Type</string>
     <string name="type_weak">Weakness</string>
     <string name="type_res">Resistance</string>
     <string name="type_title">Type Analysis</string>
+
+    <!-- Move details -->
+    <string name="move_type">Type</string>
+    <string name="move_pp">PP</string>
+    <string name="move_power">Power</string>
+    <string name="move_accuracy">Acc</string>
+    <string name="move_accyracy_long">Accuracy</string>
+    <string name="move_type_class">Type1 / Type2</string>
+    <string name="move_moves">Moves</string>
 
     <!-- Search -->
     <string name="action_pokemon_list_search">Pokémon Name or Pokédex ID</string>
@@ -50,14 +62,5 @@
     <string name="action_share_poke">Share PokéDetails</string>
     <string name="share_chooser_poke_details">Share Pokémon details</string>
     <string name="action_share_team">Share Team Details</string>
-
-    <!-- Move details -->
-    <string name="move_type">Type</string>
-    <string name="move_pp">PP</string>
-    <string name="move_power">Power</string>
-    <string name="move_accuracy">Acc</string>
-    <string name="move_accyracy_long">Accuracy</string>
-    <string name="move_type_class">Type1 / Type2</string>
-    <string name="move_moves">Moves</string>
 
 </resources>

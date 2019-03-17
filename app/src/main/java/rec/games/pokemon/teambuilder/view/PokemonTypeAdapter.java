@@ -1,15 +1,21 @@
 package rec.games.pokemon.teambuilder.view;
 
 import android.content.Context;
+import android.content.res.AssetManager;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import rec.games.pokemon.teambuilder.R;
 
@@ -80,6 +86,7 @@ public class PokemonTypeAdapter extends RecyclerView.Adapter<PokemonTypeAdapter.
 	{
 		private OnPokemonTypeClickListener mListener;
 		private TextView mTypeName;
+		private ImageView mTypeImage;
 		private TextView mTypeWeakness;
 		private TextView mTypeResistance;
 
@@ -87,6 +94,7 @@ public class PokemonTypeAdapter extends RecyclerView.Adapter<PokemonTypeAdapter.
 		{
 			super(view);
 			mTypeName = view.findViewById(R.id.type_name);
+			mTypeImage = view.findViewById(R.id.type_name_iv);
 			mTypeWeakness = view.findViewById(R.id.type_weakness);
 			mTypeResistance = view.findViewById(R.id.type_resistance);
 			mListener = l;
@@ -115,6 +123,20 @@ public class PokemonTypeAdapter extends RecyclerView.Adapter<PokemonTypeAdapter.
 			else {
 				mTypeWeakness.setBackgroundColor(ContextCompat.getColor(context, R.color.colorNormalBackground));
 				mTypeWeakness.setTextColor(ContextCompat.getColor(context, R.color.colorNormalText));
+			}
+
+			AssetManager assets = context.getAssets();
+
+			try {
+				mTypeName.setVisibility(View.GONE);
+				mTypeImage.setVisibility(View.VISIBLE);
+				InputStream stream = assets.open(String.format(Locale.US, "types/%s.png", typeName));
+				Drawable drawable = Drawable.createFromStream(stream, typeName+".png");
+				mTypeImage.setImageDrawable(drawable);
+			} catch (IOException exc) {
+				mTypeImage.setImageResource(R.drawable.ic_poke_unknown);
+				mTypeImage.setVisibility(View.GONE);
+				mTypeName.setVisibility(View.VISIBLE);
 			}
 		}
 	}

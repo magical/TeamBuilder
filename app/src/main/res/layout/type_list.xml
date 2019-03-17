@@ -10,6 +10,8 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingLeft="4dp"
+        android:paddingStart="4dp"
         android:paddingBottom="4dp"
         android:paddingTop="4dp">
 
@@ -22,7 +24,19 @@
             android:layout_toLeftOf="@+id/type_weakness"
             android:layout_toStartOf="@+id/type_weakness"
             android:textSize="22sp"
+            android:visibility="visible"
             tools:text="Type"/>
+
+        <ImageView
+            android:id="@+id/type_name_iv"
+            android:layout_width="80dp"
+            android:layout_height="35dp"
+            android:foregroundGravity="left"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:visibility="gone"
+            android:src="@drawable/ic_poke_unknown"
+            android:contentDescription="Type"/>
 
         <TextView
             android:id="@+id/type_weakness"

@@ -11,6 +11,7 @@ import android.util.Log;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import rec.games.pokemon.teambuilder.R;
 
@@ -42,11 +43,13 @@ public class TeamTypeActivity extends AppCompatActivity implements PokemonTypeAd
 
 			final PokemonTypeAdapter adapter = new PokemonTypeAdapter(new ArrayList<String>(), this);
 
-			ArrayList<String> types = new ArrayList<>();
-			for (int i=1; i<12; i++)
-			{
-				types.add("Type" + String.valueOf(i));
-			}
+			String typeNames[] = {"bug","dark","dragon","electric","fairy",
+				"fighting","fire","flying","ghost","grass","ground","ice",
+				"normal","poison","psychic","rock","shadow","steel","unknown","water",
+			}; //very temporary
+
+			ArrayList<String> types = new ArrayList<>(Arrays.asList(typeNames));
+
 			adapter.updatePokemonTypes(types);
 			mTypeRV.setAdapter(adapter);
 		}

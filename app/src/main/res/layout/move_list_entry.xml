@@ -35,7 +35,19 @@
             android:layout_centerInParent="true"
             android:minWidth="100dp"
             android:textSize="16sp"
+            android:visibility="visible"
             tools:text="Type"/>
+
+        <ImageView
+            android:id="@+id/move_type_iv"
+            android:layout_width="80dp"
+            android:layout_height="35dp"
+            android:layout_toLeftOf="@+id/move_power"
+            android:layout_toStartOf="@+id/move_power"
+            android:layout_marginRight="40dp"
+            android:visibility="gone"
+            android:src="@drawable/ic_poke_unknown"
+            android:contentDescription="Type"/>
 
         <TextView
             android:id="@+id/move_power"
