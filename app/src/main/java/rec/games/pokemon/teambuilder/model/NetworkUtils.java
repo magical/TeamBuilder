@@ -57,7 +57,7 @@ public class NetworkUtils
 	{
 		Request request = new Request.Builder().url(url).build();
 
-		Log.d(TAG, request.toString());
+		//Log.d(TAG, request.toString());
 		doHTTPGet(request, callback);
 	}
 
