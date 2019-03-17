@@ -41,6 +41,12 @@ class CacheEntry<E>
 		this.liveObserver = new MutableLiveData<>();
 		liveObserver.postValue(data);
 	}
+
+	void setData(E data)
+	{
+		this.data = data;
+		liveObserver.postValue(data);
+	}
 }
 
 public class PokeAPIRepository
@@ -49,9 +55,9 @@ public class PokeAPIRepository
 	private static HashMap<Integer, CacheEntry<PokemonMove>> moveCache;
 	private static HashMap<Integer, CacheEntry<Pokemon>> pokemonCache;
 
-	private static MutableLiveData<Boolean> typeCacheObserver;
-	private static MutableLiveData<Boolean> moveCacheObserver;
-	private static MutableLiveData<Boolean> pokemonCacheObserver;
+	private static CacheEntry<Boolean> typeCacheObserver;
+	private static CacheEntry<Boolean> moveCacheObserver;
+	private static CacheEntry<Boolean> pokemonCacheObserver;
 
 	static
 	{
@@ -59,9 +65,9 @@ public class PokeAPIRepository
 		moveCache = new HashMap<>();
 		pokemonCache = new HashMap<>();
 
-		typeCacheObserver = new MutableLiveData<>();
-		moveCacheObserver = new MutableLiveData<>();
-		pokemonCacheObserver = new MutableLiveData<>();
+		typeCacheObserver = new CacheEntry<>(null);
+		moveCacheObserver = new CacheEntry<>(null);
+		pokemonCacheObserver = new CacheEntry<>(null);
 
 		getNewPokemonList();
 	}
@@ -84,7 +90,7 @@ public class PokeAPIRepository
 			@Override
 			public void onFailure(Call call, IOException e)
 			{
-				typeCacheObserver.postValue(false);
+				typeCacheObserver.setData(false);
 			}
 
 			@EverythingIsNonNull
@@ -94,7 +100,7 @@ public class PokeAPIRepository
 				ResponseBody body = response.body();
 				if(body == null)
 				{
-					typeCacheObserver.postValue(false);
+					typeCacheObserver.setData(false);
 					return;
 				}
 
@@ -111,7 +117,7 @@ public class PokeAPIRepository
 				}
 
 				//alert that the data has changed
-				typeCacheObserver.postValue(true);
+				typeCacheObserver.setData(true);
 				typeLock.countDown();
 
 				//start loading the types
@@ -119,7 +125,7 @@ public class PokeAPIRepository
 				{
 					int result = loadType(key, NetworkPriority.ABOVE_NORMAL);
 					if(result != 0)
-						Log.d("Hello World", "bad result " + result + " for type: " + key);
+						Log.d(PokeAPIViewModel.class.getSimpleName(), "bad result " + result + " for type: " + key);
 				}
 			}
 		});
@@ -137,7 +143,7 @@ public class PokeAPIRepository
 			@Override
 			public void onFailure(Call call, IOException e)
 			{
-				moveCacheObserver.postValue(false);
+				moveCacheObserver.setData(false);
 			}
 
 			@EverythingIsNonNull
@@ -147,7 +153,7 @@ public class PokeAPIRepository
 				ResponseBody body = response.body();
 				if(body == null)
 				{
-					moveCacheObserver.postValue(false);
+					moveCacheObserver.setData(false);
 					return;
 				}
 
@@ -162,7 +168,7 @@ public class PokeAPIRepository
 					updatePokemonMove(id, pokemonMove);
 				}
 
-				moveCacheObserver.postValue(true);
+				moveCacheObserver.setData(true);
 				moveLock.countDown();
 
 				try
@@ -178,7 +184,7 @@ public class PokeAPIRepository
 				{
 					int result = loadMove(key, NetworkPriority.LOW);
 					if(result != 0)
-						Log.d("Hello World", "bad result " + result + " for move: " + key);
+						Log.d(PokeAPIViewModel.class.getSimpleName(), "bad result " + result + " for move: " + key);
 				}
 			}
 		});
@@ -196,7 +202,7 @@ public class PokeAPIRepository
 			@Override
 			public void onFailure(Call call, IOException e)
 			{
-				pokemonCacheObserver.postValue(false);
+				pokemonCacheObserver.setData(false);
 			}
 
 			@EverythingIsNonNull
@@ -206,7 +212,7 @@ public class PokeAPIRepository
 				ResponseBody body = response.body();
 				if(body == null)
 				{
-					pokemonCacheObserver.postValue(false);
+					pokemonCacheObserver.setData(false);
 					return;
 				}
 
@@ -221,7 +227,7 @@ public class PokeAPIRepository
 					updatePokemon(id, pokemon);
 				}
 
-				pokemonCacheObserver.postValue(true);
+				pokemonCacheObserver.setData(true);
 
 				try
 				{
@@ -237,7 +243,7 @@ public class PokeAPIRepository
 				{
 					int result = loadPokemon(key, NetworkPriority.NORMAL);
 					if(result != 0)
-						Log.d("Hello World", "bad result " + result + " for pokemon: " + key);
+						Log.d(PokeAPIViewModel.class.getSimpleName(), "bad result " + result + " for pokemon: " + key);
 				}
 			}
 		});
@@ -252,8 +258,7 @@ public class PokeAPIRepository
 			return;
 		}
 
-		cacheItem.data = type;
-		cacheItem.liveObserver.postValue(type);
+		cacheItem.setData(type);
 	}
 
 	private static void updatePokemonMove(int id, PokemonMove move)
@@ -265,8 +270,7 @@ public class PokeAPIRepository
 			return;
 		}
 
-		cacheItem.data = move;
-		cacheItem.liveObserver.postValue(move);
+		cacheItem.setData(move);
 	}
 
 	private static void updatePokemon(int id, Pokemon pokemon)
@@ -278,13 +282,12 @@ public class PokeAPIRepository
 			return;
 		}
 
-		cacheItem.data = pokemon;
-		cacheItem.liveObserver.postValue(pokemon);
+		cacheItem.setData(pokemon);
 	}
 
 	public static LiveData<Boolean> getPokemonListObserver()
 	{
-		return pokemonCacheObserver;
+		return pokemonCacheObserver.liveObserver;
 	}
 
 	public static LiveData<PokemonType> getLiveType(int id)
@@ -311,18 +314,17 @@ public class PokeAPIRepository
 	/*
 	 * return codes:
 	 * 0 - operation has been queued
-	 * 1 - typeCache hasn't finished loading yet
-	 * 2 - could not find LiveData reference, a bad id
-	 * 3 - LiveData is not Deferred. Hypothetically LiveData.getValue() could return null, but that would be a bug in the constructor
+	 * 1 - typeCache hasn't finished loading yet and/or could not find item in map (a bad id)
+	 * 2 - data is not Deferred. Hypothetically cacheEntry.data could return null, but that would be a bug in the constructor
 	 */
 	public static int loadType(int id, NetworkPriority priority)
 	{
 		final CacheEntry<PokemonType> cacheEntry = typeCache.get(id);
 		if(cacheEntry == null)
-			return 2;
+			return 1;
 
 		if(cacheEntry.data == null || !cacheEntry.data.isDeferred())
-			return 3;
+			return 2;
 
 		final String url = ((DeferredPokemonTypeResource)cacheEntry.data).getUrl();
 		NetworkUtils.doPriorityHTTPGet(url, priority, new PriorityCallback()
@@ -369,18 +371,17 @@ public class PokeAPIRepository
 	/*
 	 * return codes:
 	 * 0 - operation has been queued
-	 * 1 - moveCache and it's dependencies haven't finished loading yet
-	 * 2 - could not find LiveData reference, a bad id
-	 * 3 - LiveData is not Deferred. Hypothetically LiveData.getValue() could return null, but that would be a bug in the constructor
+	 * 1 - moveCache and it's dependencies haven't finished loading yet and/or could not find item in map (a bad id)
+	 * 2 - data is not Deferred. Hypothetically cacheEntry.data could return null, but that would be a bug in the constructor
 	 */
 	public static int loadMove(int id, NetworkPriority priority)
 	{
 		final CacheEntry<PokemonMove> cacheEntry = moveCache.get(id);
-		if(cacheEntry == null)
-			return 2;
+		if(!typeCacheObserver.data || cacheEntry == null)
+			return 1;
 
 		if(cacheEntry.data == null || !cacheEntry.data.isDeferred())
-			return 3;
+			return 2;
 
 		final String url = ((DeferredPokemonMoveResource)cacheEntry.data).getUrl();
 		NetworkUtils.doPriorityHTTPGet(url, priority, new PriorityCallback()
@@ -425,20 +426,19 @@ public class PokeAPIRepository
 	/*
 	 * return codes:
 	 * 0 - operation has been queued
-	 * 1 - pokemonCache and it's dependencies haven't finished loading yet
-	 * 2 - could not find LiveData reference, a bad id
-	 * 3 - LiveData is not Deferred. Hypothetically LiveData.getValue() could return null, but that would be a bug in the constructor
+	 * 1 - pokemonCache and it's dependencies haven't finished loading yet and/or could not find item in map (a bad id)
+	 * 2 - data is not Deferred. Hypothetically cacheEntry.data could return null, but that would be a bug in the constructor
 	 */
 	public static int loadPokemon(int id, NetworkPriority priority)
 	{
 		//did they give us a bad id?
 		final CacheEntry<Pokemon> cacheEntry = pokemonCache.get(id);
-		if(cacheEntry == null)
-			return 2;
+		if(!typeCacheObserver.data || !moveCacheObserver.data || cacheEntry == null)
+			return 1;
 
 		//is this thing actually deferred?
 		if(cacheEntry.data == null || !cacheEntry.data.isDeferred())
-			return 3;
+			return 2;
 
 		//so now we know it is deferred, we can make a request for the data
 		final String url = ((DeferredPokemonResource)cacheEntry.data).getUrl();

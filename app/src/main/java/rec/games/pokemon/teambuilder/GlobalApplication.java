@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import java.util.concurrent.TimeUnit;
 
@@ -36,10 +35,6 @@ public class GlobalApplication extends Application implements Application.Activi
 		if((currentTime - releaseTimeStamp) >= timePeriod)
 			permits = defaultPermits;
 
-		Log.d("Hello World", "Initing rate limiter");
-		Log.d("Hello World", "default permits: " + defaultPermits);
-		Log.d("Hello World", "permits: " + permits);
-		Log.d("Hello World", "elapsedSinceClose: " + TimeUnit.NANOSECONDS.toSeconds(currentTime - releaseTimeStamp));
 		pokeAPILimiter = new RateLimitInterceptor(defaultPermits, timePeriod, permits);
 	}
 
@@ -48,24 +43,18 @@ public class GlobalApplication extends Application implements Application.Activi
 		return pokeAPILimiter;
 	}
 
-	private void savePokeAPILimiter(boolean commitFlag)
+	private void savePokeAPILimiter()
 	{
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(appContext);
 		SharedPreferences.Editor editor = sharedPref.edit();
 
 		int permits = pokeAPILimiter.currentPermits();
 		long releaseTimeStamp = pokeAPILimiter.getReleaseTimeStamp();
-		long timeLeftOver = TimeUnit.MINUTES.toSeconds(1) - TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - releaseTimeStamp);
-		Log.d("Hello World", "saving permits: " + permits);
-		Log.d("Hello World", "timeLeftOver: " + timeLeftOver);
 
 		editor.putInt(getString(R.string.pref_pokeapi_limiter_permits_key), permits);
 		editor.putLong(getString(R.string.pref_pokeapi_limiter_release_timestamp_key), releaseTimeStamp);
 
-		if(commitFlag)
-			editor.commit();
-		else
-			editor.apply();
+		editor.apply();
 	}
 
 	@Override
@@ -83,22 +72,22 @@ public class GlobalApplication extends Application implements Application.Activi
 	@Override
 	public void onActivityResumed(Activity activity)
 	{
-
+		//warning but Resumed can get called from either Started or Paused
+		pokeAPILimiter.unPause();
 	}
 
 	@Override
 	public void onActivityPaused(Activity activity)
 	{
-		Log.d("Hello World", "Application was paused");
-		savePokeAPILimiter(false);
+		pokeAPILimiter.pause();
+		savePokeAPILimiter();
 
 	}
 
 	@Override
 	public void onActivityStopped(Activity activity)
 	{
-		Log.d("Hello World", "Application was stopped");
-		savePokeAPILimiter(false);
+
 	}
 
 	@Override
@@ -110,7 +99,6 @@ public class GlobalApplication extends Application implements Application.Activi
 	@Override
 	public void onActivityDestroyed(Activity activity)
 	{
-		Log.d("Hello World", "Application was destroyed");
-		savePokeAPILimiter(true);
+
 	}
 }

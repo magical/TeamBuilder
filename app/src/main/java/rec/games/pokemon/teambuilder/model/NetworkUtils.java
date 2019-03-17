@@ -1,7 +1,5 @@
 package rec.games.pokemon.teambuilder.model;
 
-import android.util.Log;
-
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -88,14 +86,7 @@ public class NetworkUtils
 			&& queueItem.priority.compareTo(lowestPriority) <= 0)
 		{
 			if(queueItem.callback.onStart())
-			{
-				Log.d("Hello World", "processing: " + queueItem.request.url().toString());
 				mHttpClient.newCall(queueItem.request).enqueue(queueItem.callback);
-			}
-			else
-			{
-				Log.d("Hello World", "Cancelling: " + queueItem.request.url().toString());
-			}
 
 			networkPriorityQueue.poll();
 			queueItem = networkPriorityQueue.peek();
