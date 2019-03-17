@@ -1,7 +1,9 @@
 package rec.games.pokemon.teambuilder.viewmodel;
 
+import android.arch.core.util.Function;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
 import android.util.Log;
 
@@ -202,6 +204,25 @@ public class PokeAPIViewModel extends ViewModel
 			return null;
 
 		return pokemonCache.getValue().get(id);
+	}
+
+	public LiveData<Pokemon> getPokemonById(final int id)
+	{
+		return Transformations.switchMap(pokemonCache, new Function<HashMap<Integer, LiveData<Pokemon>>, LiveData<Pokemon>>()
+		{
+			@Override
+			public LiveData<Pokemon> apply(HashMap<Integer, LiveData<Pokemon>> pokemonCache)
+			{
+				return pokemonCache.get(id);
+			}
+		});
+		// TODO: should call loadPokemon to load more pokemon data in the background.
+		/*int code = loadPokemon(id);
+		if(code != 0)
+		{
+			// FIXME uh-oh
+		}
+		*/
 	}
 
 	/*
