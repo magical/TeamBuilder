@@ -10,6 +10,10 @@ import rec.games.pokemon.teambuilder.model.Team;
 import rec.games.pokemon.teambuilder.model.TeamMember;
 import rec.games.pokemon.teambuilder.viewmodel.PokeAPIViewModel;
 
+/**
+ * TeamUtils provides some helper methods for dealing with saved teams.
+ * TODO: convert to a ViewModel?
+ */
 public class TeamUtils
 {
 	public static boolean isPokemonInCurrentTeam(SharedPreferences prefs, int pokemonId)
