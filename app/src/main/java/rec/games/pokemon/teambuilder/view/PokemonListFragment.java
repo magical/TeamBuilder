@@ -83,6 +83,9 @@ public class PokemonListFragment extends Fragment
 			mTeamToAdd = getArguments().getInt(Team.TEAM_ID, 0);
 		}
 
+		preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+		preferences.registerOnSharedPreferenceChangeListener(this);
+
 		mPokemonListAdapter = new PokemonListAdapter(new LiveDataList<Pokemon>(), this);
 
 		mViewModel = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
@@ -116,6 +119,7 @@ public class PokemonListFragment extends Fragment
 
 				LiveDataList<Pokemon> pokemon = mViewModel.extractPokemonListFromCache();
 				mPokemonListAdapter.updatePokemon(pokemon);
+				sortPokemonList();
 			}
 		});
 
@@ -157,10 +161,6 @@ public class PokemonListFragment extends Fragment
 		});
 
 		listRV.setAdapter(mPokemonListAdapter);
-
-		preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-		preferences.registerOnSharedPreferenceChangeListener(this);
-		sortPokemonList();
 
 		return view;
 	}
@@ -233,7 +233,6 @@ public class PokemonListFragment extends Fragment
 			getString(R.string.pref_sort_key),
 			getString(R.string.pref_sort_default)
 		);
-		Log.d(TAG, "Sorting");
 
 		if(sortPreference.equals(getString(R.string.pref_sort_value_sort_by_name)))
 		{
