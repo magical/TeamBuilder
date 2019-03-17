@@ -30,7 +30,7 @@
             android:layout_toLeftOf="@+id/tv_type_resistance"
             android:layout_toStartOf="@+id/tv_type_resistance"
             android:layout_centerInParent="true"
-            android:minWidth="110dp"
+            android:minWidth="105dp"
             android:textSize="22sp"
             android:text="@string/type_weak"/>
 
@@ -41,9 +41,9 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:layout_centerInParent="true"
-            android:minWidth="110dp"
+            android:minWidth="90dp"
             android:textSize="22sp"
-            android:text="@string/type_res"/>
+            android:text="@string/type_strong"/>
 
     </RelativeLayout>
 

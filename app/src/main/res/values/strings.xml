@@ -19,8 +19,8 @@
 
     <!-- Team Type info -->
     <string name="type_name">Type</string>
-    <string name="type_weak">Weakness</string>
-    <string name="type_res">Resistance</string>
+    <string name="type_weak">Weak</string>
+    <string name="type_strong">Strong</string>
     <string name="type_title">Type Analysis</string>
 
     <!-- Move details -->
