@@ -24,8 +24,6 @@ public abstract class Pokemon
 
 	//subclasses may or may not have these. Or they could return different values
 	public abstract String getName();
-	public abstract ArrayList getMoves();
-	public abstract ArrayList getTypes();
 
 	public boolean isLoaded()
 	{

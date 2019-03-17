@@ -27,9 +27,7 @@ public class PokemonResource extends Pokemon
 	}
 
 	//could always restructure to access in a different way, just for testing right now
-	@Override
 	public ArrayList getMoves(){ return moves; }
-	@Override
 	public ArrayList getTypes(){ return types; }
 
 	@Override

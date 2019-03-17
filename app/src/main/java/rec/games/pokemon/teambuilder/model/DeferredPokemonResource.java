@@ -26,6 +26,6 @@ public class DeferredPokemonResource extends Pokemon
 		return url;
 	}
 
-	public ArrayList getMoves() {return null; }
+	public ArrayList getMoves() {return null;}
 	public ArrayList getTypes() {return null;}
 }
