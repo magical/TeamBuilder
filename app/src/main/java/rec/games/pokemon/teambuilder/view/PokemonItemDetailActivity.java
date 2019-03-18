@@ -1,6 +1,7 @@
 package rec.games.pokemon.teambuilder.view;
 
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -37,6 +38,8 @@ import rec.games.pokemon.teambuilder.db.SavedTeamRepository;
 import rec.games.pokemon.teambuilder.db.TeamUtils;
 import rec.games.pokemon.teambuilder.model.PokeAPIUtils;
 import rec.games.pokemon.teambuilder.model.Pokemon;
+import rec.games.pokemon.teambuilder.model.PokemonResource;
+import rec.games.pokemon.teambuilder.model.PokemonType;
 import rec.games.pokemon.teambuilder.model.Team;
 import rec.games.pokemon.teambuilder.viewmodel.PokeAPIViewModel;
 
@@ -50,15 +53,20 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 
 	private int pokeId;
 	private Pokemon mPokemon;
+	private int numTypes = 1;
+	private PokemonType mType1;
+	private PokemonType mType2;
+	private MediatorLiveData<PokemonType> typesMediator = new MediatorLiveData<>();
+
 	private ImageView mArtwork;
 	private ImageView mFrontSprite;
 	private ImageView mBackSprite;
 	private TextView mPokemonName;
 	private TextView mPokemonId;
-	private TextView mPokemonType1;
+	private TextView mPokemonType1TV;
 	private ImageView mPokemonType1IV;
 	private TextView mPokemonTypeSeperator;
-	private TextView mPokemonType2;
+	private TextView mPokemonType2TV;
 	private ImageView mPokemonType2IV;
 	private FloatingActionButton mItemFAB;
 	private boolean mItemAdded;
@@ -81,10 +89,10 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 		mArtwork = findViewById(R.id.iv_pokemon_detail_artwork);
 		//mFrontSprite = findViewById(R.id.iv_pokemon_detail_front_small);
 		//mBackSprite = findViewById(R.id.iv_pokemon_detail_back_small);
-		mPokemonType1 = findViewById(R.id.tv_pokemon_type1);
+		mPokemonType1TV = findViewById(R.id.tv_pokemon_type1);
 		mPokemonType1IV = findViewById(R.id.iv_pokemon_type1);
 		mPokemonTypeSeperator = findViewById(R.id.tv_pokemon_type_seperator);
-		mPokemonType2 = findViewById(R.id.tv_pokemon_type2);
+		mPokemonType2TV = findViewById(R.id.tv_pokemon_type2);
 		mPokemonType2IV = findViewById(R.id.iv_pokemon_type2);
 
 		mAllowMovesSelected = false; //default to false
@@ -101,21 +109,24 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 
 
 		mPokeViewModel = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
-
-
 		if(intent != null && intent.hasExtra(PokeAPIUtils.POKE_ITEM))
 		{
-			pokeId = intent.getIntExtra(PokeAPIUtils.POKE_ITEM, pokeId);
+			pokeId = intent.getIntExtra(PokeAPIUtils.POKE_ITEM, 0);
 
-			final PokeAPIViewModel model = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
-
-			model.getLivePokemon(pokeId).observe(this, new Observer<Pokemon>()
+			final LiveData<Pokemon> livePokemon = mPokeViewModel.getLivePokemon(pokeId);
+			livePokemon.observe(this, new Observer<Pokemon>()
 			{
 				@Override
 				public void onChanged(@Nullable Pokemon pokemon)
 				{
-					mPokemon = pokemon;
-					fillLayout();
+					Log.d(TAG, "Got value");
+					if (pokemon != null)
+					{
+						Log.d(TAG, "mPokemon is loaded is " + pokemon.isLoaded());
+						int code = mPokeViewModel.loadPokemon(pokeId);
+						Log.d(TAG, String.format(Locale.US, "loading pokemon %d: status %d", pokeId, code)); // load if not deferred
+					}
+					setPokemon(pokemon);
 				}
 			});
 
@@ -156,8 +167,11 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 				Log.d(TAG, "Hiding FAB");
 
 			if(intent.hasExtra(TeamListFragment.TEAM_MOVE_ENABLE))
+			{
 				mAllowMovesSelected = true;
+			}
 
+			// Fill in with some fake data
 			final PokemonMoveAdapter adapter = new PokemonMoveAdapter(new ArrayList<String>(), this, mAllowMovesSelected);
 
 			String typeNames[] = {"bug","dark","dragon","electric","fairy",
@@ -188,9 +202,44 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 		});
 	}
 
+	private void setPokemon(@Nullable Pokemon pokemon) {
+		mPokemon = pokemon;
+
+		// set observers on types and moves
+		if (pokemon != null && !pokemon.isDeferred()) {
+			PokemonResource p = (PokemonResource)pokemon;
+			numTypes = p.getTypes().size();
+
+			// TODO: remove old observers
+			if (p.getTypes().size() >= 1) {
+				 p.getTypes().get(0).observe(this, new Observer<PokemonType>()
+				{
+					@Override
+					public void onChanged(@Nullable PokemonType pokemonType)
+					{
+						mType1 = pokemonType;
+					}
+				});
+			}
+			if (p.getTypes().size() >= 2) {
+
+				p.getTypes().get(1).observe(this, new Observer<PokemonType>()
+				{
+					@Override
+					public void onChanged(@Nullable PokemonType pokemonType)
+					{
+						mType2 = pokemonType;
+					}
+				});
+			}
+		}
+		// update the layout
+		fillLayout();
+	}
+
 	private void fillLayout()
 	{
-		if(pokeId > 0)
+		if(mPokemon != null)
 		{
 			mPokemonName.setText(mPokemon.getName());
 			String pokemonDisplayId = "#" + pokeId;
@@ -217,36 +266,26 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 			}
 			setTitle(mPokemon.getName());
 
-			mPokemonType1.setText("unknown"); //replace
 
-			AssetManager assets = this.getAssets();
-
-			try {
-				mPokemonType1.setVisibility(View.GONE);
-				mPokemonType1IV.setVisibility(View.VISIBLE);
-				InputStream stream = assets.open(String.format(Locale.US, "types/%s.png", "unknown"));
-				Drawable drawable = Drawable.createFromStream(stream, "unknown"+".png");
-				mPokemonType1IV.setImageDrawable(drawable);
-			} catch (IOException exc) {
-				mPokemonType1IV.setImageResource(R.drawable.ic_poke_unknown);
-				mPokemonType1IV.setVisibility(View.GONE);
-				mPokemonType1.setVisibility(View.VISIBLE);
-			}
-
-			if(pokeId%2 == 1) //random, replace
+			if(mType1 == null)
 			{
-				try {
-					mPokemonTypeSeperator.setVisibility(View.VISIBLE);
-					mPokemonType2.setVisibility(View.GONE);
-					mPokemonType2IV.setVisibility(View.VISIBLE);
-					InputStream stream = assets.open(String.format(Locale.US, "types/%s.png", "unknown"));
-					Drawable drawable = Drawable.createFromStream(stream, "unknown"+".png");
-					mPokemonType2IV.setImageDrawable(drawable);
-				} catch (IOException exc) {
-					mPokemonTypeSeperator.setVisibility(View.GONE); //else overlaps type1 in text mode
-					mPokemonType2IV.setImageResource(R.drawable.ic_poke_unknown);
-					mPokemonType2IV.setVisibility(View.GONE);
-					mPokemonType2.setVisibility(View.VISIBLE);
+				showType(1, "unknown");
+			}
+			else
+			{
+				showType(1, mType1.getName());
+			}
+			if (numTypes < 2) {
+				hideType2();
+			} else
+			{
+				if(mType2 == null)
+				{
+					showType(2, "unknown");
+				}
+				else
+				{
+					showType(2, mType2.getName());
 				}
 			}
 		}
@@ -259,6 +298,42 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 				addOrRemovePokemonFromTeam();
 			}
 		});
+	}
+
+	private void hideType2() {
+		mPokemonType2IV.setVisibility(View.GONE);
+		mPokemonType2TV.setVisibility(View.GONE);
+		mPokemonTypeSeperator.setVisibility(View.GONE);
+	}
+
+	private void showType(int index, String name) {
+		TextView tv = mPokemonType1TV;
+		ImageView iv = mPokemonType1IV;
+		if (index == 2) {
+			tv = mPokemonType2TV;
+			iv = mPokemonType2IV;
+		}
+
+		tv.setText(name);
+		AssetManager assets = this.getAssets();
+		try {
+			if (index == 2)
+			{
+				mPokemonTypeSeperator.setVisibility(View.VISIBLE);
+			}
+			tv.setVisibility(View.GONE);
+			iv.setVisibility(View.VISIBLE);
+			InputStream stream = assets.open(String.format(Locale.US, "types/%s.png", name));
+			Drawable drawable = Drawable.createFromStream(stream, name);
+			iv.setImageDrawable(drawable);
+		} catch (IOException exc) {
+			if (index == 2) {
+				mPokemonTypeSeperator.setVisibility(View.GONE); //else overlaps type1 in text mode
+			}
+			iv.setImageResource(R.drawable.ic_poke_unknown); // TODO: display unknown.png instead
+			iv.setVisibility(View.GONE);
+			tv.setVisibility(View.VISIBLE);
+		}
 	}
 
 	@Override
@@ -357,7 +432,7 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 		{
 			Log.d(TAG, "Added");
 			mItemFAB.setImageResource(R.drawable.ic_status_remove); //remove
-			mItemFAB.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.colorRemovePokemon));
+			mItemFAB.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.colorNegativeFAB));
 			mItemAdded = true;
 		} else
 		{
