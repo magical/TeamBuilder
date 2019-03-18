@@ -8,6 +8,8 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.concurrent.CountDownLatch;
 
@@ -504,6 +506,14 @@ public class PokeAPIRepository
 				PokeAPIUtils.Pokemon pokemonData = PokeAPIUtils.parsePokemonJSON(pokemonJSON);
 
 				//grab the type references from the cache
+				Arrays.sort(pokemonData.types, new Comparator<PokeAPIUtils.PokemonType>()
+				{
+					@Override
+					public int compare(PokeAPIUtils.PokemonType o1, PokeAPIUtils.PokemonType o2)
+					{
+						return o1.slot - o2.slot;
+					}
+				});
 				ArrayList<LiveData<PokemonType>> types = new ArrayList<>(pokemonData.types.length);
 				for(PokeAPIUtils.PokemonType pokeAPIType : pokemonData.types)
 				{
@@ -512,6 +522,7 @@ public class PokeAPIRepository
 				}
 
 				//grab the move references from the cache
+				// TODO: sort by name
 				ArrayList<LiveData<PokemonMove>> moves = new ArrayList<>(pokemonData.moves.length);
 				for(PokeAPIUtils.PokemonMove pokeAPIMove : pokemonData.moves)
 				{
