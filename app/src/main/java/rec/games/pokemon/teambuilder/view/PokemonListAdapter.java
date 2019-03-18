@@ -21,6 +21,7 @@ import rec.games.pokemon.teambuilder.model.LiveDataList;
 import rec.games.pokemon.teambuilder.model.PokeAPIUtils;
 import rec.games.pokemon.teambuilder.model.Pokemon;
 import rec.games.pokemon.teambuilder.model.PokemonResource;
+import rec.games.pokemon.teambuilder.model.SearchCriteria;
 
 public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.PokemonViewHolder>
 {
@@ -36,12 +37,14 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 	};
 	Context context;
 	private LiveDataList<Pokemon> mPokemonList;
+	private LiveDataList<Pokemon> mSearchedPokemonList;
 	private OnPokemonClickListener mListener;
 
 	PokemonListAdapter(LiveDataList<Pokemon> pokemon, OnPokemonClickListener l)
 	{
 		this.mPokemonList = pokemon;
 		this.mListener = l;
+		mSearchedPokemonList = null;
 
 		mPokemonList.observeCollection(cacheNotifier);
 	}
@@ -73,7 +76,10 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 	@Override
 	public int getItemCount()
 	{
-		return mPokemonList.size();
+		if (mSearchedPokemonList != null && mSearchedPokemonList.size() > 0)
+			return mSearchedPokemonList.size();
+		else
+			return mPokemonList.size();
 	}
 
 	public int getPokemonClickedId(int position)
@@ -94,7 +100,8 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 		return prefs.getBoolean(context.getResources().getString(R.string.pref_image_key), true);
 	}
 
-	public void sortPokemonByName(){
+	public void sortPokemonByName()
+	{
 		mPokemonList.sort(new Comparator<Pokemon>()
 		{
 			@Override
@@ -106,7 +113,8 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 		notifyDataSetChanged();
 	}
 
-	public void sortPokemonById(){
+	public void sortPokemonById()
+	{
 		mPokemonList.sort(new Comparator<Pokemon>()
 		{
 			@Override
@@ -118,10 +126,43 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 		notifyDataSetChanged();
 	}
 
+	public void searchPokemon(final String searchTerm)
+	{
+		SearchCriteria searchCriteria = new SearchCriteria()
+		{
+			@Override
+			public boolean match(@Nullable Object o)
+			{
+				if(searchTerm.toLowerCase().contains(searchTerm))
+					return true;
+				else
+					return false;
+			}
+		};
+		mSearchedPokemonList = mPokemonList.searchSubList(searchCriteria);
+		if(mSearchedPokemonList !=null)
+		{
+			Log.d(TAG, "searching");
+
+			notifyDataSetChanged();
+		}
+	}
+
+	public void clearSearchPokemon()
+	{
+		mSearchedPokemonList = null;
+		notifyDataSetChanged();
+	}
+
 	@Override
 	public void onBindViewHolder(@NonNull PokemonViewHolder viewHolder, int i)
 	{
-		viewHolder.bind(mPokemonList.getValue(i));
+		Log.d(TAG, "refreshing");
+		if(mSearchedPokemonList != null && mSearchedPokemonList.size() > 0)
+			viewHolder.bind(mSearchedPokemonList.getValue(i));
+		else
+			viewHolder.bind(mPokemonList.getValue(i));
+
 	}
 
 	public interface OnPokemonClickListener

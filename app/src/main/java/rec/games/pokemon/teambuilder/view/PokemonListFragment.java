@@ -76,6 +76,9 @@ public class PokemonListFragment extends Fragment
 		mLoadingErrorLL = view.findViewById(R.id.ll_loading_error);
 		mLoadingErrorBtn = view.findViewById(R.id.btn_loading_error);
 		mListFAB = view.findViewById(R.id.pokemon_list_FAB);
+		mLoadingErrorMsgTV.setVisibility(View.GONE);
+		mLoadingErrorLL.setVisibility(LinearLayout.GONE);
+		mLoadingErrorBtn.setVisibility(View.GONE);
 		mListFAB.hide();
 
 		if(getArguments() != null)
@@ -214,7 +217,11 @@ public class PokemonListFragment extends Fragment
 							Log.d(TAG, "Is str");
 
 						mListFAB.setImageResource(R.drawable.ic_action_clear); //add to SQL
+						mListFAB.hide();
+						mListFAB.show(); //fix google bug to show image icon
 						mListFAB.setBackgroundTintList(ContextCompat.getColorStateList(getActivity(), R.color.colorNegativeFAB));
+
+						mPokemonListAdapter.searchPokemon(searchTerm);
 					}
 				}
 			});
@@ -233,7 +240,10 @@ public class PokemonListFragment extends Fragment
 	private void clearSearch()
 	{
 		searchTerm = null;
+		mPokemonListAdapter.clearSearchPokemon();
 		mListFAB.setImageResource(R.drawable.ic_action_search); //add to SQL
+		mListFAB.hide();
+		mListFAB.show(); //fix google bug to show image icon
 		mListFAB.setBackgroundTintList(ContextCompat.getColorStateList(getActivity(), R.color.colorPrimary));
 	}
 
