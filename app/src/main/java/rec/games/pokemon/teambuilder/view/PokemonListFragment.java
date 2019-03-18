@@ -85,7 +85,7 @@ public class PokemonListFragment extends Fragment implements PokemonListAdapter.
 			@Override
 			public void onChanged(@Nullable Boolean listStatus)
 			{
-				if(listStatus == null)
+				if(listStatus == null || !listStatus)
 				{
 					Log.d(TAG, "Could not load PokemonList JSON");
 					listRV.setVisibility(View.INVISIBLE);

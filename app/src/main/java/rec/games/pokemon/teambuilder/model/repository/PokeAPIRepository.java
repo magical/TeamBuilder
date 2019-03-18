@@ -9,6 +9,7 @@ import android.util.Log;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
 import okhttp3.Call;
@@ -185,12 +186,12 @@ public class PokeAPIRepository
 					e.printStackTrace();
 				}
 
-				for(int key: moveCache.keySet())
+				/*for(int key: moveCache.keySet())
 				{
 					int result = loadMove(key, NetworkPriority.LOW);
 					if(result != 0)
 						Log.d(PokeAPIViewModel.class.getSimpleName(), "bad result " + result + " for move: " + key);
-				}
+				}*/
 			}
 		});
 
@@ -244,12 +245,12 @@ public class PokeAPIRepository
 					e.printStackTrace();
 				}
 
-				for(int key: pokemonCache.keySet())
+				/*for(int key: pokemonCache.keySet())
 				{
 					int result = loadPokemon(key, NetworkPriority.NORMAL);
 					if(result != 0)
 						Log.d(PokeAPIViewModel.class.getSimpleName(), "bad result " + result + " for pokemon: " + key);
-				}
+				}*/
 			}
 		});
 	}
@@ -288,6 +289,16 @@ public class PokeAPIRepository
 		}
 
 		cacheItem.setData(pokemon);
+	}
+
+	public static Set<Integer> getTypeListIds()
+	{
+		return typeCache.keySet();
+	}
+
+	public static LiveData<Boolean> getTypeListObserver()
+	{
+		return typeCacheObserver.liveObserver;
 	}
 
 	public static LiveData<Boolean> getPokemonListObserver()

@@ -3,6 +3,8 @@ package rec.games.pokemon.teambuilder.viewmodel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
 
+import java.util.Set;
+
 import rec.games.pokemon.teambuilder.model.LiveDataList;
 import rec.games.pokemon.teambuilder.model.NetworkPriority;
 import rec.games.pokemon.teambuilder.model.Pokemon;
@@ -20,6 +22,16 @@ public class PokeAPIViewModel extends ViewModel
 	public LiveDataList<Pokemon> extractPokemonListFromCache()
 	{
 		return PokeAPIRepository.extractPokemonListFromCache();
+	}
+
+	public Set<Integer> getTypeListIds()
+	{
+		return PokeAPIRepository.getTypeListIds();
+	}
+
+	public LiveData<Boolean> getTypeListCache()
+	{
+		return PokeAPIRepository.getTypeListObserver();
 	}
 
 	public LiveData<Boolean> getPokemonListCache()
