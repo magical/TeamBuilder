@@ -5,11 +5,14 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -30,12 +33,14 @@ import rec.games.pokemon.teambuilder.model.Pokemon;
 import rec.games.pokemon.teambuilder.model.Team;
 import rec.games.pokemon.teambuilder.viewmodel.PokeAPIViewModel;
 
-public class PokemonListFragment extends Fragment implements PokemonListAdapter.OnPokemonClickListener
+public class PokemonListFragment extends Fragment
+	implements PokemonListAdapter.OnPokemonClickListener, SharedPreferences.OnSharedPreferenceChangeListener
 {
 	private static final String TAG = PokemonListFragment.class.getSimpleName();
 
 	private PokeAPIViewModel mViewModel;
 	private RecyclerView listRV;
+	private PokemonListAdapter mPokemonListAdapter;
 
 	private ProgressBar mLoadingPB;
 	private TextView mLoadingErrorMsgTV;
@@ -44,6 +49,8 @@ public class PokemonListFragment extends Fragment implements PokemonListAdapter.
 	private FloatingActionButton mListFAB;
 	private int mTeamToAdd;
 	private String searchTerm;
+
+	private SharedPreferences preferences;
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState)
@@ -77,7 +84,10 @@ public class PokemonListFragment extends Fragment implements PokemonListAdapter.
 			mTeamToAdd = getArguments().getInt(Team.TEAM_ID, 0);
 		}
 
-		final PokemonListAdapter adapter = new PokemonListAdapter(new LiveDataList<Pokemon>(), this);
+		preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+		preferences.registerOnSharedPreferenceChangeListener(this);
+
+		mPokemonListAdapter = new PokemonListAdapter(new LiveDataList<Pokemon>(), this);
 
 		mViewModel = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
 		mViewModel.getPokemonListCache().observe(this, new Observer<Boolean>()
@@ -109,7 +119,8 @@ public class PokemonListFragment extends Fragment implements PokemonListAdapter.
 				}
 
 				LiveDataList<Pokemon> pokemon = mViewModel.extractPokemonListFromCache();
-				adapter.updatePokemon(pokemon);
+				mPokemonListAdapter.updatePokemon(pokemon);
+				sortPokemonList();
 			}
 		});
 
@@ -129,7 +140,10 @@ public class PokemonListFragment extends Fragment implements PokemonListAdapter.
 			public void onClick(View v)
 			{
 				Log.d(TAG, "Fab search clicked");
-				searchForPokemon();
+				if(searchTerm==null)
+					searchForPokemon();
+				else
+					clearSearch();
 			}
 		});
 		listRV.addOnScrollListener(new RecyclerView.OnScrollListener()
@@ -150,7 +164,7 @@ public class PokemonListFragment extends Fragment implements PokemonListAdapter.
 			}
 		});
 
-		listRV.setAdapter(adapter);
+		listRV.setAdapter(mPokemonListAdapter);
 
 		return view;
 	}
@@ -198,10 +212,55 @@ public class PokemonListFragment extends Fragment implements PokemonListAdapter.
 						}
 						else
 							Log.d(TAG, "Is str");
+
+						mListFAB.setImageResource(R.drawable.ic_action_clear); //add to SQL
+						mListFAB.setBackgroundTintList(ContextCompat.getColorStateList(getActivity(), R.color.colorNegativeFAB));
 					}
 				}
 			});
+		builder.setNegativeButton(getString(R.string.action_search_cancel), new DialogInterface.OnClickListener()
+		{
+			@Override
+			public void onClick(DialogInterface dialog, int which)
+			{
+				clearSearch();
+			}
+		});
+
 		builder.create().show();
+	}
+
+	private void clearSearch()
+	{
+		searchTerm = null;
+		mListFAB.setImageResource(R.drawable.ic_action_search); //add to SQL
+		mListFAB.setBackgroundTintList(ContextCompat.getColorStateList(getActivity(), R.color.colorPrimary));
+	}
+
+	@Override
+	public void onDestroy()
+	{
+		PreferenceManager.getDefaultSharedPreferences(getContext()).unregisterOnSharedPreferenceChangeListener(this);
+		super.onDestroy();
+	}
+
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
+	{
+		sortPokemonList();
+	}
+
+	private void sortPokemonList()
+	{
+		String sortPreference = preferences.getString(
+			getString(R.string.pref_sort_key),
+			getString(R.string.pref_sort_default)
+		);
+
+		if(sortPreference.equals(getString(R.string.pref_sort_value_sort_by_name)))
+			mPokemonListAdapter.sortPokemonByName();
+		else //default
+			mPokemonListAdapter.sortPokemonById();
 
 	}
 }

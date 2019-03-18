@@ -13,6 +13,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.Comparator;
+
 import rec.games.pokemon.teambuilder.R;
 import rec.games.pokemon.teambuilder.model.CollectionObserver;
 import rec.games.pokemon.teambuilder.model.LiveDataList;
@@ -33,23 +35,23 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 		}
 	};
 	Context context;
-	private LiveDataList<Pokemon> mPokemon;
+	private LiveDataList<Pokemon> mPokemonList;
 	private OnPokemonClickListener mListener;
 
 	PokemonListAdapter(LiveDataList<Pokemon> pokemon, OnPokemonClickListener l)
 	{
-		this.mPokemon = pokemon;
+		this.mPokemonList = pokemon;
 		this.mListener = l;
 
-		mPokemon.observeCollection(cacheNotifier);
+		mPokemonList.observeCollection(cacheNotifier);
 	}
 
 	public void updatePokemon(LiveDataList<Pokemon> pokemon)
 	{
-		this.mPokemon = pokemon;
+		this.mPokemonList = pokemon;
 		notifyDataSetChanged();
 
-		mPokemon.observeCollection(cacheNotifier);
+		mPokemonList.observeCollection(cacheNotifier);
 	}
 
 	@Override
@@ -71,16 +73,16 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 	@Override
 	public int getItemCount()
 	{
-		return mPokemon.size();
+		return mPokemonList.size();
 	}
 
 	public int getPokemonClickedId(int position)
 	{
 		Log.d(TAG, "position: " + position);
-		if(position > 0 && mPokemon != null)
+		if(position > 0 && mPokemonList != null)
 		{
-			Log.d(TAG, Integer.toString(mPokemon.getValue(position).getId()));
-			return mPokemon.getValue(position).getId(); //mPokemon ids start at 1
+			Log.d(TAG, Integer.toString(mPokemonList.getValue(position).getId()));
+			return mPokemonList.getValue(position).getId(); //mPokemonList ids start at 1
 		}
 		else
 			return 1;
@@ -92,10 +94,34 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 		return prefs.getBoolean(context.getResources().getString(R.string.pref_image_key), true);
 	}
 
+	public void sortPokemonByName(){
+		mPokemonList.sort(new Comparator<Pokemon>()
+		{
+			@Override
+			public int compare(Pokemon pokemon1, Pokemon pokemon2)
+			{
+				return pokemon1.getName().compareTo(pokemon2.getName());
+			}
+		});
+		notifyDataSetChanged();
+	}
+
+	public void sortPokemonById(){
+		mPokemonList.sort(new Comparator<Pokemon>()
+		{
+			@Override
+			public int compare(Pokemon pokemon1, Pokemon pokemon2)
+			{
+				return pokemon1.getId() - pokemon2.getId();
+			}
+		});
+		notifyDataSetChanged();
+	}
+
 	@Override
 	public void onBindViewHolder(@NonNull PokemonViewHolder viewHolder, int i)
 	{
-		viewHolder.bind(mPokemon.getValue(i));
+		viewHolder.bind(mPokemonList.getValue(i));
 	}
 
 	public interface OnPokemonClickListener

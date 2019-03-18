@@ -36,15 +36,16 @@
     <string name="action_pokemon_list_search">Pokémon Name or Pokédex ID</string>
     <string name="action_search_title">Search</string>
     <string name="action_search_submit">Submit</string>
+    <string name="action_search_cancel">Cancel</string>
 
     <!-- sort order -->
     <string name="pref_sort_key" translatable="false">pref_sort</string>
     <string name="pref_sort_title">Sort By</string>
-    <string name="pref_sort_entry_id">Pokémon ID Number</string>
-    <string name="pref_sort_value_id" translatable="false">id</string>
-    <string name="pref_sort_entry_name">Name</string>
-    <string name="pref_sort_value_name" translatable="false">name</string>
-    <string name="pref_sort_default">@string/pref_sort_value_id</string>
+    <string name="pref_sort_entry_sort_by_id">Pokémon ID Number</string>
+    <string name="pref_sort_value_sort_by_id" translatable="false">id</string>
+    <string name="pref_sort_entry_sort_by_name">Name</string>
+    <string name="pref_sort_value_sort_by_name" translatable="false">name</string>
+    <string name="pref_sort_default">@string/pref_sort_value_sort_by_id</string>
 
     <!-- if showing images -->
     <string name="pref_image_key" translatable="false">pref_image</string>

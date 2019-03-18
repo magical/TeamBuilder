@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="pref_sort_entries">
-        <item>@string/pref_sort_entry_id</item>
-        <item>@string/pref_sort_entry_name</item>
+        <item>@string/pref_sort_entry_sort_by_id</item>
+        <item>@string/pref_sort_entry_sort_by_name</item>
     </string-array>
 
     <string-array name="pref_sort_values">
-        <item>@string/pref_sort_value_id</item>
-        <item>@string/pref_sort_value_name</item>
+        <item>@string/pref_sort_value_sort_by_id</item>
+        <item>@string/pref_sort_value_sort_by_name</item>
     </string-array>
 
 </resources>
