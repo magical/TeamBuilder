@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -139,7 +140,10 @@ public class PokemonListFragment extends Fragment
 			public void onClick(View v)
 			{
 				Log.d(TAG, "Fab search clicked");
-				searchForPokemon();
+				if(searchTerm==null)
+					searchForPokemon();
+				else
+					clearSearch();
 			}
 		});
 		listRV.addOnScrollListener(new RecyclerView.OnScrollListener()
@@ -208,10 +212,21 @@ public class PokemonListFragment extends Fragment
 						}
 						else
 							Log.d(TAG, "Is str");
+
+						mListFAB.setImageResource(R.drawable.ic_action_clear); //add to SQL
+						mListFAB.setBackgroundTintList(ContextCompat.getColorStateList(getActivity(), R.color.colorNegativeFAB));
 					}
+					dialog.dismiss();
 				}
 			});
+
 		builder.create().show();
+	}
+
+	private void clearSearch()
+	{
+		mListFAB.setImageResource(R.drawable.ic_action_search); //add to SQL
+		mListFAB.setBackgroundTintList(ContextCompat.getColorStateList(getActivity(), R.color.colorPrimary));
 	}
 
 	@Override
@@ -235,13 +250,10 @@ public class PokemonListFragment extends Fragment
 		);
 
 		if(sortPreference.equals(getString(R.string.pref_sort_value_sort_by_name)))
-		{
 			mPokemonListAdapter.sortPokemonByName();
-		}
 		else //default
-		{
 			mPokemonListAdapter.sortPokemonById();
-		}
+
 	}
 }
 

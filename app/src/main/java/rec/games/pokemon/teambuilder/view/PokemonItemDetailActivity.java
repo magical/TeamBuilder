@@ -357,7 +357,7 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 		{
 			Log.d(TAG, "Added");
 			mItemFAB.setImageResource(R.drawable.ic_status_remove); //remove
-			mItemFAB.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.colorRemovePokemon));
+			mItemFAB.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.colorNegativeFAB));
 			mItemAdded = true;
 		} else
 		{

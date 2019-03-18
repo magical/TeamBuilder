@@ -36,6 +36,7 @@
     <string name="action_pokemon_list_search">Pokémon Name or Pokédex ID</string>
     <string name="action_search_title">Search</string>
     <string name="action_search_submit">Submit</string>
+    <string name="action_search_clear">Clear</string>
 
     <!-- sort order -->
     <string name="pref_sort_key" translatable="false">pref_sort</string>
