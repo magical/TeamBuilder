@@ -128,7 +128,7 @@ public class PokeAPIRepository
 				typeLock.countDown();
 
 				//start loading the types
-				for(int key: typeCache.keySet())
+				for(int key : typeCache.keySet())
 				{
 					int result = loadType(key, NetworkPriority.ABOVE_NORMAL);
 					if(result != 0)
@@ -360,7 +360,7 @@ public class PokeAPIRepository
 		if(cacheEntry.data == null || !cacheEntry.data.isDeferred())
 			return 2;
 
-		final String url = ((DeferredPokemonTypeResource)cacheEntry.data).getUrl();
+		final String url = ((DeferredPokemonTypeResource) cacheEntry.data).getUrl();
 		NetworkUtils.doPriorityHTTPGet(url, priority, new PriorityCallback()
 		{
 			@Override
@@ -417,7 +417,7 @@ public class PokeAPIRepository
 		if(cacheEntry.data == null || !cacheEntry.data.isDeferred())
 			return 2;
 
-		final String url = ((DeferredPokemonMoveResource)cacheEntry.data).getUrl();
+		final String url = ((DeferredPokemonMoveResource) cacheEntry.data).getUrl();
 		NetworkUtils.doPriorityHTTPGet(url, priority, new PriorityCallback()
 		{
 			@Override
@@ -475,7 +475,7 @@ public class PokeAPIRepository
 			return 2;
 
 		//so now we know it is deferred, we can make a request for the data
-		final String url = ((DeferredPokemonResource)cacheEntry.data).getUrl();
+		final String url = ((DeferredPokemonResource) cacheEntry.data).getUrl();
 		NetworkUtils.doPriorityHTTPGet(url, priority, new PriorityCallback()
 		{
 			@Override
@@ -522,7 +522,14 @@ public class PokeAPIRepository
 				}
 
 				//grab the move references from the cache
-				// TODO: sort by name
+				Arrays.sort(pokemonData.moves, new Comparator<PokeAPIUtils.PokemonMove>()
+				{
+					@Override
+					public int compare(PokeAPIUtils.PokemonMove o1, PokeAPIUtils.PokemonMove o2)
+					{
+						return o1.move.name.compareTo(o2.move.name);
+					}
+				});
 				ArrayList<LiveData<PokemonMove>> moves = new ArrayList<>(pokemonData.moves.length);
 				for(PokeAPIUtils.PokemonMove pokeAPIMove : pokemonData.moves)
 				{
@@ -542,7 +549,7 @@ public class PokeAPIRepository
 	public static LiveDataList<Pokemon> extractPokemonListFromCache()
 	{
 		LiveDataList<Pokemon> liveList = new LiveDataList<>();
-		for(CacheEntry<Pokemon> cacheEntry: pokemonCache.values())
+		for(CacheEntry<Pokemon> cacheEntry : pokemonCache.values())
 			liveList.add(cacheEntry.liveObserver);
 
 		return liveList;
