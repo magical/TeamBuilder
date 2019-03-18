@@ -216,15 +216,23 @@ public class PokemonListFragment extends Fragment
 						mListFAB.setImageResource(R.drawable.ic_action_clear); //add to SQL
 						mListFAB.setBackgroundTintList(ContextCompat.getColorStateList(getActivity(), R.color.colorNegativeFAB));
 					}
-					dialog.dismiss();
 				}
 			});
+		builder.setNegativeButton(getString(R.string.action_search_cancel), new DialogInterface.OnClickListener()
+		{
+			@Override
+			public void onClick(DialogInterface dialog, int which)
+			{
+				clearSearch();
+			}
+		});
 
 		builder.create().show();
 	}
 
 	private void clearSearch()
 	{
+		searchTerm = null;
 		mListFAB.setImageResource(R.drawable.ic_action_search); //add to SQL
 		mListFAB.setBackgroundTintList(ContextCompat.getColorStateList(getActivity(), R.color.colorPrimary));
 	}
