@@ -185,12 +185,12 @@ public class PokeAPIRepository
 					e.printStackTrace();
 				}
 
-				for(int key: moveCache.keySet())
+				/*for(int key: moveCache.keySet())
 				{
 					int result = loadMove(key, NetworkPriority.LOW);
 					if(result != 0)
 						Log.d(PokeAPIViewModel.class.getSimpleName(), "bad result " + result + " for move: " + key);
-				}
+				}*/
 			}
 		});
 
@@ -244,12 +244,12 @@ public class PokeAPIRepository
 					e.printStackTrace();
 				}
 
-				for(int key: pokemonCache.keySet())
+				/*for(int key: pokemonCache.keySet())
 				{
 					int result = loadPokemon(key, NetworkPriority.NORMAL);
 					if(result != 0)
 						Log.d(PokeAPIViewModel.class.getSimpleName(), "bad result " + result + " for pokemon: " + key);
-				}
+				}*/
 			}
 		});
 	}
