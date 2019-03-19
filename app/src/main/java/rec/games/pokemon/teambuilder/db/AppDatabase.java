@@ -7,7 +7,7 @@ import android.arch.persistence.room.RoomDatabase;
 import android.arch.persistence.room.migration.Migration;
 import android.content.Context;
 
-@Database(entities = {SavedTeamEntity.class, SavedTeamMemberEntity.class}, version = 1)
+@Database(entities = {SavedTeamEntity.class, SavedTeamMemberEntity.class}, version = 2)
 public abstract class AppDatabase extends RoomDatabase
 {
 	public abstract SavedTeamDao savedTeamDao();
