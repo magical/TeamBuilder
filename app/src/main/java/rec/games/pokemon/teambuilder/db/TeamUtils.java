@@ -16,10 +16,9 @@ import rec.games.pokemon.teambuilder.viewmodel.PokeAPIViewModel;
  */
 public class TeamUtils
 {
-	public static boolean isPokemonInCurrentTeam(SavedTeamRepository repo, SharedPreferences prefs, int pokemonId)
+	public static boolean isPokemonInCurrentTeam(SavedTeamRepository repo, int teamId, int pokemonId)
 	{
-		int currentTeamId = getCurrentTeamId(prefs);
-		return repo.isPokemonInTeamSync(currentTeamId, pokemonId);
+		return repo.isPokemonInTeamSync(teamId, pokemonId);
 	}
 
 	public static LiveData<Team> getTeam(PokeAPIViewModel viewModel, SavedTeamDao dao, int teamId)
@@ -47,30 +46,23 @@ public class TeamUtils
 		);
 	}
 
-	public static LiveData<Team> getCurrentTeam(PokeAPIViewModel viewModel, SavedTeamDao dao, SharedPreferences prefs)
+	public static LiveData<Team> getCurrentTeam(PokeAPIViewModel viewModel, SavedTeamDao dao, int teamId)
 	{
-		int currentTeamId = getCurrentTeamId(prefs);
-		return getTeam(viewModel, dao, currentTeamId);
+		return getTeam(viewModel, dao, teamId);
 	}
 
-	public static int getCurrentTeamId(SharedPreferences prefs)
-	{
-		return 1; // TODO: get from prefs
-	}
-
-	public static void addPokemonToCurrentTeam(SavedTeamRepository repo, SharedPreferences prefs, Pokemon pokemon)
+	public static void addPokemonToCurrentTeam(SavedTeamRepository repo, int teamId, Pokemon pokemon)
 	{
 		SavedTeam savedTeam = new SavedTeam();
-		savedTeam.id = getCurrentTeamId(prefs);
+		savedTeam.id = teamId;
 		repo.createSavedTeam(savedTeam); // in case it hasn't been created yet
 		repo.addTeamMember(savedTeam, pokemon.getId());
 	}
 
-	public static void removePokemonFromCurrentTeam(SavedTeamRepository repo, SharedPreferences prefs, Pokemon pokemon)
+	public static void removePokemonFromCurrentTeam(SavedTeamRepository repo, int teamId, Pokemon pokemon)
 	{
 		SavedTeam savedTeam = new SavedTeam();
-		savedTeam.id = getCurrentTeamId(prefs);
-		//repo.createSavedTeam(savedTeam); // in case it hasn't been created yet
+		savedTeam.id = teamId;
 		repo.removeTeamMember(savedTeam, pokemon.getId());
 	}
 }
