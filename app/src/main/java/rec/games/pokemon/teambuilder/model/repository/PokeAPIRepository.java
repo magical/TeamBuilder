@@ -532,7 +532,8 @@ public class PokeAPIRepository
 				for(PokeAPIUtils.PokemonType pokeAPIType : pokemonData.types)
 				{
 					int typeId = PokeAPIUtils.getId(pokeAPIType.type.url);
-					types.add(getLiveType(typeId));
+					//types.add(getLiveType(typeId));
+					types.add(typeCache.get(typeId).liveObserver);
 				}
 
 				//grab the move references from the cache
@@ -564,6 +565,18 @@ public class PokeAPIRepository
 	{
 		LiveDataList<Pokemon> liveList = new LiveDataList<>();
 		for(CacheEntry<Pokemon> cacheEntry : pokemonCache.values())
+			liveList.add(cacheEntry.liveObserver);
+
+		return liveList;
+	}
+
+	/**
+	 * Returns a list of type objects. Only call this if you know all the types have been loaded already.
+	 */
+	public static LiveDataList<PokemonType> extractTypeListFromCache()
+	{
+		LiveDataList<PokemonType> liveList = new LiveDataList<>();
+		for(CacheEntry<PokemonType> cacheEntry : typeCache.values())
 			liveList.add(cacheEntry.liveObserver);
 
 		return liveList;
