@@ -393,7 +393,8 @@ public class PokeAPIRepository
 				PokemonTypeResource newPokemonType = new PokemonTypeResource(
 					typeData.id,
 					typeData.name,
-					PokemonTypeResource.generateDamageMultipliers(typeData.damage_relations, typeCache.keySet())
+					PokemonTypeResource.generateDamageMultipliers(typeData.damage_relations, typeCache.keySet()),
+					PokeAPIUtils.createLocaleMap(typeData.names)
 				);
 				updatePokemonType(newPokemonType.getId(), newPokemonType);
 			}
@@ -449,7 +450,13 @@ public class PokeAPIRepository
 
 				int typeId = PokeAPIUtils.getId(moveData.type.url);
 
-				PokemonMoveResource newPokemonMove = new PokemonMoveResource(moveData.id, moveData.name, moveData.power, getLiveType(typeId));
+				PokemonMoveResource newPokemonMove = new PokemonMoveResource(
+					moveData.id,
+					moveData.name,
+					moveData.power,
+					getLiveType(typeId),
+					PokeAPIUtils.createLocaleMap(moveData.names)
+				);
 				updatePokemonMove(newPokemonMove.getId(), newPokemonMove);
 			}
 		});
@@ -463,7 +470,7 @@ public class PokeAPIRepository
 	 * 1 - pokemonCache and it's dependencies haven't finished loading yet and/or could not find item in map (a bad id)
 	 * 2 - data is not Deferred. Hypothetically cacheEntry.data could return null, but that would be a bug in the constructor
 	 */
-	public static int loadPokemon(int id, NetworkPriority priority)
+	public static int loadPokemon(int id, final NetworkPriority priority)
 	{
 		//did they give us a bad id?
 		final CacheEntry<Pokemon> cacheEntry = pokemonCache.get(id);
@@ -540,10 +547,48 @@ public class PokeAPIRepository
 				//create a non-deferred and post it to our LiveData
 				PokemonResource newPokemon = new PokemonResource(pokemonData.id, pokemonData.name, types, moves);
 				updatePokemon(newPokemon.getId(), newPokemon);
+				loadPokemonSpeciesNames(pokemonData.species.url, newPokemon, priority);
 			}
 		});
 
 		return 0;
+	}
+
+	private static void loadPokemonSpeciesNames(final String speciesUrl, final PokemonResource pokemon, NetworkPriority priority)
+	{
+		NetworkUtils.doPriorityHTTPGet(speciesUrl, priority, new PriorityCallback()
+		{
+			@Override
+			public boolean onStart()
+			{
+				return true;
+			}
+
+			@EverythingIsNonNull
+			@Override
+			public void onFailure(Call call, IOException e)
+			{
+				Log.d(PokeAPIViewModel.class.getSimpleName(), "unable to request pokemonSpecies at url: " + speciesUrl);
+			}
+
+			@EverythingIsNonNull
+			@Override
+			public void onResponse(Call call, Response response) throws IOException
+			{
+				ResponseBody body = response.body();
+				if(body == null)
+				{
+					Log.d(PokeAPIViewModel.class.getSimpleName(), "Body was null");
+					return;
+				}
+
+				String pokemonSpeciesJSON = body.string();
+				PokeAPIUtils.PokemonSpecies pokemonSpecies = PokeAPIUtils.parsePokemonSpeciesJSON(pokemonSpeciesJSON);
+
+				pokemon.setSpeciesLocaleMap(PokeAPIUtils.createLocaleMap(pokemonSpecies.names));
+				//updatePokemon(pokemon.getId(), pokemon);
+			}
+		});
 	}
 
 	public static LiveDataList<Pokemon> extractPokemonListFromCache()

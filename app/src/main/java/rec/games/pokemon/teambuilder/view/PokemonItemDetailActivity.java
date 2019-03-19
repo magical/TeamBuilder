@@ -241,7 +241,26 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 	{
 		if(mPokemon != null)
 		{
-			mPokemonName.setText(mPokemon.getName());
+			if(mPokemon instanceof PokemonResource)
+			{
+				((PokemonResource) mPokemon).getLocaleName("en").observe(this, new Observer<String>()
+				{
+					@Override
+					public void onChanged(@Nullable String s)
+					{
+						if(s == null)
+							mPokemonName.setText(mPokemon.getName());
+						else
+							mPokemonName.setText(s);
+					}
+				});
+			}
+			else
+			{
+				mPokemonName.setText(mPokemon.getName());
+			}
+
+
 			String pokemonDisplayId = "#" + pokeId;
 			mPokemonId.setText(pokemonDisplayId);
 

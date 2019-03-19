@@ -5,6 +5,7 @@ import android.net.Uri;
 import com.google.gson.Gson;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
 public class PokeAPIUtils
 {
@@ -58,6 +59,12 @@ public class PokeAPIUtils
 		return gson.fromJson(pokemonJSON, Pokemon.class);
 	}
 
+	public static PokemonSpecies parsePokemonSpeciesJSON(String pokemonSpeciesJSON)
+	{
+		Gson gson = new Gson();
+		return gson.fromJson(pokemonSpeciesJSON, PokemonSpecies.class);
+	}
+
 	public static Move parseMoveJSON(String moveJSON)
 	{
 		Gson gson = new Gson();
@@ -93,6 +100,19 @@ public class PokeAPIUtils
 			.appendEncodedPath(Integer.toString(id) + POKE_API_SPRITE_FILE_TYPE).build().toString();
 	}
 
+	public static HashMap<String, String> createLocaleMap(Name[] names)
+	{
+		if(names.length == 0)
+			return null;
+
+		//key: locale, value: locale name
+		HashMap<String, String> localeMap = new HashMap<>(names.length);
+		for(Name name: names)
+			localeMap.put(name.language.name, name.name);
+
+		return localeMap;
+	}
+
 	public static class NamedAPIResourceList implements Serializable
 	{
 		public NamedAPIResource[] results;
@@ -116,6 +136,7 @@ public class PokeAPIUtils
 		public int id;
 		public String name;
 		public PokemonMove[] moves;
+		public NamedAPIResource species;
 		public PokemonSprites sprites;
 		public PokemonType[] types;
 	}
@@ -136,6 +157,11 @@ public class PokeAPIUtils
 	{
 		public int slot;
 		public NamedAPIResource type;
+	}
+
+	public static class PokemonSpecies implements Serializable
+	{
+		public Name[] names;
 	}
 
 	public static class Move implements Serializable

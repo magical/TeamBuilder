@@ -14,12 +14,13 @@ public class PokemonTypeResource extends PokemonType
 	//key: PokemonType id. value: damageMultiplier against the key
 	protected HashMap<Integer, Double> damageMultipliers;
 
-	public PokemonTypeResource(int id, String resourceName, HashMap<Integer, Double> damageMultipliers)
+	public PokemonTypeResource(int id, String resourceName, HashMap<Integer, Double> damageMultipliers, HashMap<String, String> localeNames)
 	{
 		super(id);
 
 		this.resourceName = resourceName;
 		this.damageMultipliers = damageMultipliers;
+		this.localeNames = localeNames;
 	}
 
 	public static HashMap<Integer, Double> generateDamageMultipliers(PokeAPIUtils.TypeRelations damageRelations, Set<Integer> typeKeys)
@@ -61,5 +62,10 @@ public class PokemonTypeResource extends PokemonType
 	public boolean isLoaded()
 	{
 		return true;
+	}
+
+	public String getLocaleName(String locale)
+	{
+		return localeNames.get(locale);
 	}
 }
