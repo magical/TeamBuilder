@@ -303,13 +303,13 @@ public class PokemonListFragment extends Fragment
 
 		if(mDisplayLimit) //default to false
 		{
-			SearchCriteria searchCriteria = new SearchCriteria()
+			SearchCriteria<Pokemon> searchCriteria = new SearchCriteria<Pokemon>()
 			{
 				@Override
-				public boolean match(@Nullable Object o)
+				public boolean match(@Nullable Pokemon pokemon)
 				{
-					if(o instanceof Pokemon)
-						return (( (Pokemon) o).getId() < 10000 );
+					if(pokemon != null)
+						return ( pokemon.getId() < 10000 ); //if less than 10000
 					return false;
 				}
 			};
@@ -343,13 +343,13 @@ public class PokemonListFragment extends Fragment
 
 		if(searchTerm != null && searchTerm.matches("\\d+"))
 		{
-			SearchCriteria searchCriteria = new SearchCriteria()
+			SearchCriteria<Pokemon> searchCriteria = new SearchCriteria<Pokemon>()
 			{
 				@Override
-				public boolean match(@Nullable Object o)
+				public boolean match(@Nullable Pokemon pokemon)
 				{
-					if(o instanceof Pokemon)
-						return (Integer.toString(((Pokemon) o).getId()).contains(searchTerm));
+					if(pokemon != null)
+						return (Integer.toString(pokemon.getId()).contains(searchTerm));
 
 					return false;
 				}
@@ -365,14 +365,13 @@ public class PokemonListFragment extends Fragment
 		}
 		else if (searchTerm != null)
 		{
-			SearchCriteria searchCriteria = new SearchCriteria()
+			SearchCriteria<Pokemon> searchCriteria = new SearchCriteria<Pokemon>()
 			{
 				@Override
-				public boolean match(@Nullable Object o)
+				public boolean match(@Nullable Pokemon pokemon)
 				{
-					if(o instanceof Pokemon)
-						return (((Pokemon) o).getName().toLowerCase().contains(searchTerm));
-
+					if(pokemon != null)
+						return (pokemon.getName().toLowerCase().contains(searchTerm));
 					return false;
 				}
 			};
