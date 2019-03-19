@@ -145,7 +145,7 @@ public class PokemonListFragment extends Fragment
 			@Override
 			public void onClick(View v)
 			{
-				Log.d(TAG, "Refreshing");
+				//Log.d(TAG, "Refreshing");
 				mViewModel.getNewPokemonList();
 			}
 		});
@@ -155,7 +155,7 @@ public class PokemonListFragment extends Fragment
 			@Override
 			public void onClick(View v)
 			{
-				Log.d(TAG, "Fab search clicked");
+				//Log.d(TAG, "Fab search clicked");
 				if(searchTerm==null)
 					searchForPokemon();
 				else
@@ -218,7 +218,7 @@ public class PokemonListFragment extends Fragment
 				{
 					String input = userInputText.getText().toString();
 					searchTerm = input;
-					Log.d(TAG, "Searched for: " + input);
+					//Log.d(TAG, "Searched for: " + input);
 					if(!input.isEmpty())
 					{
 						boolean ifSearchSuccess = false;

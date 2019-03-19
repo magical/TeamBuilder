@@ -15,7 +15,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
 	@Override
 	public void onCreatePreferences(Bundle bundle, String s)
 	{
-		Log.d(TAG, "Inflated preferences");
+		//Log.d(TAG, "Inflated preferences");
 		addPreferencesFromResource(R.xml.prefs);
 	}
 
