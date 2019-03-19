@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
 import okhttp3.Call;
@@ -290,6 +291,16 @@ public class PokeAPIRepository
 		}
 
 		cacheItem.setData(pokemon);
+	}
+
+	public static Set<Integer> getTypeListIds()
+	{
+		return typeCache.keySet();
+	}
+
+	public static LiveData<Boolean> getTypeListObserver()
+	{
+		return typeCacheObserver.liveObserver;
 	}
 
 	public static LiveData<Boolean> getPokemonListObserver()
