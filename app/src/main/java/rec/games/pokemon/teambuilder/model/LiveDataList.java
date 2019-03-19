@@ -212,4 +212,16 @@ public class LiveDataList<E> implements Iterable<E>
 	{
 		collectionObserverSet.remove(collectionObserver);
 	}
+
+	//if the search criteria returns true, then that given item is added to the sublist
+	public LiveDataList<E> searchSubList(SearchCriteria<E> searchCriteria)
+	{
+		LiveDataList<E> subList = new LiveDataList<>();
+
+		for(LiveData<E> item: list)
+			if(searchCriteria.match(item.getValue()))
+				subList.add(item);
+
+		return subList;
+	}
 }

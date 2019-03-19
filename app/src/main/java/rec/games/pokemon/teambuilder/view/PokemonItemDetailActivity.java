@@ -72,7 +72,7 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 	private boolean mItemAdded;
 	private LiveData<Boolean> mLiveItemAdded;
 	private boolean mAllowMovesSelected;
-	private String mTeamName;
+	private int mTeamId;
 
 	private SavedTeamRepository mSavedTeamRepo;
 	private RecyclerView mMoveRV;
@@ -134,8 +134,8 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 			{
 				mItemFAB.show();
 				updateFABStatus(true);
-				//mTeamName = intent.getStringExtra(Team.TEAM_ID);
-				//Log.d(TAG, "Have Team " + mTeamName);
+				mTeamId = intent.getIntExtra(Team.TEAM_ID, 0);
+				Log.d(TAG, "Have Team " + mTeamId);
 
 				//if team is showing, hide/show FAB and set padding
 				mMoveRV.addOnScrollListener(new RecyclerView.OnScrollListener()
@@ -162,6 +162,21 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 					mMoveRV.getPaddingRight(),
 					getResources().getDimensionPixelOffset(R.dimen.rv_fab_padding));
 				mMoveRV.setClipToPadding(false);
+
+				mSavedTeamRepo = new SavedTeamRepository(this.getApplication());
+
+				mLiveItemAdded = mSavedTeamRepo.isPokemonInTeam(mTeamId, pokeId);
+				mLiveItemAdded.observe(this, new Observer<Boolean>()
+				{
+					@Override
+					public void onChanged(@Nullable Boolean added)
+					{
+						if (added != null)
+						{
+							updateFABStatus(added);
+						}
+					}
+				});
 			}
 			else
 				Log.d(TAG, "Hiding FAB");
@@ -183,23 +198,6 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 			adapter.updatePokemonMoves(moves);
 			mMoveRV.setAdapter(adapter);
 		}
-
-		mSavedTeamRepo = new SavedTeamRepository(this.getApplication());
-
-		SharedPreferences prefs = android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(this);
-		int teamId = TeamUtils.getCurrentTeamId(prefs); // TODO remove me, pass team id via intent
-		mLiveItemAdded = mSavedTeamRepo.isPokemonInTeam(teamId, pokeId);
-		mLiveItemAdded.observe(this, new Observer<Boolean>()
-		{
-			@Override
-			public void onChanged(@Nullable Boolean added)
-			{
-			if (added != null)
-			{
-				updateFABStatus(added);
-			}
-			}
-		});
 	}
 
 	private void setPokemon(@Nullable Pokemon pokemon) {
@@ -357,6 +355,9 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 			case R.id.action_veekun:
 				openInVeekun();
 				return true;
+			case android.R.id.home:
+				finish();
+				return true;
 			default:
 				return super.onOptionsItemSelected(item);
 		}
@@ -445,17 +446,16 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 
 	public void addOrRemovePokemonFromTeam()
 	{
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		//final LiveData<Team> liveTeam = TeamUtils.getCurrentTeam(mPokeViewModel, mSavedTeamDao, prefs);
 		if(!mItemAdded)
 		{
 			Log.d(TAG, String.format(Locale.US, "Adding %s...", mPokemon.getName()));
-			TeamUtils.addPokemonToCurrentTeam(mSavedTeamRepo, prefs, mPokemon);
+			TeamUtils.addPokemonToCurrentTeam(mSavedTeamRepo, mTeamId, mPokemon);
 		}
 		else
 		{
 			Log.d(TAG,  String.format(Locale.US,"Removing %s...", mPokemon.getName()));
-			TeamUtils.removePokemonFromCurrentTeam(mSavedTeamRepo, prefs, mPokemon);
+			TeamUtils.removePokemonFromCurrentTeam(mSavedTeamRepo, mTeamId, mPokemon);
 		}
 	}
 
