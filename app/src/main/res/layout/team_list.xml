@@ -4,26 +4,41 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv_team_list"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:nestedScrollingEnabled="false"
-        android:scrollbars="vertical"
-        android:visibility="visible" />
+        android:layout_height="match_parent">
 
-    <include layout="@layout/loading_error" />
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_team_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:nestedScrollingEnabled="false"
+            android:scrollbars="vertical"
+            android:visibility="visible" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab_add_team"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        android:elevation="6dp"
-        android:src="@drawable/ic_action_add"
-        app:fabSize="normal"
-        app:layout_insetEdge="right"
-        app:rippleColor="@color/colorSecondary" />
+        <include layout="@layout/loading_error" />
 
+        <!-- force at bottom -->
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:gravity="end"
+            android:orientation="horizontal">
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fab_add_team"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|bottom"
+                android:layout_margin="20dp"
+                android:background="@color/colorPrimary"
+                android:elevation="6dp"
+                android:src="@drawable/ic_action_add"
+                app:fabSize="normal"
+                app:rippleColor="@color/colorSecondary" />
+
+        </LinearLayout>
+    </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>
