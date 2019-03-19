@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -40,6 +41,7 @@ public class PokemonListFragment extends Fragment
 
 	private PokeAPIViewModel mViewModel;
 	private RecyclerView listRV;
+	private Parcelable mListRVState;
 	private PokemonListAdapter mPokemonListAdapter;
 
 	private ProgressBar mLoadingPB;
@@ -208,22 +210,25 @@ public class PokemonListFragment extends Fragment
 					Log.d(TAG, "Searched for: " + input);
 					if(!input.isEmpty())
 					{
+						boolean ifSearchSuccess = false;
 						if(input.matches("\\d+"))
-						{
-							int pokeSearchID = Integer.parseInt(input);
-							Log.d(TAG, "Is int " + pokeSearchID);
-						}
+							ifSearchSuccess = mPokemonListAdapter.searchPokemonId(searchTerm);
 						else
-							Log.d(TAG, "Is str");
+							ifSearchSuccess = mPokemonListAdapter.searchPokemonName(searchTerm);
 
-						mListFAB.setImageResource(R.drawable.ic_action_clear); //add to SQL
-						mListFAB.hide();
-						mListFAB.show(); //fix google bug to show image icon
-						mListFAB.setBackgroundTintList(ContextCompat.getColorStateList(getActivity(), R.color.colorNegativeFAB));
+						if(ifSearchSuccess)
+						{
+							if(listRV.getLayoutManager() != null)
+								mListRVState = listRV.getLayoutManager().onSaveInstanceState(); //save position
 
-						mPokemonListAdapter.searchPokemon(searchTerm);
-						listRV.invalidate();
-						mPokemonListAdapter.notifyDataSetChanged();
+							mListFAB.setImageResource(R.drawable.ic_action_clear); //add to SQL
+							mListFAB.hide();
+							mListFAB.show(); //fix google bug to show image icon
+							if(getActivity() != null)
+								mListFAB.setBackgroundTintList(
+									ContextCompat.getColorStateList(getActivity(), R.color.colorNegativeFAB));
+						}
+
 					}
 				}
 			});
@@ -243,6 +248,8 @@ public class PokemonListFragment extends Fragment
 	{
 		searchTerm = null;
 		mPokemonListAdapter.clearSearchPokemon();
+		if(listRV.getLayoutManager() !=null && mListRVState != null)
+			listRV.getLayoutManager().onRestoreInstanceState(mListRVState); //restore current position
 		mListFAB.setImageResource(R.drawable.ic_action_search); //add to SQL
 		mListFAB.hide();
 		mListFAB.show(); //fix google bug to show image icon

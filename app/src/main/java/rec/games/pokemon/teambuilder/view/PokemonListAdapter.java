@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Comparator;
 
@@ -35,6 +36,7 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 				notifyItemChanged(index);
 		}
 	};
+
 	Context context;
 	private LiveDataList<Pokemon> mPokemonList;
 	private LiveDataList<Pokemon> mCurrentPokemonList;
@@ -144,7 +146,7 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 		notifyDataSetChanged();
 	}
 
-	public void searchPokemon(final String searchTerm)
+	public boolean searchPokemonName(final String searchTerm)
 	{
 		SearchCriteria searchCriteria = new SearchCriteria()
 		{
@@ -152,24 +154,45 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 			public boolean match(@Nullable Object o)
 			{
 				if(o instanceof Pokemon)
-				{
-					if(((Pokemon) o).getName().toLowerCase().contains(searchTerm))
-						return true;
-					else
-						return false;
-				}
-				Log.d(TAG, "Not a poke");
+					return (((Pokemon) o).getName().toLowerCase().contains(searchTerm));
+
 				return false;
 			}
 		};
+		return searchPokemon(searchCriteria);
+	}
+
+	public boolean searchPokemonId(final String searchTerm)
+	{
+		SearchCriteria searchCriteria = new SearchCriteria()
+		{
+			@Override
+			public boolean match(@Nullable Object o)
+			{
+				if(o instanceof Pokemon)
+					return (Integer.toString(((Pokemon) o).getId()).contains(searchTerm));
+
+				return false;
+			}
+		};
+		return searchPokemon(searchCriteria);
+	}
+
+	private boolean searchPokemon(SearchCriteria searchCriteria)
+	{
 		mCurrentPokemonList = mPokemonList.searchSubList(searchCriteria);
 		if(mCurrentPokemonList !=null && mCurrentPokemonList.size() > 0)
 		{
 			Log.d(TAG, "new search view, size " + mCurrentPokemonList.size() + " vs "+ mPokemonList.size());
 			notifyDataSetChanged();
+			return true; //search successful
 		}
 		else
-			mCurrentPokemonList = mPokemonList; //no search term
+		{
+			Toast.makeText(context, context.getString(R.string.pokemon_search_not_found), Toast.LENGTH_LONG).show();
+			mCurrentPokemonList = mPokemonList;
+			return false; //search unsuccessful
+		}
 	}
 
 	public void clearSearchPokemon()
