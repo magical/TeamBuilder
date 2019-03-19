@@ -52,7 +52,7 @@ public class TypeAnalysisActivity extends AppCompatActivity implements PokemonTy
 
 		Intent intent = getIntent();
 
-		if (intent != null && intent.hasExtra(TeamListFragment.TEAM_TYPE_ANALYSIS))
+		if(intent != null && intent.hasExtra(TeamListFragment.TEAM_TYPE_ANALYSIS))
 		{
 			actionBarTitle = intent.getStringExtra(TeamListFragment.TEAM_TYPE_ANALYSIS);
 			setTitle(actionBarTitle);
@@ -62,9 +62,9 @@ public class TypeAnalysisActivity extends AppCompatActivity implements PokemonTy
 
 			final PokemonTypeAdapter adapter = new PokemonTypeAdapter(new ArrayList<String>(), this);
 
-			String typeNames[] = {"bug","dark","dragon","electric","fairy",
-				"fighting","fire","flying","ghost","grass","ground","ice",
-				"normal","poison","psychic","rock","shadow","steel","unknown","water",
+			String typeNames[] = {"bug", "dark", "dragon", "electric", "fairy",
+				"fighting", "fire", "flying", "ghost", "grass", "ground", "ice",
+				"normal", "poison", "psychic", "rock", "shadow", "steel", "unknown", "water",
 			}; //very temporary
 
 			ArrayList<String> types = new ArrayList<>(Arrays.asList(typeNames));
@@ -99,7 +99,7 @@ public class TypeAnalysisActivity extends AppCompatActivity implements PokemonTy
 			{
 				if(listStatus != null && listStatus)
 				{
-					for(int key: viewModel.getTypeListIds())
+					for(int key : viewModel.getTypeListIds())
 					{
 						totalLoadCount++;
 						viewModel.loadType(key);
@@ -136,7 +136,7 @@ public class TypeAnalysisActivity extends AppCompatActivity implements PokemonTy
 			{
 				if(team != null)
 				{
-					for(final TeamMember member: team.members)
+					for(final TeamMember member : team.members)
 					{
 						totalLoadCount++;
 
