@@ -1,5 +1,7 @@
 package rec.games.pokemon.teambuilder.model;
 
+import android.arch.lifecycle.LiveData;
+
 public class DeferredPokemonMoveResource extends PokemonMove
 {
 	protected String resourceName;
@@ -20,7 +22,7 @@ public class DeferredPokemonMoveResource extends PokemonMove
 	}
 
 	@Override
-	public PokemonType getType()
+	public LiveData<PokemonType> getType()
 	{
 		return null;
 	}

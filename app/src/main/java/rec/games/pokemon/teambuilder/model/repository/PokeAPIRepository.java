@@ -532,8 +532,7 @@ public class PokeAPIRepository
 				for(PokeAPIUtils.PokemonType pokeAPIType : pokemonData.types)
 				{
 					int typeId = PokeAPIUtils.getId(pokeAPIType.type.url);
-					//types.add(getLiveType(typeId));
-					types.add(typeCache.get(typeId).liveObserver);
+					types.add(getLiveType(typeId));
 				}
 
 				//grab the move references from the cache

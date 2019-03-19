@@ -29,9 +29,9 @@ public class PokemonMoveResource extends PokemonMove
 	}
 
 	@Override
-	public PokemonType getType()
+	public LiveData<PokemonType> getType()
 	{
-		return type.getValue();
+		return type;
 	}
 
 	@Override
