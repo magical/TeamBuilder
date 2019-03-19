@@ -17,7 +17,6 @@ import android.util.Log;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import rec.games.pokemon.teambuilder.R;
 import rec.games.pokemon.teambuilder.db.AppDatabase;
@@ -38,6 +37,7 @@ public class TypeAnalysisActivity extends AppCompatActivity implements PokemonTy
 	private String actionBarTitle;
 	private TextView mTypePower;
 	private RecyclerView mTypeRV;
+	private PokemonTypeAdapter mAdapter;
 
 	private int loadCount = 0;
 	private int totalLoadCount = 0;
@@ -60,17 +60,8 @@ public class TypeAnalysisActivity extends AppCompatActivity implements PokemonTy
 			mTypeRV.setLayoutManager(new LinearLayoutManager(this));
 			mTypeRV.setItemAnimator(new DefaultItemAnimator());
 
-			final PokemonTypeAdapter adapter = new PokemonTypeAdapter(new ArrayList<String>(), this);
-
-			String typeNames[] = {"bug", "dark", "dragon", "electric", "fairy",
-				"fighting", "fire", "flying", "ghost", "grass", "ground", "ice",
-				"normal", "poison", "psychic", "rock", "shadow", "steel", "unknown", "water",
-			}; //very temporary
-
-			ArrayList<String> types = new ArrayList<>(Arrays.asList(typeNames));
-
-			adapter.updatePokemonTypes(types);
-			mTypeRV.setAdapter(adapter);
+			mAdapter = new PokemonTypeAdapter(new ArrayList<TypeInfo>(), this);
+			mTypeRV.setAdapter(mAdapter);
 
 			waitForTeamToLoad();
 		}
