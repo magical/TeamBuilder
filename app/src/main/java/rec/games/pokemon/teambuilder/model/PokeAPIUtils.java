@@ -10,40 +10,40 @@ public class PokeAPIUtils
 {
 	public static final String POKE_ITEM = "rec.games.pokemon.teambuilder.Model.PokeAPIUtils";
 	private final static String POKE_API_BASE_URL = "https://pokeapi.co/api/v2/";
-	private final static String POKE_API_LIMIT_PARAM = "limit";
-	private final static String POKE_API_OFFSET_PARAM = "offset";
+	private final static String STATIC_POKE_API_BASE_URL = "https://raw.githubusercontent.com/PokeAPI/api-data/master/data/";
 
-	private final static String POKE_API_POKEMON_ENDPOINT = "pokemon";
-	private final static String POKE_API_TYPE_ENDPOINT = "type";
-	private final static String POKE_API_MOVE_ENDPOINT = "move";
+	private final static String POKE_API_POKEMON_ENDPOINT = "api/v2/pokemon";
+	private final static String POKE_API_TYPE_ENDPOINT = "api/v2/type";
+	private final static String POKE_API_MOVE_ENDPOINT = "api/v2/move";
 
 	private final static String POKE_API_SPRITE_URL = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/";
 	private final static String POKE_API_ARTWORK_URL = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other-sprites/official-artwork/";
-	private final static String POKE_API_SPRITE_FILE_TYPE = ".png";
 
-	static String buildNamedAPIResourceListURL(String endPoint, int limit, int offset)
+	private final static String POKE_API_SPRITE_FILE_TYPE = ".png";
+	private final static String STATIC_POKE_API_FILE_NAME = "index.json";
+
+	static String buildNamedAPIResourceListURL(String endPoint)
 	{
-		return Uri.parse(POKE_API_BASE_URL).buildUpon()
-			.appendPath(endPoint)
-			.appendQueryParameter(POKE_API_LIMIT_PARAM, String.valueOf(limit))
-			.appendQueryParameter(POKE_API_OFFSET_PARAM, String.valueOf(offset))
+		return Uri.parse(STATIC_POKE_API_BASE_URL).buildUpon()
+			.appendEncodedPath(endPoint)
+			.appendPath(STATIC_POKE_API_FILE_NAME)
 			.build()
 			.toString();
 	}
 
-	public static String buildPokemonListURL(int limit, int offset)
+	public static String buildPokemonListURL()
 	{
-		return buildNamedAPIResourceListURL(POKE_API_POKEMON_ENDPOINT, limit, offset);
+		return buildNamedAPIResourceListURL(POKE_API_POKEMON_ENDPOINT);
 	}
 
-	public static String buildTypeListURL(int limit, int offset)
+	public static String buildTypeListURL()
 	{
-		return buildNamedAPIResourceListURL(POKE_API_TYPE_ENDPOINT, limit, offset);
+		return buildNamedAPIResourceListURL(POKE_API_TYPE_ENDPOINT);
 	}
 
-	public static String buildMoveListURL(int limit, int offset)
+	public static String buildMoveListURL()
 	{
-		return buildNamedAPIResourceListURL(POKE_API_MOVE_ENDPOINT, limit, offset);
+		return buildNamedAPIResourceListURL(POKE_API_MOVE_ENDPOINT);
 	}
 
 	public static NamedAPIResourceList parseNamedAPIResourceListJSON(String namedAPIResourceListJSON)
@@ -91,6 +91,16 @@ public class PokeAPIUtils
 	{
 		return Uri.parse(POKE_API_ARTWORK_URL).buildUpon()
 			.appendEncodedPath(Integer.toString(id) + POKE_API_SPRITE_FILE_TYPE).build().toString();
+	}
+
+	public static String fixStaticAPIUrl(String url)
+	{
+		//the url.substring(1) is to avoid "//" from appearing in the url
+		//while that is a valid Uri, don't want to risk a server not processing it correctly
+		return Uri.parse(STATIC_POKE_API_BASE_URL).buildUpon()
+			.appendEncodedPath(url.substring(1))
+			.appendPath(STATIC_POKE_API_FILE_NAME)
+			.toString();
 	}
 
 	public static class NamedAPIResourceList implements Serializable

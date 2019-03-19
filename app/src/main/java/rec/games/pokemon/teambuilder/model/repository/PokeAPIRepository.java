@@ -83,7 +83,7 @@ public class PokeAPIRepository
 		final CountDownLatch moveLock = new CountDownLatch(1);
 
 		//asynchronously load the type list
-		NetworkUtils.doPriorityHTTPGet(PokeAPIUtils.buildTypeListURL(10000, 0), NetworkPriority.CRITICAL, new PriorityCallback()
+		NetworkUtils.doPriorityHTTPGet(PokeAPIUtils.buildTypeListURL(), NetworkPriority.CRITICAL, new PriorityCallback()
 		{
 			@Override
 			public boolean onStart()
@@ -119,7 +119,8 @@ public class PokeAPIRepository
 					if(id >= 10000)
 						continue;
 
-					PokemonType pokemonType = new DeferredPokemonTypeResource(id, namedResource.name, namedResource.url);
+					String url = PokeAPIUtils.fixStaticAPIUrl(namedResource.url);
+					PokemonType pokemonType = new DeferredPokemonTypeResource(id, namedResource.name, url);
 
 					updatePokemonType(id, pokemonType);
 				}
@@ -139,7 +140,7 @@ public class PokeAPIRepository
 		});
 
 		//asynchronously load the move list
-		NetworkUtils.doPriorityHTTPGet(PokeAPIUtils.buildMoveListURL(10000, 0), NetworkPriority.CRITICAL, new PriorityCallback()
+		NetworkUtils.doPriorityHTTPGet(PokeAPIUtils.buildMoveListURL(), NetworkPriority.CRITICAL, new PriorityCallback()
 		{
 			@Override
 			public boolean onStart()
@@ -168,10 +169,11 @@ public class PokeAPIRepository
 				String moveListJSON = body.string();
 				PokeAPIUtils.NamedAPIResourceList moveList = PokeAPIUtils.parseNamedAPIResourceListJSON(moveListJSON);
 
-				for(PokeAPIUtils.NamedAPIResource r : moveList.results)
+				for(PokeAPIUtils.NamedAPIResource namedResource : moveList.results)
 				{
-					int id = PokeAPIUtils.getId(r.url);
-					PokemonMove pokemonMove = new DeferredPokemonMoveResource(id, r.name, r.url);
+					int id = PokeAPIUtils.getId(namedResource.url);
+					String url = PokeAPIUtils.fixStaticAPIUrl(namedResource.url);
+					PokemonMove pokemonMove = new DeferredPokemonMoveResource(id, namedResource.name, url);
 
 					updatePokemonMove(id, pokemonMove);
 				}
@@ -198,7 +200,7 @@ public class PokeAPIRepository
 		});
 
 		//asynchronously load the pokemon list
-		NetworkUtils.doPriorityHTTPGet(PokeAPIUtils.buildPokemonListURL(10000, 0), NetworkPriority.CRITICAL, new PriorityCallback()
+		NetworkUtils.doPriorityHTTPGet(PokeAPIUtils.buildPokemonListURL(), NetworkPriority.CRITICAL, new PriorityCallback()
 		{
 			@Override
 			public boolean onStart()
@@ -227,10 +229,11 @@ public class PokeAPIRepository
 				String pokemonListJSON = body.string();
 				PokeAPIUtils.NamedAPIResourceList pokemonList = PokeAPIUtils.parseNamedAPIResourceListJSON(pokemonListJSON);
 
-				for(PokeAPIUtils.NamedAPIResource r : pokemonList.results)
+				for(PokeAPIUtils.NamedAPIResource namedResource : pokemonList.results)
 				{
-					int id = PokeAPIUtils.getId(r.url);
-					Pokemon pokemon = new DeferredPokemonResource(id, r.name, r.url);
+					int id = PokeAPIUtils.getId(namedResource.url);
+					String url = PokeAPIUtils.fixStaticAPIUrl(namedResource.url);
+					Pokemon pokemon = new DeferredPokemonResource(id, namedResource.name, url);
 
 					updatePokemon(id, pokemon);
 				}
