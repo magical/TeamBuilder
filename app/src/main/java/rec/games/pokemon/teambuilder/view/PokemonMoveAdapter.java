@@ -1,13 +1,13 @@
 package rec.games.pokemon.teambuilder.view;
 
+import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.content.res.AssetManager;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,33 +17,50 @@ import android.widget.TextView;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import rec.games.pokemon.teambuilder.R;
+import rec.games.pokemon.teambuilder.model.CollectionObserver;
+import rec.games.pokemon.teambuilder.model.LiveDataList;
+import rec.games.pokemon.teambuilder.model.PokemonMove;
+import rec.games.pokemon.teambuilder.model.PokemonMoveResource;
 
-public class PokemonMoveAdapter extends RecyclerView.Adapter<PokemonMoveAdapter.PokemonViewHolder>
+public class PokemonMoveAdapter extends RecyclerView.Adapter<PokemonMoveAdapter.PokemonMoveViewHolder>
 {
 	private static final String TAG = PokemonListAdapter.class.getSimpleName();
+	private final CollectionObserver<PokemonMove> cacheNotifier = new CollectionObserver<PokemonMove>()
+	{
+		@Override
+		public void onItemChanged(@Nullable PokemonMove pokemonMove, int index)
+		{
+			if(pokemonMove instanceof PokemonMoveResource)
+				notifyItemChanged(index);
+		}
+	};
 
 	private Context context;
-	private ArrayList<String> mPokemon;				//temporary placeholder
+	private LiveDataList<PokemonMove> mMoveList;
 	private OnPokemonMoveClickListener mListener;
 	private ArrayList<Integer> selected;
 	private boolean mAllowMovesSelected;
 
-	PokemonMoveAdapter(ArrayList<String> pokemon, OnPokemonMoveClickListener l, boolean allowMovesSelected)
+	PokemonMoveAdapter(List<LiveData<PokemonMove>> moveList, OnPokemonMoveClickListener l, boolean allowMovesSelected)
 	{
-		this.mPokemon = pokemon;
+		this.mMoveList = new LiveDataList<>(moveList);
 		this.mListener = l;
 		mAllowMovesSelected = allowMovesSelected;
-
 		selected = new ArrayList<>();
+
+		mMoveList.observeCollection(cacheNotifier);
 	}
 
-	public void updatePokemonMoves(ArrayList<String> pokemon)
+	public void updatePokemonMoves(List<LiveData<PokemonMove>> moveList)
 	{
-		this.mPokemon = pokemon;
+		this.mMoveList = new LiveDataList<>(moveList);
 		notifyDataSetChanged();
+
+		mMoveList.observeCollection(cacheNotifier);
 	}
 
 	@Override
@@ -55,31 +72,26 @@ public class PokemonMoveAdapter extends RecyclerView.Adapter<PokemonMoveAdapter.
 
 	@NonNull
 	@Override
-	public PokemonViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+	public PokemonMoveViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
 	{
 		LayoutInflater inf = LayoutInflater.from(parent.getContext());
 		View v = inf.inflate(R.layout.move_list_entry, parent, false);
-		return new PokemonViewHolder(v, mListener);
+		return new PokemonMoveViewHolder(v, mListener);
 	}
 
 	@Override
 	public int getItemCount()
 	{
-		return mPokemon.size();
+		return mMoveList.size();
 	}
 
 	public int getPokemonMoveClickId(int position)
 	{
-		if(mPokemon != null)
-		{
-			return position; //temporary
-		}
-		else
-			return 0;
+		return position;
 	}
 
 	@Override
-	public void onBindViewHolder(@NonNull PokemonViewHolder viewHolder, int i)
+	public void onBindViewHolder(@NonNull PokemonMoveViewHolder viewHolder, int i)
 	{
 		if(mAllowMovesSelected)
 		{
@@ -89,7 +101,7 @@ public class PokemonMoveAdapter extends RecyclerView.Adapter<PokemonMoveAdapter.
 				viewHolder.setColor(viewHolder.itemView, R.color.colorHighlightBackground, R.color.colorHighlightText); //selected
 		}
 
-		viewHolder.bind(mPokemon.get(i));
+		viewHolder.bind(mMoveList.getValue(i));
 	}
 
 	public interface OnPokemonMoveClickListener
@@ -97,7 +109,7 @@ public class PokemonMoveAdapter extends RecyclerView.Adapter<PokemonMoveAdapter.
 		void onPokemonMoveClicked(int pokeId);
 	}
 
-	class PokemonViewHolder extends RecyclerView.ViewHolder
+	class PokemonMoveViewHolder extends RecyclerView.ViewHolder
 	{
 		private OnPokemonMoveClickListener mListener;
 		private TextView mName;
@@ -105,7 +117,7 @@ public class PokemonMoveAdapter extends RecyclerView.Adapter<PokemonMoveAdapter.
 		private ImageView mTypeIV;
 		private TextView mPower;
 
-		public PokemonViewHolder(View view, OnPokemonMoveClickListener l)
+		public PokemonMoveViewHolder(View view, OnPokemonMoveClickListener l)
 		{
 			super(view);
 			mName = view.findViewById(R.id.move_name);
@@ -149,24 +161,34 @@ public class PokemonMoveAdapter extends RecyclerView.Adapter<PokemonMoveAdapter.
 			mPower.setTextColor(ContextCompat.getColor(context, text));
 		}
 
-		public void bind(String moveName)
+		public void bind(PokemonMove pokemonMove)
 		{
-			mName.setText(moveName);
-			mType.setText("unknown");
-			mPower.setText(String.valueOf(150));
+			mName.setText(pokemonMove.getName());
 
-			AssetManager assets = context.getAssets();
+			if(pokemonMove instanceof PokemonMoveResource)
+			{
+				PokemonMoveResource move = (PokemonMoveResource) pokemonMove;
 
-			try {
-				mType.setVisibility(View.GONE);
-				mTypeIV.setVisibility(View.VISIBLE);
-				InputStream stream = assets.open(String.format(Locale.US, "types/%s.png", "unknown"));
-				Drawable drawable = Drawable.createFromStream(stream, "unknown"+".png");
-				mTypeIV.setImageDrawable(drawable);
-			} catch (IOException exc) {
-				mTypeIV.setImageResource(R.drawable.ic_poke_unknown);
-				mTypeIV.setVisibility(View.GONE);
-				mType.setVisibility(View.VISIBLE);
+				String typeName = move.getType().getValue().getName();
+				mType.setText(typeName);
+				mPower.setText(String.valueOf(move.getPower()));
+
+				AssetManager assets = context.getAssets();
+
+				try
+				{
+					mType.setVisibility(View.GONE);
+					mTypeIV.setVisibility(View.VISIBLE);
+					InputStream stream = assets.open(String.format(Locale.US, "types/%s.png", typeName));
+					Drawable drawable = Drawable.createFromStream(stream, typeName + ".png");
+					mTypeIV.setImageDrawable(drawable);
+				}
+				catch(IOException exc)
+				{
+					mTypeIV.setImageResource(R.drawable.ic_poke_unknown);
+					mTypeIV.setVisibility(View.GONE);
+					mType.setVisibility(View.VISIBLE);
+				}
 			}
 		}
 	}

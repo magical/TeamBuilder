@@ -5,11 +5,9 @@ import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -142,6 +140,27 @@ public class TypeAnalysisActivity extends AppCompatActivity implements PokemonTy
 							{
 								if(pokemon instanceof PokemonResource)
 								{
+									for(final LiveData<PokemonType> pokemonType : ((PokemonResource) pokemon).getTypes())
+									{
+										totalLoadCount++;
+
+										mediator.addSource(pokemonType, new Observer<PokemonType>()
+										{
+											@Override
+											public void onChanged(@Nullable PokemonType type)
+											{
+												if(type instanceof PokemonTypeResource)
+												{
+													loadCount++;
+													mediator.removeSource(pokemonType);
+													mediator.setValue(null);
+												}
+												else
+													viewModel.loadType(type.getId());
+											}
+										});
+									}
+
 									loadCount++;
 									mediator.removeSource(member.pokemon);
 									mediator.setValue(null);
