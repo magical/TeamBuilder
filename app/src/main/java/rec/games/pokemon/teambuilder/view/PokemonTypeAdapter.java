@@ -111,7 +111,8 @@ public class PokemonTypeAdapter extends RecyclerView.Adapter<PokemonTypeAdapter.
 
 		public void bind(TypeInfo typeInfo)
 		{
-			int typeWeak = 4;
+			int typeWeak = typeInfo.weak;
+			int typeStrong = typeInfo.strong;
 			String typeName = typeInfo.type.getName();
 
 			// TODO: use localeName
@@ -119,8 +120,7 @@ public class PokemonTypeAdapter extends RecyclerView.Adapter<PokemonTypeAdapter.
 
 			// TODO
 			mTypeWeakness.setText(String.valueOf(typeWeak));
-			mTypeResistance.setText("1/4");
-
+			mTypeResistance.setText(String.valueOf(typeStrong));
 
 			if(typeWeak > 2){
 				mTypeWeakness.setBackgroundColor(ContextCompat.getColor(context, R.color.colorHighlightBackground));
