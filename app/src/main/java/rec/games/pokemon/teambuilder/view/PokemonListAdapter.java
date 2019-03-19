@@ -190,8 +190,7 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 		else
 		{
 			Toast.makeText(context, context.getString(R.string.pokemon_search_not_found), Toast.LENGTH_LONG).show();
-			mCurrentPokemonList = mPokemonList;
-			return false; //search unsuccessful
+			return false; //search unsuccessful, need to call clearSearchPokemon
 		}
 	}
 

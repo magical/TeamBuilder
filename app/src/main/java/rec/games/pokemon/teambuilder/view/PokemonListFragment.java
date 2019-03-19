@@ -228,6 +228,11 @@ public class PokemonListFragment extends Fragment
 								mListFAB.setBackgroundTintList(
 									ContextCompat.getColorStateList(getActivity(), R.color.colorNegativeFAB));
 						}
+						else
+						{
+							mListRVState = null;
+							clearSearch();
+						}
 
 					}
 				}
