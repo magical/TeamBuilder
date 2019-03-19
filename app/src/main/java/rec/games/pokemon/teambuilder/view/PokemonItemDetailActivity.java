@@ -258,7 +258,7 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 			}
 			else
 			{
-				GlideApp.with(this).load(R.drawable.ic_poke_unknown).into(mArtwork);
+				mArtwork.setImageResource(R.drawable.ic_poke_unknown);
 				//mFrontSprite.setImageResource(android.R.color.transparent);
 				//mBackSprite.setImageResource(android.R.color.transparent);
 			}

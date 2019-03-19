@@ -39,15 +39,14 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 
 	Context context;
 	private LiveDataList<Pokemon> mPokemonList;
-	private LiveDataList<Pokemon> mCurrentPokemonList;
 	private OnPokemonClickListener mListener;
+	private boolean mDisplayImages;
 
-	PokemonListAdapter(LiveDataList<Pokemon> pokemon, OnPokemonClickListener l)
+	PokemonListAdapter(LiveDataList<Pokemon> pokemon, OnPokemonClickListener l, boolean displayImages)
 	{
 		this.mPokemonList = pokemon;
 		this.mListener = l;
-		mCurrentPokemonList = new LiveDataList<>();
-		this.mCurrentPokemonList = mPokemonList;
+		mDisplayImages = displayImages;
 
 		mPokemonList.observeCollection(cacheNotifier);
 	}
@@ -55,7 +54,6 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 	public void updatePokemon(LiveDataList<Pokemon> pokemon)
 	{
 		this.mPokemonList = pokemon;
-		this.mCurrentPokemonList = pokemon;
 		notifyDataSetChanged();
 
 		mPokemonList.observeCollection(cacheNotifier);
@@ -80,19 +78,16 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 	@Override
 	public int getItemCount()
 	{
-		if (mCurrentPokemonList != null && mCurrentPokemonList.size() > 0)
-			return mCurrentPokemonList.size();
-		else
-			return mPokemonList.size();
+		return mPokemonList.size();
 	}
 
 	public int getPokemonClickedId(int position)
 	{
 		Log.d(TAG, "position: " + position);
-		if(position > 0 && mCurrentPokemonList != null)
+		if(position >= 0 && mPokemonList != null)
 		{
-			Log.d(TAG, Integer.toString(mCurrentPokemonList.getValue(position).getId()));
-			return mCurrentPokemonList.getValue(position).getId(); //mPokemonList ids start at 1
+			Log.d(TAG, Integer.toString(mPokemonList.getValue(position).getId()));
+			return mPokemonList.getValue(position).getId(); //mPokemonList ids start at 1
 		}
 		else
 			return 1;
@@ -100,110 +95,19 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 
 	private boolean checkDisplayImages()
 	{
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-		return prefs.getBoolean(context.getResources().getString(R.string.pref_image_key), true);
+		return mDisplayImages;
 	}
 
-	public void sortPokemonByName()
+	public void setDisplayImages(boolean displayImages)
 	{
-		mPokemonList.sort(new Comparator<Pokemon>()
-		{
-			@Override
-			public int compare(Pokemon pokemon1, Pokemon pokemon2)
-			{
-				return pokemon1.getName().compareTo(pokemon2.getName());
-			}
-		});
-		mCurrentPokemonList.sort(new Comparator<Pokemon>()
-		{
-			@Override
-			public int compare(Pokemon pokemon1, Pokemon pokemon2)
-			{
-				return pokemon1.getName().compareTo(pokemon2.getName());
-			}
-		});
-		notifyDataSetChanged();
+		mDisplayImages = displayImages;
 	}
 
-	public void sortPokemonById()
-	{
-		mPokemonList.sort(new Comparator<Pokemon>()
-		{
-			@Override
-			public int compare(Pokemon pokemon1, Pokemon pokemon2)
-			{
-				return pokemon1.getId() - pokemon2.getId();
-			}
-		});
-		mCurrentPokemonList.sort(new Comparator<Pokemon>()
-		{
-			@Override
-			public int compare(Pokemon pokemon1, Pokemon pokemon2)
-			{
-				return pokemon1.getId() - pokemon2.getId();
-			}
-		});
-		notifyDataSetChanged();
-	}
-
-	public boolean searchPokemonName(final String searchTerm)
-	{
-		SearchCriteria searchCriteria = new SearchCriteria()
-		{
-			@Override
-			public boolean match(@Nullable Object o)
-			{
-				if(o instanceof Pokemon)
-					return (((Pokemon) o).getName().toLowerCase().contains(searchTerm));
-
-				return false;
-			}
-		};
-		return searchPokemon(searchCriteria);
-	}
-
-	public boolean searchPokemonId(final String searchTerm)
-	{
-		SearchCriteria searchCriteria = new SearchCriteria()
-		{
-			@Override
-			public boolean match(@Nullable Object o)
-			{
-				if(o instanceof Pokemon)
-					return (Integer.toString(((Pokemon) o).getId()).contains(searchTerm));
-
-				return false;
-			}
-		};
-		return searchPokemon(searchCriteria);
-	}
-
-	private boolean searchPokemon(SearchCriteria searchCriteria)
-	{
-		mCurrentPokemonList = mPokemonList.searchSubList(searchCriteria);
-		if(mCurrentPokemonList !=null && mCurrentPokemonList.size() > 0)
-		{
-			Log.d(TAG, "new search view, size " + mCurrentPokemonList.size() + " vs "+ mPokemonList.size());
-			notifyDataSetChanged();
-			return true; //search successful
-		}
-		else
-		{
-			Toast.makeText(context, context.getString(R.string.pokemon_search_not_found), Toast.LENGTH_LONG).show();
-			return false; //search unsuccessful, need to call clearSearchPokemon
-		}
-	}
-
-	public void clearSearchPokemon()
-	{
-		mCurrentPokemonList = mPokemonList;
-		notifyDataSetChanged();
-	}
 
 	@Override
 	public void onBindViewHolder(@NonNull PokemonViewHolder viewHolder, int i)
 	{
-		viewHolder.bind(mCurrentPokemonList.getValue(i));
+		viewHolder.bind(mPokemonList.getValue(i));
 	}
 
 	public interface OnPokemonClickListener
@@ -247,7 +151,7 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 					.into(mIcon);
 			}
 			else
-				GlideApp.with(mIcon.getContext()).load(R.drawable.ic_poke_unknown).into(mIcon);
+				mIcon.setImageResource(R.drawable.ic_poke_unknown);
 		}
 	}
 }

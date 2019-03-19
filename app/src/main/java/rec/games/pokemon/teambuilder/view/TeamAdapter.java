@@ -149,8 +149,7 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder
 						}
 						else
 						{
-							GlideApp.with(itemView.getContext())
-								.load(R.drawable.ic_poke_unknown).into(image);
+							image.setImageResource(R.drawable.ic_poke_unknown);
 						}
 					}
 				}
