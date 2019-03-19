@@ -45,7 +45,7 @@ public abstract class SavedTeamDao
 	@Transaction
 	public void createSavedTeam(SavedTeam savedTeam) {
 		SavedTeamEntity savedTeamEntity = new SavedTeamEntity();
-		savedTeamEntity.id = 0;
+		savedTeamEntity.id = savedTeam.id;
 		long teamId = insertSavedTeamEntity(savedTeamEntity);
 		if (savedTeam.memberIds != null)
 		{
