@@ -53,7 +53,7 @@ public class TypeAnalysisActivity extends AppCompatActivity implements PokemonTy
 		mTypePower = findViewById(R.id.tv_type_resistance);
 
 		Intent intent = getIntent();
-		
+
 		if (intent != null && intent.hasExtra(TeamListFragment.TEAM_TYPE_ANALYSIS) && intent.hasExtra(Team.TEAM_ID))
 		{
 			actionBarTitle = intent.getStringExtra(TeamListFragment.TEAM_TYPE_ANALYSIS);
@@ -105,7 +105,6 @@ public class TypeAnalysisActivity extends AppCompatActivity implements PokemonTy
 							{
 								if(pokemonType instanceof PokemonTypeResource)
 								{
-									Log.d(TAG, "observed a type");
 									loadCount++;
 									mediator.removeSource(liveType);
 									mediator.setValue(null);
@@ -114,7 +113,6 @@ public class TypeAnalysisActivity extends AppCompatActivity implements PokemonTy
 						});
 					}
 
-					Log.d(TAG, "observed the type list");
 					loadCount++;
 					mediator.removeSource(typeListObserver);
 					mediator.setValue(null);
@@ -144,7 +142,6 @@ public class TypeAnalysisActivity extends AppCompatActivity implements PokemonTy
 							{
 								if(pokemon instanceof PokemonResource)
 								{
-									Log.d(TAG, "observed a member");
 									loadCount++;
 									mediator.removeSource(member.pokemon);
 									mediator.setValue(null);
@@ -155,7 +152,6 @@ public class TypeAnalysisActivity extends AppCompatActivity implements PokemonTy
 						});
 					}
 
-					Log.d(TAG, "observed the team");
 					loadCount++;
 					mediator.removeSource(savedTeam);
 					mediator.setValue(null);

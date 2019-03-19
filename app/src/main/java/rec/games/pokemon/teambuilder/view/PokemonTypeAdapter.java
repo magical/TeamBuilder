@@ -24,7 +24,7 @@ public class PokemonTypeAdapter extends RecyclerView.Adapter<PokemonTypeAdapter.
 	private static final String TAG = PokemonListAdapter.class.getSimpleName();
 
 	Context context;
-	private ArrayList<TypeInfo> mTypeInfo;				//temporary placeholder
+	private ArrayList<TypeInfo> mTypeInfo;
 	private OnPokemonTypeClickListener mListener;
 
 	PokemonTypeAdapter(ArrayList<TypeInfo> pokemon, OnPokemonTypeClickListener l)
