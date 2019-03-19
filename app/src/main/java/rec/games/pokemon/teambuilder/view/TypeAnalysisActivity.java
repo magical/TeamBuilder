@@ -34,6 +34,7 @@ public class TypeAnalysisActivity extends AppCompatActivity implements PokemonTy
 {
 	private static final String TAG = TypeAnalysisActivity.class.getSimpleName();
 
+	private LiveData<Team> mTeamLiveData;
 	private String actionBarTitle;
 	private TextView mTypePower;
 	private RecyclerView mTypeRV;
@@ -103,6 +104,7 @@ public class TypeAnalysisActivity extends AppCompatActivity implements PokemonTy
 							{
 								if(pokemonType instanceof PokemonTypeResource)
 								{
+									Log.d(TAG, "observed a type");
 									loadCount++;
 									mediator.removeSource(liveType);
 									mediator.setValue(null);
@@ -111,6 +113,7 @@ public class TypeAnalysisActivity extends AppCompatActivity implements PokemonTy
 						});
 					}
 
+					Log.d(TAG, "observed the type list");
 					loadCount++;
 					mediator.removeSource(typeListObserver);
 					mediator.setValue(null);
@@ -123,7 +126,7 @@ public class TypeAnalysisActivity extends AppCompatActivity implements PokemonTy
 		mediator.addSource(savedTeam, new Observer<Team>()
 		{
 			@Override
-			public void onChanged(@Nullable Team team)
+			public void onChanged(@Nullable final Team team)
 			{
 				if(team != null)
 				{
@@ -140,6 +143,7 @@ public class TypeAnalysisActivity extends AppCompatActivity implements PokemonTy
 							{
 								if(pokemon instanceof PokemonResource)
 								{
+									Log.d(TAG, "observed a member");
 									loadCount++;
 									mediator.removeSource(member.pokemon);
 									mediator.setValue(null);
@@ -150,6 +154,7 @@ public class TypeAnalysisActivity extends AppCompatActivity implements PokemonTy
 						});
 					}
 
+					Log.d(TAG, "observed the team");
 					loadCount++;
 					mediator.removeSource(savedTeam);
 					mediator.setValue(null);
@@ -165,9 +170,45 @@ public class TypeAnalysisActivity extends AppCompatActivity implements PokemonTy
 				if(loadCount == totalLoadCount)
 				{
 					Log.d(TAG, "Finished loading all of the dependencies");
-					mediator.removeObserver(this);
+					computeResults(savedTeam.getValue());
+					mediator.removeObserver(this); // remove?
 				}
 			}
 		});
+	}
+
+	private void computeResults(Team team)
+	{
+		final PokeAPIViewModel viewModel = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
+		ArrayList<TypeInfo> typeInfoList = new ArrayList<>();
+
+		// waitForResults has finished, so it should be safe to just grab everything from the cache
+		for(PokemonType pokemonType : viewModel.extractTypeListFromCache())
+		{
+			PokemonTypeResource attackingType = (PokemonTypeResource) pokemonType;
+			TypeInfo info = new TypeInfo();
+			info.type = attackingType;
+			for(TeamMember m : team.members)
+			{
+				PokemonResource p = (PokemonResource) m.pokemon.getValue();
+				double damageMultiplier = 1;
+				for(LiveData<PokemonType> liveType : p.getTypes())
+				{
+					PokemonType defendingType = liveType.getValue();
+					damageMultiplier *= attackingType.getDamageMultiplier(defendingType);
+				}
+				if(damageMultiplier > 1)
+				{
+					info.weak++;
+				}
+				else if(damageMultiplier < 1)
+				{
+					info.strong++;
+				}
+			}
+			typeInfoList.add(info);
+		}
+
+		mAdapter.updatePokemonTypes(typeInfoList);
 	}
 }

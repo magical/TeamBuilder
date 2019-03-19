@@ -24,6 +24,11 @@ public class PokeAPIViewModel extends ViewModel
 		return PokeAPIRepository.extractPokemonListFromCache();
 	}
 
+	public LiveDataList<PokemonType> extractTypeListFromCache()
+	{
+		return PokeAPIRepository.extractTypeListFromCache();
+	}
+
 	public Set<Integer> getTypeListIds()
 	{
 		return PokeAPIRepository.getTypeListIds();
