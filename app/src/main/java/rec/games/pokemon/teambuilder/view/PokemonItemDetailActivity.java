@@ -1,5 +1,6 @@
 package rec.games.pokemon.teambuilder.view;
 
+import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.Observer;
@@ -38,6 +39,8 @@ import rec.games.pokemon.teambuilder.db.SavedTeamRepository;
 import rec.games.pokemon.teambuilder.db.TeamUtils;
 import rec.games.pokemon.teambuilder.model.PokeAPIUtils;
 import rec.games.pokemon.teambuilder.model.Pokemon;
+import rec.games.pokemon.teambuilder.model.PokemonMove;
+import rec.games.pokemon.teambuilder.model.PokemonMoveResource;
 import rec.games.pokemon.teambuilder.model.PokemonResource;
 import rec.games.pokemon.teambuilder.model.PokemonType;
 import rec.games.pokemon.teambuilder.model.Team;
@@ -56,7 +59,6 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 	private int numTypes = 1;
 	private PokemonType mType1;
 	private PokemonType mType2;
-	private MediatorLiveData<PokemonType> typesMediator = new MediatorLiveData<>();
 
 	private ImageView mArtwork;
 	private ImageView mFrontSprite;
@@ -72,10 +74,11 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 	private boolean mItemAdded;
 	private LiveData<Boolean> mLiveItemAdded;
 	private boolean mAllowMovesSelected;
-	private String mTeamName;
+	private int mTeamId;
 
 	private SavedTeamRepository mSavedTeamRepo;
 	private RecyclerView mMoveRV;
+	private PokemonMoveAdapter mMoveAdapter;
 
 	private PokeAPIViewModel mPokeViewModel;
 
@@ -134,8 +137,8 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 			{
 				mItemFAB.show();
 				updateFABStatus(true);
-				//mTeamName = intent.getStringExtra(Team.TEAM_ID);
-				//Log.d(TAG, "Have Team " + mTeamName);
+				mTeamId = intent.getIntExtra(Team.TEAM_ID, 0);
+				Log.d(TAG, "Have Team " + mTeamId);
 
 				//if team is showing, hide/show FAB and set padding
 				mMoveRV.addOnScrollListener(new RecyclerView.OnScrollListener()
@@ -162,6 +165,21 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 					mMoveRV.getPaddingRight(),
 					getResources().getDimensionPixelOffset(R.dimen.rv_fab_padding));
 				mMoveRV.setClipToPadding(false);
+
+				mSavedTeamRepo = new SavedTeamRepository(this.getApplication());
+
+				mLiveItemAdded = mSavedTeamRepo.isPokemonInTeam(mTeamId, pokeId);
+				mLiveItemAdded.observe(this, new Observer<Boolean>()
+				{
+					@Override
+					public void onChanged(@Nullable Boolean added)
+					{
+						if (added != null)
+						{
+							updateFABStatus(added);
+						}
+					}
+				});
 			}
 			else
 				Log.d(TAG, "Hiding FAB");
@@ -172,34 +190,9 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 			}
 
 			// Fill in with some fake data
-			final PokemonMoveAdapter adapter = new PokemonMoveAdapter(new ArrayList<String>(), this, mAllowMovesSelected);
-
-			String typeNames[] = {"bug","dark","dragon","electric","fairy",
-				"fighting","fire","flying","ghost","grass","ground","ice",
-				"normal","poison","psychic","rock","shadow","steel","unknown","water",
-			}; //very temporary
-
-			ArrayList<String> moves = new ArrayList<>(Arrays.asList(typeNames));
-			adapter.updatePokemonMoves(moves);
-			mMoveRV.setAdapter(adapter);
+			mMoveAdapter = new PokemonMoveAdapter(new ArrayList<LiveData<PokemonMove>>(), this, mAllowMovesSelected);
+			mMoveRV.setAdapter(mMoveAdapter);
 		}
-
-		mSavedTeamRepo = new SavedTeamRepository(this.getApplication());
-
-		SharedPreferences prefs = android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(this);
-		int teamId = TeamUtils.getCurrentTeamId(prefs); // TODO remove me, pass team id via intent
-		mLiveItemAdded = mSavedTeamRepo.isPokemonInTeam(teamId, pokeId);
-		mLiveItemAdded.observe(this, new Observer<Boolean>()
-		{
-			@Override
-			public void onChanged(@Nullable Boolean added)
-			{
-			if (added != null)
-			{
-				updateFABStatus(added);
-			}
-			}
-		});
 	}
 
 	private void setPokemon(@Nullable Pokemon pokemon) {
@@ -232,6 +225,34 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 					}
 				});
 			}
+
+			//complete the move chain
+			final LifecycleOwner owner = this;
+			for(LiveData<PokemonMove> pokemonMove: p.getMoves())
+			{
+				pokemonMove.observe(this, new Observer<PokemonMove>()
+				{
+					@Override
+					public void onChanged(@Nullable PokemonMove move)
+					{
+						if(move instanceof PokemonMoveResource)
+						{
+							//complete the move type chain
+							move.getType().observe(owner, new Observer<PokemonType>()
+							{
+								@Override
+								public void onChanged(@Nullable PokemonType pokemonType)
+								{
+									//maybe do something when the move's type chain completes
+								}
+							});
+						}
+						else
+							mPokeViewModel.loadMove(move.getId());
+					}
+				});
+			}
+			mMoveAdapter.updatePokemonMoves(p.getMoves());
 		}
 		// update the layout
 		fillLayout();
@@ -376,6 +397,9 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 			case R.id.action_veekun:
 				openInVeekun();
 				return true;
+			case android.R.id.home:
+				finish();
+				return true;
 			default:
 				return super.onOptionsItemSelected(item);
 		}
@@ -464,17 +488,16 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 
 	public void addOrRemovePokemonFromTeam()
 	{
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		//final LiveData<Team> liveTeam = TeamUtils.getCurrentTeam(mPokeViewModel, mSavedTeamDao, prefs);
 		if(!mItemAdded)
 		{
 			Log.d(TAG, String.format(Locale.US, "Adding %s...", mPokemon.getName()));
-			TeamUtils.addPokemonToCurrentTeam(mSavedTeamRepo, prefs, mPokemon);
+			TeamUtils.addPokemonToCurrentTeam(mSavedTeamRepo, mTeamId, mPokemon);
 		}
 		else
 		{
 			Log.d(TAG,  String.format(Locale.US,"Removing %s...", mPokemon.getName()));
-			TeamUtils.removePokemonFromCurrentTeam(mSavedTeamRepo, prefs, mPokemon);
+			TeamUtils.removePokemonFromCurrentTeam(mSavedTeamRepo, mTeamId, mPokemon);
 		}
 	}
 

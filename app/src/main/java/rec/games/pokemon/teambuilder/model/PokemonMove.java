@@ -1,5 +1,7 @@
 package rec.games.pokemon.teambuilder.model;
 
+import android.arch.lifecycle.LiveData;
+
 //Data class representing pokemon moves
 public abstract class PokemonMove
 {
@@ -23,7 +25,7 @@ public abstract class PokemonMove
 	//subclasses may or may not have these. Or they could return different values
 	public abstract String getName();
 
-	public abstract PokemonType getType();
+	public abstract LiveData<PokemonType> getType();
 
 	public abstract Integer getPower();
 

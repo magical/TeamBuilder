@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
 import okhttp3.Call;
@@ -82,7 +83,7 @@ public class PokeAPIRepository
 		final CountDownLatch moveLock = new CountDownLatch(1);
 
 		//asynchronously load the type list
-		NetworkUtils.doPriorityHTTPGet(PokeAPIUtils.buildTypeListURL(10000, 0), NetworkPriority.CRITICAL, new PriorityCallback()
+		NetworkUtils.doPriorityHTTPGet(PokeAPIUtils.buildTypeListURL(), NetworkPriority.CRITICAL, new PriorityCallback()
 		{
 			@Override
 			public boolean onStart()
@@ -118,7 +119,8 @@ public class PokeAPIRepository
 					if(id >= 10000)
 						continue;
 
-					PokemonType pokemonType = new DeferredPokemonTypeResource(id, namedResource.name, namedResource.url);
+					String url = PokeAPIUtils.fixStaticAPIUrl(namedResource.url);
+					PokemonType pokemonType = new DeferredPokemonTypeResource(id, namedResource.name, url);
 
 					updatePokemonType(id, pokemonType);
 				}
@@ -138,7 +140,7 @@ public class PokeAPIRepository
 		});
 
 		//asynchronously load the move list
-		NetworkUtils.doPriorityHTTPGet(PokeAPIUtils.buildMoveListURL(10000, 0), NetworkPriority.CRITICAL, new PriorityCallback()
+		NetworkUtils.doPriorityHTTPGet(PokeAPIUtils.buildMoveListURL(), NetworkPriority.CRITICAL, new PriorityCallback()
 		{
 			@Override
 			public boolean onStart()
@@ -167,10 +169,11 @@ public class PokeAPIRepository
 				String moveListJSON = body.string();
 				PokeAPIUtils.NamedAPIResourceList moveList = PokeAPIUtils.parseNamedAPIResourceListJSON(moveListJSON);
 
-				for(PokeAPIUtils.NamedAPIResource r : moveList.results)
+				for(PokeAPIUtils.NamedAPIResource namedResource : moveList.results)
 				{
-					int id = PokeAPIUtils.getId(r.url);
-					PokemonMove pokemonMove = new DeferredPokemonMoveResource(id, r.name, r.url);
+					int id = PokeAPIUtils.getId(namedResource.url);
+					String url = PokeAPIUtils.fixStaticAPIUrl(namedResource.url);
+					PokemonMove pokemonMove = new DeferredPokemonMoveResource(id, namedResource.name, url);
 
 					updatePokemonMove(id, pokemonMove);
 				}
@@ -197,7 +200,7 @@ public class PokeAPIRepository
 		});
 
 		//asynchronously load the pokemon list
-		NetworkUtils.doPriorityHTTPGet(PokeAPIUtils.buildPokemonListURL(10000, 0), NetworkPriority.CRITICAL, new PriorityCallback()
+		NetworkUtils.doPriorityHTTPGet(PokeAPIUtils.buildPokemonListURL(), NetworkPriority.CRITICAL, new PriorityCallback()
 		{
 			@Override
 			public boolean onStart()
@@ -226,10 +229,11 @@ public class PokeAPIRepository
 				String pokemonListJSON = body.string();
 				PokeAPIUtils.NamedAPIResourceList pokemonList = PokeAPIUtils.parseNamedAPIResourceListJSON(pokemonListJSON);
 
-				for(PokeAPIUtils.NamedAPIResource r : pokemonList.results)
+				for(PokeAPIUtils.NamedAPIResource namedResource : pokemonList.results)
 				{
-					int id = PokeAPIUtils.getId(r.url);
-					Pokemon pokemon = new DeferredPokemonResource(id, r.name, r.url);
+					int id = PokeAPIUtils.getId(namedResource.url);
+					String url = PokeAPIUtils.fixStaticAPIUrl(namedResource.url);
+					Pokemon pokemon = new DeferredPokemonResource(id, namedResource.name, url);
 
 					updatePokemon(id, pokemon);
 				}
@@ -290,6 +294,16 @@ public class PokeAPIRepository
 		}
 
 		cacheItem.setData(pokemon);
+	}
+
+	public static Set<Integer> getTypeListIds()
+	{
+		return typeCache.keySet();
+	}
+
+	public static LiveData<Boolean> getTypeListObserver()
+	{
+		return typeCacheObserver.liveObserver;
 	}
 
 	public static LiveData<Boolean> getPokemonListObserver()
@@ -547,7 +561,9 @@ public class PokeAPIRepository
 				//create a non-deferred and post it to our LiveData
 				PokemonResource newPokemon = new PokemonResource(pokemonData.id, pokemonData.name, types, moves);
 				updatePokemon(newPokemon.getId(), newPokemon);
-				loadPokemonSpeciesNames(pokemonData.species.url, newPokemon, priority);
+
+				String speciesUrl = PokeAPIUtils.fixStaticAPIUrl(pokemonData.species.url);
+				loadPokemonSpeciesNames(speciesUrl, newPokemon, priority);
 			}
 		});
 
@@ -595,6 +611,18 @@ public class PokeAPIRepository
 	{
 		LiveDataList<Pokemon> liveList = new LiveDataList<>();
 		for(CacheEntry<Pokemon> cacheEntry : pokemonCache.values())
+			liveList.add(cacheEntry.liveObserver);
+
+		return liveList;
+	}
+
+	/**
+	 * Returns a list of type objects. Only call this if you know all the types have been loaded already.
+	 */
+	public static LiveDataList<PokemonType> extractTypeListFromCache()
+	{
+		LiveDataList<PokemonType> liveList = new LiveDataList<>();
+		for(CacheEntry<PokemonType> cacheEntry : typeCache.values())
 			liveList.add(cacheEntry.liveObserver);
 
 		return liveList;

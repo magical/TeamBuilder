@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -40,6 +41,7 @@ public class PokemonListFragment extends Fragment
 
 	private PokeAPIViewModel mViewModel;
 	private RecyclerView listRV;
+	private Parcelable mListRVState;
 	private PokemonListAdapter mPokemonListAdapter;
 
 	private ProgressBar mLoadingPB;
@@ -76,6 +78,9 @@ public class PokemonListFragment extends Fragment
 		mLoadingErrorLL = view.findViewById(R.id.ll_loading_error);
 		mLoadingErrorBtn = view.findViewById(R.id.btn_loading_error);
 		mListFAB = view.findViewById(R.id.pokemon_list_FAB);
+		mLoadingErrorMsgTV.setVisibility(View.GONE);
+		mLoadingErrorLL.setVisibility(LinearLayout.GONE);
+		mLoadingErrorBtn.setVisibility(View.GONE);
 		mListFAB.hide();
 
 		if(getArguments() != null)
@@ -95,7 +100,7 @@ public class PokemonListFragment extends Fragment
 			@Override
 			public void onChanged(@Nullable Boolean listStatus)
 			{
-				if(listStatus == null)
+				if(listStatus == null || !listStatus)
 				{
 					Log.d(TAG, "Could not load PokemonList JSON");
 					listRV.setVisibility(View.INVISIBLE);
@@ -205,16 +210,30 @@ public class PokemonListFragment extends Fragment
 					Log.d(TAG, "Searched for: " + input);
 					if(!input.isEmpty())
 					{
+						boolean ifSearchSuccess = false;
 						if(input.matches("\\d+"))
+							ifSearchSuccess = mPokemonListAdapter.searchPokemonId(searchTerm);
+						else
+							ifSearchSuccess = mPokemonListAdapter.searchPokemonName(searchTerm);
+
+						if(ifSearchSuccess)
 						{
-							int pokeSearchID = Integer.parseInt(input);
-							Log.d(TAG, "Is int " + pokeSearchID);
+							if(listRV.getLayoutManager() != null)
+								mListRVState = listRV.getLayoutManager().onSaveInstanceState(); //save position
+
+							mListFAB.setImageResource(R.drawable.ic_action_clear); //add to SQL
+							mListFAB.hide();
+							mListFAB.show(); //fix google bug to show image icon
+							if(getActivity() != null)
+								mListFAB.setBackgroundTintList(
+									ContextCompat.getColorStateList(getActivity(), R.color.colorNegativeFAB));
 						}
 						else
-							Log.d(TAG, "Is str");
+						{
+							mListRVState = null;
+							clearSearch();
+						}
 
-						mListFAB.setImageResource(R.drawable.ic_action_clear); //add to SQL
-						mListFAB.setBackgroundTintList(ContextCompat.getColorStateList(getActivity(), R.color.colorNegativeFAB));
 					}
 				}
 			});
@@ -233,7 +252,12 @@ public class PokemonListFragment extends Fragment
 	private void clearSearch()
 	{
 		searchTerm = null;
+		mPokemonListAdapter.clearSearchPokemon();
+		if(listRV.getLayoutManager() !=null && mListRVState != null)
+			listRV.getLayoutManager().onRestoreInstanceState(mListRVState); //restore current position
 		mListFAB.setImageResource(R.drawable.ic_action_search); //add to SQL
+		mListFAB.hide();
+		mListFAB.show(); //fix google bug to show image icon
 		mListFAB.setBackgroundTintList(ContextCompat.getColorStateList(getActivity(), R.color.colorPrimary));
 	}
 

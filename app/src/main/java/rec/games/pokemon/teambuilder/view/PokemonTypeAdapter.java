@@ -24,18 +24,18 @@ public class PokemonTypeAdapter extends RecyclerView.Adapter<PokemonTypeAdapter.
 	private static final String TAG = PokemonListAdapter.class.getSimpleName();
 
 	Context context;
-	private ArrayList<String> mPokemon;				//temporary placeholder
+	private ArrayList<TypeInfo> mTypeInfo;
 	private OnPokemonTypeClickListener mListener;
 
-	PokemonTypeAdapter(ArrayList<String> pokemon, OnPokemonTypeClickListener l)
+	PokemonTypeAdapter(ArrayList<TypeInfo> pokemon, OnPokemonTypeClickListener l)
 	{
-		this.mPokemon = pokemon;
+		this.mTypeInfo = pokemon;
 		this.mListener = l;
 	}
 
-	public void updatePokemonTypes(ArrayList<String> pokemon)
+	public void updatePokemonTypes(ArrayList<TypeInfo> pokemon)
 	{
-		this.mPokemon = pokemon;
+		this.mTypeInfo = pokemon;
 		notifyDataSetChanged();
 	}
 
@@ -58,12 +58,12 @@ public class PokemonTypeAdapter extends RecyclerView.Adapter<PokemonTypeAdapter.
 	@Override
 	public int getItemCount()
 	{
-		return mPokemon.size();
+		return mTypeInfo.size();
 	}
 
 	public int getPokemonTypeClickId(int position)
 	{
-		if(mPokemon != null)
+		if(mTypeInfo != null)
 		{
 			return position; //temporary
 		}
@@ -74,7 +74,7 @@ public class PokemonTypeAdapter extends RecyclerView.Adapter<PokemonTypeAdapter.
 	@Override
 	public void onBindViewHolder(@NonNull PokemonViewHolder viewHolder, int i)
 	{
-		viewHolder.bind(mPokemon.get(i));
+		viewHolder.bind(mTypeInfo.get(i));
 	}
 
 	public interface OnPokemonTypeClickListener
@@ -109,12 +109,18 @@ public class PokemonTypeAdapter extends RecyclerView.Adapter<PokemonTypeAdapter.
 			});
 		}
 
-		public void bind(String typeName)
+		public void bind(TypeInfo typeInfo)
 		{
-			int typeWeak = 4;
+			int typeWeak = typeInfo.weak;
+			int typeStrong = typeInfo.strong;
+			String typeName = typeInfo.type.getName();
+
+			// TODO: use localeName
 			mTypeName.setText(typeName);
+
+			// TODO
 			mTypeWeakness.setText(String.valueOf(typeWeak));
-			mTypeResistance.setText("1/4");
+			mTypeResistance.setText(String.valueOf(typeStrong));
 
 			if(typeWeak > 2){
 				mTypeWeakness.setBackgroundColor(ContextCompat.getColor(context, R.color.colorHighlightBackground));

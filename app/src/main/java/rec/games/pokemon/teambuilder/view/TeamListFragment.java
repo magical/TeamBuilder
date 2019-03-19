@@ -55,6 +55,8 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 	private BottomAppBar mAppBar;
 	private LinearLayout mActionTypeAnalysis;
 
+	private int teamId;
+
 	private static TeamMember newTeamMember(LiveData<Pokemon> p)
 	{
 		TeamMember tm = new TeamMember();
@@ -96,8 +98,8 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 		mViewModel = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
 		mSavedTeamDao = AppDatabase.getDatabase(this.getContext()).savedTeamDao();
 
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.getContext());
-		mLiveTeam = TeamUtils.getCurrentTeam(mViewModel, mSavedTeamDao, prefs);
+		teamId = 1;
+		mLiveTeam = TeamUtils.getCurrentTeam(mViewModel, mSavedTeamDao, teamId);
 
 		mLiveTeam.observe(this, new Observer<Team>()
 		{
@@ -151,7 +153,7 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 				//should be replaced by activity to create a new team, is a placeholder...
 				Log.d(TAG, "FAB Clicked");
 				Intent intent = new Intent(getActivity(), TeamPokemonActivity.class);
-				intent.putExtra(Team.TEAM_ID, 1); // TODO don't hardcode
+				intent.putExtra(Team.TEAM_ID, teamId);
 				intent.putExtra(TeamListFragment.TEAM_MOVE_ENABLE, true); //allow access to change moves
 				startActivity(intent);
 			}
@@ -181,7 +183,9 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 			{
 				Log.d(TAG, "Clicked");
 				Intent intent = new Intent(getContext(), TypeAnalysisActivity.class);
-				intent.putExtra(TeamListFragment.TEAM_TYPE_ANALYSIS, "Team1 Analysis");
+				String title = "Team " + teamId + " analysis";
+				intent.putExtra(TeamListFragment.TEAM_TYPE_ANALYSIS, title);
+				intent.putExtra(Team.TEAM_ID, teamId);
 				startActivity(intent);
 			}
 		});
@@ -193,7 +197,7 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 	{
 		Intent intent = new Intent(getContext(), PokemonItemDetailActivity.class);
 		intent.putExtra(PokeAPIUtils.POKE_ITEM, pokeId); //temporary assignment
-		intent.putExtra(Team.TEAM_ID, 1); // TODO, know which team is calling
+		intent.putExtra(Team.TEAM_ID, teamId);
 		intent.putExtra(TeamListFragment.TEAM_MOVE_ENABLE, true); //allow access to change moves
 		startActivity(intent);
 	}

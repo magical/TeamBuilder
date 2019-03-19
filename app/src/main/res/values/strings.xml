@@ -37,6 +37,7 @@
     <string name="action_search_title">Search</string>
     <string name="action_search_submit">Submit</string>
     <string name="action_search_cancel">Cancel</string>
+    <string name="pokemon_search_not_found">Search did not find any Pokémon with that query</string>
 
     <!-- sort order -->
     <string name="pref_sort_key" translatable="false">pref_sort</string>
@@ -59,7 +60,7 @@
 
     <!-- PokeAPI rate limiting data -->
     <string name="pref_pokeapi_limiter_permits_key" translatable="false">pref_pokeapi_limiter_permits</string>
-    <string name="pref_pokeapi_limiter_permits_default" translatable="false">100</string>
+    <string name="pref_pokeapi_limiter_permits_default" translatable="false">1000</string>
     <string name="pref_pokeapi_limiter_release_timestamp_key" translatable="false">pref_pokeapi_limiter_release_timestamp</string>
     
     <!-- Share actions -->
