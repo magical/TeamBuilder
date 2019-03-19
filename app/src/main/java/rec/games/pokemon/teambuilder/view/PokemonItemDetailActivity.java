@@ -357,6 +357,9 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 			case R.id.action_veekun:
 				openInVeekun();
 				return true;
+			case android.R.id.home:
+				finish();
+				return true;
 			default:
 				return super.onOptionsItemSelected(item);
 		}
