@@ -5,11 +5,9 @@ import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -54,9 +52,9 @@ public class TypeAnalysisActivity extends AppCompatActivity implements PokemonTy
 
 		Intent intent = getIntent();
 
-		if (intent != null && intent.hasExtra(TeamListFragment.TEAM_TYPE_ANALYSIS) && intent.hasExtra(Team.TEAM_ID))
+		if (intent != null && intent.hasExtra(TeamFragment.TEAM_TYPE_ANALYSIS) && intent.hasExtra(Team.TEAM_ID))
 		{
-			actionBarTitle = intent.getStringExtra(TeamListFragment.TEAM_TYPE_ANALYSIS);
+			actionBarTitle = intent.getStringExtra(TeamFragment.TEAM_TYPE_ANALYSIS);
 			teamId = intent.getIntExtra(Team.TEAM_ID, 1);
 			setTitle(actionBarTitle);
 

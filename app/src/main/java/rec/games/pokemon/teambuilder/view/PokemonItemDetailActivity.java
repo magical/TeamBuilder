@@ -181,7 +181,7 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 			else
 				Log.d(TAG, "Hiding FAB");
 
-			if(intent.hasExtra(TeamListFragment.TEAM_MOVE_ENABLE))
+			if(intent.hasExtra(TeamFragment.TEAM_MOVE_ENABLE))
 			{
 				mAllowMovesSelected = true;
 			}

@@ -4,14 +4,12 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.bottomappbar.BottomAppBar;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -33,14 +31,14 @@ import rec.games.pokemon.teambuilder.model.Team;
 import rec.games.pokemon.teambuilder.model.TeamMember;
 import rec.games.pokemon.teambuilder.viewmodel.PokeAPIViewModel;
 
-public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClickListener
+public class TeamFragment extends Fragment implements TeamAdapter.OnTeamClickListener
 {
-	private static final String TAG = TeamListFragment.class.getSimpleName();
+	private static final String TAG = TeamFragment.class.getSimpleName();
 
 	private LiveData<Team> mLiveTeam;
 
-	public static final String TEAM_TYPE_ANALYSIS = "rec.games.pokemon.teambuilder.view.TeamListFragment";
-	public static final String TEAM_MOVE_ENABLE = "rec.games.pokemon.teambuilder.view.TeamListFragment.Move.Enable";
+	public static final String TEAM_TYPE_ANALYSIS = "rec.games.pokemon.teambuilder.view.TeamFragment";
+	public static final String TEAM_MOVE_ENABLE = "rec.games.pokemon.teambuilder.view.TeamFragment.Move.Enable";
 
 	private TeamAdapter mTeamAdapter;
 	private RecyclerView teamRV;
@@ -154,7 +152,7 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 				Log.d(TAG, "FAB Clicked");
 				Intent intent = new Intent(getActivity(), TeamPokemonActivity.class);
 				intent.putExtra(Team.TEAM_ID, teamId);
-				intent.putExtra(TeamListFragment.TEAM_MOVE_ENABLE, true); //allow access to change moves
+				intent.putExtra(TeamFragment.TEAM_MOVE_ENABLE, true); //allow access to change moves
 				startActivity(intent);
 			}
 		});
@@ -184,7 +182,7 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 				Log.d(TAG, "Clicked");
 				Intent intent = new Intent(getContext(), TypeAnalysisActivity.class);
 				String title = "Team " + teamId + " analysis";
-				intent.putExtra(TeamListFragment.TEAM_TYPE_ANALYSIS, title);
+				intent.putExtra(TeamFragment.TEAM_TYPE_ANALYSIS, title);
 				intent.putExtra(Team.TEAM_ID, teamId);
 				startActivity(intent);
 			}
@@ -198,7 +196,7 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 		Intent intent = new Intent(getContext(), PokemonItemDetailActivity.class);
 		intent.putExtra(PokeAPIUtils.POKE_ITEM, pokeId); //temporary assignment
 		intent.putExtra(Team.TEAM_ID, teamId);
-		intent.putExtra(TeamListFragment.TEAM_MOVE_ENABLE, true); //allow access to change moves
+		intent.putExtra(TeamFragment.TEAM_MOVE_ENABLE, true); //allow access to change moves
 		startActivity(intent);
 	}
 }
