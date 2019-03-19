@@ -298,7 +298,7 @@ public class PokemonListFragment extends Fragment
 
 	private boolean setupPokemonList()
 	{
-		LiveDataList<Pokemon> pokemon = mViewModel.extractPokemonListFromCache();
+		LiveDataList<Pokemon> modifiedPokemonList = mViewModel.extractPokemonListFromCache();
 		boolean updateSuccess = true;
 
 		if(mDisplayLimit) //default to false
@@ -313,13 +313,13 @@ public class PokemonListFragment extends Fragment
 					return false;
 				}
 			};
-			pokemon = pokemon.searchSubList(searchCriteria);
+			modifiedPokemonList = modifiedPokemonList.searchSubList(searchCriteria);
 		}
 
 		//sorts list
 		if(mSortOrder.equals(getString(R.string.pref_sort_value_sort_by_name)))
 		{
-			pokemon.sort(new Comparator<Pokemon>()
+			modifiedPokemonList.sort(new Comparator<Pokemon>()
 			{
 				@Override
 				public int compare(Pokemon pokemon1, Pokemon pokemon2)
@@ -330,7 +330,7 @@ public class PokemonListFragment extends Fragment
 		}
 		else //default
 		{
-			pokemon.sort(new Comparator<Pokemon>()
+			modifiedPokemonList.sort(new Comparator<Pokemon>()
 			{
 				@Override
 				public int compare(Pokemon pokemon1, Pokemon pokemon2)
@@ -354,9 +354,9 @@ public class PokemonListFragment extends Fragment
 					return false;
 				}
 			};
-			LiveDataList<Pokemon> temp = pokemon.searchSubList(searchCriteria);
+			LiveDataList<Pokemon> temp = modifiedPokemonList.searchSubList(searchCriteria);
 			if(temp != null && temp.size() > 0)
-				pokemon = temp;
+				modifiedPokemonList = temp;
 			else
 			{
 				Toast.makeText(getContext(), getString(R.string.pokemon_search_not_found), Toast.LENGTH_LONG).show();
@@ -376,9 +376,9 @@ public class PokemonListFragment extends Fragment
 					return false;
 				}
 			};
-			LiveDataList<Pokemon> temp = pokemon.searchSubList(searchCriteria);
+			LiveDataList<Pokemon> temp = modifiedPokemonList.searchSubList(searchCriteria);
 			if(temp != null && temp.size() > 0)
-				pokemon = temp;
+				modifiedPokemonList = temp;
 			else
 			{
 				Toast.makeText(getContext(), getString(R.string.pokemon_search_not_found), Toast.LENGTH_LONG).show();
@@ -386,7 +386,7 @@ public class PokemonListFragment extends Fragment
 			}
 		}
 
-		mPokemonListAdapter.updatePokemon(pokemon);
+		mPokemonListAdapter.updatePokemon(modifiedPokemonList);
 		return updateSuccess;
 	}
 
