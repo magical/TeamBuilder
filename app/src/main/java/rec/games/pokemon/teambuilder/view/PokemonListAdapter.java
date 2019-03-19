@@ -37,14 +37,15 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 	};
 	Context context;
 	private LiveDataList<Pokemon> mPokemonList;
-	private LiveDataList<Pokemon> mSearchedPokemonList;
+	private LiveDataList<Pokemon> mCurrentPokemonList;
 	private OnPokemonClickListener mListener;
 
 	PokemonListAdapter(LiveDataList<Pokemon> pokemon, OnPokemonClickListener l)
 	{
 		this.mPokemonList = pokemon;
 		this.mListener = l;
-		mSearchedPokemonList = null;
+		mCurrentPokemonList = new LiveDataList<>();
+		this.mCurrentPokemonList = mPokemonList;
 
 		mPokemonList.observeCollection(cacheNotifier);
 	}
@@ -52,6 +53,7 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 	public void updatePokemon(LiveDataList<Pokemon> pokemon)
 	{
 		this.mPokemonList = pokemon;
+		this.mCurrentPokemonList = pokemon;
 		notifyDataSetChanged();
 
 		mPokemonList.observeCollection(cacheNotifier);
@@ -76,8 +78,8 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 	@Override
 	public int getItemCount()
 	{
-		if (mSearchedPokemonList != null && mSearchedPokemonList.size() > 0)
-			return mSearchedPokemonList.size();
+		if (mCurrentPokemonList != null && mCurrentPokemonList.size() > 0)
+			return mCurrentPokemonList.size();
 		else
 			return mPokemonList.size();
 	}
@@ -85,10 +87,10 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 	public int getPokemonClickedId(int position)
 	{
 		Log.d(TAG, "position: " + position);
-		if(position > 0 && mPokemonList != null)
+		if(position > 0 && mCurrentPokemonList != null)
 		{
-			Log.d(TAG, Integer.toString(mPokemonList.getValue(position).getId()));
-			return mPokemonList.getValue(position).getId(); //mPokemonList ids start at 1
+			Log.d(TAG, Integer.toString(mCurrentPokemonList.getValue(position).getId()));
+			return mCurrentPokemonList.getValue(position).getId(); //mPokemonList ids start at 1
 		}
 		else
 			return 1;
@@ -110,12 +112,28 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 				return pokemon1.getName().compareTo(pokemon2.getName());
 			}
 		});
+		mCurrentPokemonList.sort(new Comparator<Pokemon>()
+		{
+			@Override
+			public int compare(Pokemon pokemon1, Pokemon pokemon2)
+			{
+				return pokemon1.getName().compareTo(pokemon2.getName());
+			}
+		});
 		notifyDataSetChanged();
 	}
 
 	public void sortPokemonById()
 	{
 		mPokemonList.sort(new Comparator<Pokemon>()
+		{
+			@Override
+			public int compare(Pokemon pokemon1, Pokemon pokemon2)
+			{
+				return pokemon1.getId() - pokemon2.getId();
+			}
+		});
+		mCurrentPokemonList.sort(new Comparator<Pokemon>()
 		{
 			@Override
 			public int compare(Pokemon pokemon1, Pokemon pokemon2)
@@ -133,36 +151,37 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 			@Override
 			public boolean match(@Nullable Object o)
 			{
-				if(searchTerm.toLowerCase().contains(searchTerm))
-					return true;
-				else
-					return false;
+				if(o instanceof Pokemon)
+				{
+					if(((Pokemon) o).getName().toLowerCase().contains(searchTerm))
+						return true;
+					else
+						return false;
+				}
+				Log.d(TAG, "Not a poke");
+				return false;
 			}
 		};
-		mSearchedPokemonList = mPokemonList.searchSubList(searchCriteria);
-		if(mSearchedPokemonList !=null)
+		mCurrentPokemonList = mPokemonList.searchSubList(searchCriteria);
+		if(mCurrentPokemonList !=null && mCurrentPokemonList.size() > 0)
 		{
-			Log.d(TAG, "searching");
-
+			Log.d(TAG, "new search view, size " + mCurrentPokemonList.size() + " vs "+ mPokemonList.size());
 			notifyDataSetChanged();
 		}
+		else
+			mCurrentPokemonList = mPokemonList; //no search term
 	}
 
 	public void clearSearchPokemon()
 	{
-		mSearchedPokemonList = null;
+		mCurrentPokemonList = mPokemonList;
 		notifyDataSetChanged();
 	}
 
 	@Override
 	public void onBindViewHolder(@NonNull PokemonViewHolder viewHolder, int i)
 	{
-		Log.d(TAG, "refreshing");
-		if(mSearchedPokemonList != null && mSearchedPokemonList.size() > 0)
-			viewHolder.bind(mSearchedPokemonList.getValue(i));
-		else
-			viewHolder.bind(mPokemonList.getValue(i));
-
+		viewHolder.bind(mCurrentPokemonList.getValue(i));
 	}
 
 	public interface OnPokemonClickListener

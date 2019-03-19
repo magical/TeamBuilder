@@ -222,6 +222,8 @@ public class PokemonListFragment extends Fragment
 						mListFAB.setBackgroundTintList(ContextCompat.getColorStateList(getActivity(), R.color.colorNegativeFAB));
 
 						mPokemonListAdapter.searchPokemon(searchTerm);
+						listRV.invalidate();
+						mPokemonListAdapter.notifyDataSetChanged();
 					}
 				}
 			});
