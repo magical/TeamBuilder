@@ -18,8 +18,6 @@ public class SettingsActivity extends AppCompatActivity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_settings);
 
-		//Log.d(TAG, "Creating toolbar");
-
 		if(getSupportActionBar() != null)
 		{
 			getSupportActionBar().setDisplayHomeAsUpEnabled(true); //show back button

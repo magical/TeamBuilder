@@ -41,7 +41,6 @@ public class MainActivity extends AppCompatActivity
 
 	private SharedPreferences preferences;
 	private boolean preferencesImage;
-	private boolean preferencesIdLimit;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -80,7 +79,6 @@ public class MainActivity extends AppCompatActivity
 		preferences.registerOnSharedPreferenceChangeListener(this);
 
 		preferencesImage = preferences.getBoolean(getString(R.string.pref_image_key), true); //default to show images
-		preferencesIdLimit = preferences.getBoolean(getString(R.string.pref_limit_key), false);
 	}
 
 	@Override
@@ -108,12 +106,10 @@ public class MainActivity extends AppCompatActivity
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
 	{
 		boolean newPrefImage = preferences.getBoolean(getString(R.string.pref_image_key), true);
-		boolean limitIds = preferences.getBoolean(getString(R.string.pref_limit_key), false);
-		if(newPrefImage != preferencesImage || limitIds != preferencesIdLimit)
+		if(newPrefImage != preferencesImage)
 		{
 			adapterVP.refreshFragment(); //refreshes all fragments
 			preferencesImage = newPrefImage;
-			preferencesIdLimit = limitIds;
 		}
 	}
 

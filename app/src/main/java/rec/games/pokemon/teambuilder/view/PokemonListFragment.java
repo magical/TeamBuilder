@@ -145,7 +145,6 @@ public class PokemonListFragment extends Fragment
 			@Override
 			public void onClick(View v)
 			{
-				//Log.d(TAG, "Refreshing");
 				mViewModel.getNewPokemonList();
 			}
 		});
@@ -155,7 +154,6 @@ public class PokemonListFragment extends Fragment
 			@Override
 			public void onClick(View v)
 			{
-				//Log.d(TAG, "Fab search clicked");
 				if(searchTerm==null)
 					searchForPokemon();
 				else
@@ -218,7 +216,6 @@ public class PokemonListFragment extends Fragment
 				{
 					String input = userInputText.getText().toString();
 					searchTerm = input;
-					//Log.d(TAG, "Searched for: " + input);
 					if(!input.isEmpty())
 					{
 						boolean ifSearchSuccess = false;
@@ -284,9 +281,15 @@ public class PokemonListFragment extends Fragment
 			getString(R.string.pref_sort_default));
 		boolean newDisplayLimit = prefs.getBoolean(this.getResources().getString(R.string.pref_limit_key), false);
 
-		if (!mSortOrder.equals(newSortOrder) || mDisplayLimit != newDisplayLimit) //either changes
+		if (!mSortOrder.equals(newSortOrder)) //either changes
 		{
 			mSortOrder = newSortOrder;
+			listRV.scrollToPosition(0);
+			setupPokemonList();
+		}
+		if(mDisplayLimit != newDisplayLimit)
+		{
+			mDisplayLimit = newDisplayLimit;
 			setupPokemonList();
 		}
 		if(mDisplayImages != newDisplayImages)

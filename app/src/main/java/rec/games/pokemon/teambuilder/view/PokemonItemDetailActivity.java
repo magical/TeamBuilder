@@ -119,7 +119,6 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 				@Override
 				public void onChanged(@Nullable Pokemon pokemon)
 				{
-					//Log.d(TAG, "Got value");
 					if (pokemon != null)
 					{
 						Log.d(TAG, "mPokemon is loaded is " + pokemon.isLoaded());

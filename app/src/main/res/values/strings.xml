@@ -55,7 +55,7 @@
 
     <!-- if showing Pokemon > 10000 -->
     <string name="pref_limit_key" translatable="false">pref_limit</string>
-    <string name="pref_limit_summary">Show Pokémon IDs greater than 10,000</string>
+    <string name="pref_limit_summary">Do not show Pokémon IDs greater than 10,000</string>
     <string name="pref_limit_title">Limit IDs</string>
 
     <!-- PokeAPI rate limiting data -->
