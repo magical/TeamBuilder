@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity
 
 		viewPager = findViewById(R.id.main_viewpager);
 		adapterVP = new ViewPagerAdapter(getSupportFragmentManager());
-		adapterVP.addFragment(new TeamFragment(), "Teams"); //tab
+		adapterVP.addFragment(new TeamListFragment(), "Teams"); //tab
 		adapterVP.addFragment(new PokemonListFragment(), "Pokémon"); //tab, title in caps
 		viewPager.setAdapter(adapterVP);
 

@@ -70,4 +70,7 @@
     <string name="share_chooser_poke_details">Share Pokémon details</string>
     <string name="action_share_team">Share Team Details</string>
 
+
+    <string name="activity_team_detail_title">Team Detail</string>
+
 </resources>
