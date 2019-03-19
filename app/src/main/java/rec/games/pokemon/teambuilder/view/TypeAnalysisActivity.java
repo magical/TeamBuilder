@@ -41,6 +41,7 @@ public class TypeAnalysisActivity extends AppCompatActivity implements PokemonTy
 
 	private int loadCount = 0;
 	private int totalLoadCount = 0;
+	private int teamId;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState)
@@ -52,9 +53,11 @@ public class TypeAnalysisActivity extends AppCompatActivity implements PokemonTy
 
 		Intent intent = getIntent();
 
-		if (intent != null && intent.hasExtra(TeamListFragment.TEAM_TYPE_ANALYSIS))
+		if (intent != null && intent.hasExtra(TeamListFragment.TEAM_TYPE_ANALYSIS)
+		&& intent.hasExtra(Team.TEAM_ID))
 		{
 			actionBarTitle = intent.getStringExtra(TeamListFragment.TEAM_TYPE_ANALYSIS);
+			teamId = intent.getIntExtra(Team.TEAM_ID, 1);
 			setTitle(actionBarTitle);
 
 			mTypeRV.setLayoutManager(new LinearLayoutManager(this));
@@ -86,7 +89,6 @@ public class TypeAnalysisActivity extends AppCompatActivity implements PokemonTy
 	{
 		final PokeAPIViewModel viewModel = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
 		final SavedTeamDao savedTeamDao = AppDatabase.getDatabase(this.getApplicationContext()).savedTeamDao();
-		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
 
 		final MediatorLiveData<Object> mediator = new MediatorLiveData<>();
 
@@ -128,7 +130,7 @@ public class TypeAnalysisActivity extends AppCompatActivity implements PokemonTy
 		});
 
 		totalLoadCount++;
-		final LiveData<Team> savedTeam = TeamUtils.getCurrentTeam(viewModel, savedTeamDao, prefs);
+		final LiveData<Team> savedTeam = TeamUtils.getCurrentTeam(viewModel, savedTeamDao, teamId);
 		mediator.addSource(savedTeam, new Observer<Team>()
 		{
 			@Override
