@@ -140,7 +140,6 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 			@Override
 			public void onClick(View v)
 			{
-				Log.d(TAG, "Refreshing");
 				mViewModel.getNewPokemonList();
 			}
 		});
@@ -151,7 +150,6 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 			public void onClick(View v)
 			{
 				//should be replaced by activity to create a new team, is a placeholder...
-				Log.d(TAG, "FAB Clicked");
 				Intent intent = new Intent(getActivity(), TeamPokemonActivity.class);
 				intent.putExtra(Team.TEAM_ID, teamId);
 				intent.putExtra(TeamListFragment.TEAM_MOVE_ENABLE, true); //allow access to change moves
@@ -181,7 +179,6 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 			@Override
 			public void onClick(View v)
 			{
-				Log.d(TAG, "Clicked");
 				Intent intent = new Intent(getContext(), TypeAnalysisActivity.class);
 				String title = "Team " + teamId + " analysis";
 				intent.putExtra(TeamListFragment.TEAM_TYPE_ANALYSIS, title);

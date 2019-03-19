@@ -26,11 +26,15 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.Comparator;
 
 import rec.games.pokemon.teambuilder.R;
 import rec.games.pokemon.teambuilder.model.LiveDataList;
 import rec.games.pokemon.teambuilder.model.PokeAPIUtils;
 import rec.games.pokemon.teambuilder.model.Pokemon;
+import rec.games.pokemon.teambuilder.model.SearchCriteria;
 import rec.games.pokemon.teambuilder.model.Team;
 import rec.games.pokemon.teambuilder.viewmodel.PokeAPIViewModel;
 
@@ -53,6 +57,9 @@ public class PokemonListFragment extends Fragment
 	private String searchTerm;
 
 	private SharedPreferences preferences;
+	private String mSortOrder;
+	private boolean mDisplayImages;
+	private boolean mDisplayLimit; //if limiting to id < 10000
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState)
@@ -92,7 +99,13 @@ public class PokemonListFragment extends Fragment
 		preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
 		preferences.registerOnSharedPreferenceChangeListener(this);
 
-		mPokemonListAdapter = new PokemonListAdapter(new LiveDataList<Pokemon>(), this);
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+		mSortOrder = preferences.getString(getString(R.string.pref_sort_key),
+			getString(R.string.pref_sort_default));
+		mDisplayImages = prefs.getBoolean(this.getResources().getString(R.string.pref_image_key), true);
+		mDisplayLimit = prefs.getBoolean(this.getResources().getString(R.string.pref_limit_key), true);
+
+		mPokemonListAdapter = new PokemonListAdapter(new LiveDataList<Pokemon>(), this, mDisplayImages);
 
 		mViewModel = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
 		mViewModel.getPokemonListCache().observe(this, new Observer<Boolean>()
@@ -123,9 +136,7 @@ public class PokemonListFragment extends Fragment
 					mListFAB.show();
 				}
 
-				LiveDataList<Pokemon> pokemon = mViewModel.extractPokemonListFromCache();
-				mPokemonListAdapter.updatePokemon(pokemon);
-				sortPokemonList();
+				setupPokemonList();
 			}
 		});
 
@@ -134,7 +145,6 @@ public class PokemonListFragment extends Fragment
 			@Override
 			public void onClick(View v)
 			{
-				Log.d(TAG, "Refreshing");
 				mViewModel.getNewPokemonList();
 			}
 		});
@@ -144,7 +154,6 @@ public class PokemonListFragment extends Fragment
 			@Override
 			public void onClick(View v)
 			{
-				Log.d(TAG, "Fab search clicked");
 				if(searchTerm==null)
 					searchForPokemon();
 				else
@@ -207,14 +216,10 @@ public class PokemonListFragment extends Fragment
 				{
 					String input = userInputText.getText().toString();
 					searchTerm = input;
-					Log.d(TAG, "Searched for: " + input);
 					if(!input.isEmpty())
 					{
 						boolean ifSearchSuccess = false;
-						if(input.matches("\\d+"))
-							ifSearchSuccess = mPokemonListAdapter.searchPokemonId(searchTerm);
-						else
-							ifSearchSuccess = mPokemonListAdapter.searchPokemonName(searchTerm);
+						ifSearchSuccess = setupPokemonList();
 
 						if(ifSearchSuccess)
 						{
@@ -252,7 +257,7 @@ public class PokemonListFragment extends Fragment
 	private void clearSearch()
 	{
 		searchTerm = null;
-		mPokemonListAdapter.clearSearchPokemon();
+		setupPokemonList();
 		if(listRV.getLayoutManager() !=null && mListRVState != null)
 			listRV.getLayoutManager().onRestoreInstanceState(mListRVState); //restore current position
 		mListFAB.setImageResource(R.drawable.ic_action_search); //add to SQL
@@ -269,24 +274,129 @@ public class PokemonListFragment extends Fragment
 	}
 
 	@Override
-	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
+	public void onSharedPreferenceChanged(SharedPreferences prefs, String key)
 	{
-		sortPokemonList();
+		boolean newDisplayImages = prefs.getBoolean(this.getResources().getString(R.string.pref_image_key), true);
+		String newSortOrder = preferences.getString(getString(R.string.pref_sort_key),
+			getString(R.string.pref_sort_default));
+		boolean newDisplayLimit = prefs.getBoolean(this.getResources().getString(R.string.pref_limit_key), false);
+
+		if (!mSortOrder.equals(newSortOrder)) //either changes
+		{
+			mSortOrder = newSortOrder;
+			listRV.scrollToPosition(0);
+			setupPokemonList();
+		}
+		if(mDisplayLimit != newDisplayLimit)
+		{
+			mDisplayLimit = newDisplayLimit;
+			setupPokemonList();
+		}
+		if(mDisplayImages != newDisplayImages)
+		{
+			mDisplayImages = newDisplayImages;
+			changeImageDisplay();
+		}
 	}
 
-	private void sortPokemonList()
+	private boolean setupPokemonList()
 	{
-		String sortPreference = preferences.getString(
-			getString(R.string.pref_sort_key),
-			getString(R.string.pref_sort_default)
-		);
+		LiveDataList<Pokemon> modifiedPokemonList = mViewModel.extractPokemonListFromCache();
+		boolean updateSuccess = true;
 
-		if(sortPreference.equals(getString(R.string.pref_sort_value_sort_by_name)))
-			mPokemonListAdapter.sortPokemonByName();
+		if(mDisplayLimit) //default to false
+		{
+			SearchCriteria<Pokemon> searchCriteria = new SearchCriteria<Pokemon>()
+			{
+				@Override
+				public boolean match(@Nullable Pokemon pokemon)
+				{
+					if(pokemon != null)
+						return ( pokemon.getId() < 10000 ); //if less than 10000
+					return false;
+				}
+			};
+			modifiedPokemonList = modifiedPokemonList.searchSubList(searchCriteria);
+		}
+
+		//sorts list
+		if(mSortOrder.equals(getString(R.string.pref_sort_value_sort_by_name)))
+		{
+			modifiedPokemonList.sort(new Comparator<Pokemon>()
+			{
+				@Override
+				public int compare(Pokemon pokemon1, Pokemon pokemon2)
+				{
+					return pokemon1.getName().compareTo(pokemon2.getName());
+				}
+			});
+		}
 		else //default
-			mPokemonListAdapter.sortPokemonById();
+		{
+			modifiedPokemonList.sort(new Comparator<Pokemon>()
+			{
+				@Override
+				public int compare(Pokemon pokemon1, Pokemon pokemon2)
+				{
+					return pokemon1.getId() - pokemon2.getId();
+				}
+			});
+		}
 
+
+		if(searchTerm != null && searchTerm.matches("\\d+"))
+		{
+			SearchCriteria<Pokemon> searchCriteria = new SearchCriteria<Pokemon>()
+			{
+				@Override
+				public boolean match(@Nullable Pokemon pokemon)
+				{
+					if(pokemon != null)
+						return (Integer.toString(pokemon.getId()).contains(searchTerm));
+
+					return false;
+				}
+			};
+			LiveDataList<Pokemon> temp = modifiedPokemonList.searchSubList(searchCriteria);
+			if(temp != null && temp.size() > 0)
+				modifiedPokemonList = temp;
+			else
+			{
+				Toast.makeText(getContext(), getString(R.string.pokemon_search_not_found), Toast.LENGTH_LONG).show();
+				updateSuccess = false;
+			}
+		}
+		else if (searchTerm != null)
+		{
+			SearchCriteria<Pokemon> searchCriteria = new SearchCriteria<Pokemon>()
+			{
+				@Override
+				public boolean match(@Nullable Pokemon pokemon)
+				{
+					if(pokemon != null)
+						return (pokemon.getName().toLowerCase().contains(searchTerm));
+					return false;
+				}
+			};
+			LiveDataList<Pokemon> temp = modifiedPokemonList.searchSubList(searchCriteria);
+			if(temp != null && temp.size() > 0)
+				modifiedPokemonList = temp;
+			else
+			{
+				Toast.makeText(getContext(), getString(R.string.pokemon_search_not_found), Toast.LENGTH_LONG).show();
+				updateSuccess = false;
+			}
+		}
+
+		mPokemonListAdapter.updatePokemon(modifiedPokemonList);
+		return updateSuccess;
 	}
+
+	private void changeImageDisplay()
+	{
+		mPokemonListAdapter.setDisplayImages(mDisplayImages);
+	}
+
 }
 
 
