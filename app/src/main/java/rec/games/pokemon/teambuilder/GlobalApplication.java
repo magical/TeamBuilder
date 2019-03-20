@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import java.util.concurrent.TimeUnit;
 
@@ -35,6 +36,7 @@ public class GlobalApplication extends Application implements Application.Activi
 		if((currentTime - releaseTimeStamp) >= timePeriod)
 			permits = defaultPermits;
 
+		Log.d(GlobalApplication.class.getSimpleName(), "Starting permits: " + permits);
 		pokeAPILimiter = new RateLimitInterceptor(defaultPermits, timePeriod, permits);
 	}
 
