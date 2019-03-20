@@ -152,8 +152,9 @@ public class MainActivity extends AppCompatActivity
 		{
 			for(Fragment fragment:mFragmentList)
 			{
-				getSupportFragmentManager().beginTransaction()
-					.detach(fragment).attach(fragment).commitAllowingStateLoss();
+				if(fragment != null && fragment.isAdded())
+					getSupportFragmentManager().beginTransaction()
+						.detach(fragment).attach(fragment).commitAllowingStateLoss();
 			}
 		}
 
