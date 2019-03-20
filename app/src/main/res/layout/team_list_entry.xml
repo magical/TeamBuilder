@@ -1,36 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:layout_margin="10dp">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
-    <LinearLayout
+    <RelativeLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:background="@drawable/border"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:padding="5dp">
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/pokemon_sprite"
-            android:layout_width="128dp"
-            android:layout_height="128dp"
-            android:scaleType="fitXY"
-            android:padding="8dp"
-            android:src="@drawable/ic_poke_unknown" />
 
         <TextView
-            android:id="@+id/pokemon_name"
+            android:id="@+id/tv_team_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:padding="8dp"
             android:textSize="24sp"
-            tools:text="Pokémon" />
+            tools:text="Team name"/>
 
-    </LinearLayout>
+        <TextView
+            android:id="@+id/tv_team_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_centerInParent="true"
+            android:minWidth="40dp"
+            android:padding="8dp"
+            android:textSize="18sp"
+            tools:text="0"/>
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:background="#dadada" />
 
 </LinearLayout>

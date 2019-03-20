@@ -186,7 +186,7 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 				});
 			}
 
-			if(intent.hasExtra(TeamListFragment.TEAM_MOVE_ENABLE))
+			if(intent.hasExtra(TeamFragment.TEAM_MOVE_ENABLE))
 			{
 				mAllowMovesSelected = true;
 			}

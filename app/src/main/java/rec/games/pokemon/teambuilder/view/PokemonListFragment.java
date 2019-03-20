@@ -193,7 +193,7 @@ public class PokemonListFragment extends Fragment
 		if(mTeamToAdd > 0)
 		{
 			intent.putExtra(Team.TEAM_ID, mTeamToAdd);
-			intent.putExtra(TeamListFragment.TEAM_MOVE_ENABLE, true); //allow access to change moves
+			intent.putExtra(TeamFragment.TEAM_MOVE_ENABLE, true); //allow access to change moves
 		}
 		startActivity(intent);
 	}

@@ -24,7 +24,6 @@ import rec.games.pokemon.teambuilder.model.TeamMember;
 
 public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder>
 {
-
 	private static final String TAG = TeamAdapter.class.getSimpleName();
 	private Context context;
 	private LifecycleOwner mLifecycleOwner;
@@ -77,7 +76,7 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder
 	public TeamViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int position)
 	{
 		LayoutInflater inf = LayoutInflater.from(parent.getContext());
-		View v = inf.inflate(R.layout.team_list_entry, parent, false);
+		View v = inf.inflate(R.layout.team_member_entry, parent, false);
 		return new TeamViewHolder(v, mListener, mLifecycleOwner);
 	}
 

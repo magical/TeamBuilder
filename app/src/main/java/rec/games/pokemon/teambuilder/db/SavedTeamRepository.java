@@ -33,7 +33,7 @@ public class SavedTeamRepository
 	}
 
 	public void createSavedTeam(SavedTeam team) { new CreateSavedTeamAsyncTask(mDao).execute(team); }
-	//public void deleteSavedTeam(SavedTeam team) { new DeleteSavedTeamEntityAsyncTask(mDao).execute(team); }
+	public void deleteSavedTeam(SavedTeam team) { new DeleteSavedTeamAsyncTask(mDao).execute(team); }
 
 	public LiveData<SavedTeam> getTeamById(int id) { return mDao.getTeamById(id); }
 	public LiveData<List<SavedTeam>> getAllTeams() { return mDao.getAllTeams(); }
@@ -57,6 +57,24 @@ public class SavedTeamRepository
 			return null;
 		}
 	}
+
+	private static class DeleteSavedTeamAsyncTask extends AsyncTask<SavedTeam, Void, Void>
+	{
+		private SavedTeamDao mDao;
+
+		DeleteSavedTeamAsyncTask(SavedTeamDao dao)
+		{
+			mDao = dao;
+		}
+
+		@Override
+		protected Void doInBackground(SavedTeam... savedTeams)
+		{
+			mDao.deleteSavedTeam(savedTeams[0]);
+			return null;
+		}
+	}
+
 
 	private static class InsertTeamMemberAsyncTask extends AsyncTask<SavedTeamMemberEntity, Void, Void>
 	{
