@@ -9,8 +9,8 @@ Our app will be a Pokémon team builder — a tool to help find analyze a team o
 ## API
 PokéAPI was used for this project, and it is a RESTful read-only API with a wide variety of data about Pokémon in JSON format.
 
-##Demo
+## Demo
 ![Demo](https://user-images.githubusercontent.com/10273995/54655742-470fd500-4a80-11e9-8f91-93e52ef454ff.gif)
 
-##Project Features
+## Project Features
 This project features multiple activities (in building a team, displaying a information about a Pokémon), a 3rd-party API (PokéAPI), lifecycle methods (ViewModel), SharedPreferences (list sort), SQLite (teams), a polished UI, and can launch the current Pokémon to have more information from the web. 
