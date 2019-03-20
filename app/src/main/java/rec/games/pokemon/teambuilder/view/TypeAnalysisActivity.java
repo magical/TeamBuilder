@@ -52,9 +52,9 @@ public class TypeAnalysisActivity extends AppCompatActivity implements PokemonTy
 
 		Intent intent = getIntent();
 
-		if (intent != null && intent.hasExtra(TeamListFragment.TEAM_TYPE_ANALYSIS) && intent.hasExtra(Team.TEAM_ID))
+		if (intent != null && intent.hasExtra(TeamFragment.TEAM_TYPE_ANALYSIS) && intent.hasExtra(Team.TEAM_ID))
 		{
-			actionBarTitle = intent.getStringExtra(TeamListFragment.TEAM_TYPE_ANALYSIS);
+			actionBarTitle = intent.getStringExtra(TeamFragment.TEAM_TYPE_ANALYSIS);
 			teamId = intent.getIntExtra(Team.TEAM_ID, 1);
 			setTitle(actionBarTitle);
 

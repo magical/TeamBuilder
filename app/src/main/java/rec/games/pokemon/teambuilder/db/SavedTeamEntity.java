@@ -8,4 +8,6 @@ public class SavedTeamEntity
 {
 	@PrimaryKey(autoGenerate = true)
 	public int id;
+
+	public String name;
 }
