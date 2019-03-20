@@ -96,7 +96,7 @@ public class TeamFragment extends Fragment implements TeamAdapter.OnTeamClickLis
 		mViewModel = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
 		mSavedTeamDao = AppDatabase.getDatabase(this.getContext()).savedTeamDao();
 
-		teamId = 1;
+		teamId = getArguments().getInt(Team.TEAM_ID, 0);
 		mLiveTeam = TeamUtils.getCurrentTeam(mViewModel, mSavedTeamDao, teamId);
 
 		mLiveTeam.observe(this, new Observer<Team>()
@@ -138,7 +138,6 @@ public class TeamFragment extends Fragment implements TeamAdapter.OnTeamClickLis
 			@Override
 			public void onClick(View v)
 			{
-				Log.d(TAG, "Refreshing");
 				mViewModel.getNewPokemonList();
 			}
 		});
@@ -149,7 +148,6 @@ public class TeamFragment extends Fragment implements TeamAdapter.OnTeamClickLis
 			public void onClick(View v)
 			{
 				//should be replaced by activity to create a new team, is a placeholder...
-				Log.d(TAG, "FAB Clicked");
 				Intent intent = new Intent(getActivity(), TeamPokemonActivity.class);
 				intent.putExtra(Team.TEAM_ID, teamId);
 				intent.putExtra(TeamFragment.TEAM_MOVE_ENABLE, true); //allow access to change moves
@@ -179,7 +177,6 @@ public class TeamFragment extends Fragment implements TeamAdapter.OnTeamClickLis
 			@Override
 			public void onClick(View v)
 			{
-				Log.d(TAG, "Clicked");
 				Intent intent = new Intent(getContext(), TypeAnalysisActivity.class);
 				String title = "Team " + teamId + " analysis";
 				intent.putExtra(TeamFragment.TEAM_TYPE_ANALYSIS, title);
