@@ -100,4 +100,8 @@ public class TeamListAdapter extends RecyclerView.Adapter<TeamListAdapter.ViewHo
 			tvCount.setText(Integer.toString(savedTeam.memberIds.size()));
 		}
 	}
+
+	SavedTeam getTeam(int position) {
+		return mTeamList.get(position);
+	}
 }

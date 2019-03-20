@@ -74,5 +74,7 @@
     <string name="activity_team_detail_title">Team Detail</string>
     <string name="create_team_hint_text">New team name</string>
     <string name="create_team_title">New team</string>
+    <string name="delete_team_name_text">Delete team "%s"?</string>
+    <string name="delete_team_id_text">Delete team %d?</string>
 
 </resources>

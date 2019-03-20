@@ -13,6 +13,8 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -133,6 +135,20 @@ public class TeamListFragment extends Fragment implements OnTeamClickListener
 			}
 		});
 
+		int swipeDirs = ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
+		ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, swipeDirs) {
+			@Override
+			public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder viewHolder1) {
+				return false;
+			}
+
+			@Override
+			public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+				showDeleteTeamDialog(mTeamListAdapter.getTeam(viewHolder.getAdapterPosition()), viewHolder.getAdapterPosition());
+			}
+		});
+		helper.attachToRecyclerView(teamRV);
+
 		return view;
 	}
 
@@ -167,5 +183,51 @@ public class TeamListFragment extends Fragment implements OnTeamClickListener
 
 		builder.create().show();
 	}
+
+	private void showDeleteTeamDialog(final SavedTeam savedTeam, final int position)
+	{
+		AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+		builder.setTitle(R.string.create_team_title);
+		builder.setCancelable(true);
+
+		LayoutInflater inflater = LayoutInflater.from(getContext());
+		View itemView = inflater.inflate(R.layout.team_list_delete_dialog, null);
+		TextView textView = itemView.findViewById(R.id.tv_delete_team);
+		if (!TextUtils.isEmpty(savedTeam.name)) {
+			textView.setText(getString(R.string.delete_team_name_text, savedTeam.name));
+		} else {
+			textView.setText(getString(R.string.delete_team_id_text, savedTeam.id));
+		}
+		builder.setView(itemView);
+
+		builder.setOnCancelListener(new DialogInterface.OnCancelListener()
+		{
+			@Override
+			public void onCancel(DialogInterface dialog)
+			{
+				mTeamListAdapter.notifyItemChanged(position); // force recyclerview to refresh
+			}
+		});
+
+		builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+		{
+			@Override
+			public void onClick(DialogInterface dialog, int which)
+			{
+				dialog.cancel();
+			}
+		});
+		builder.setPositiveButton("Delete", new DialogInterface.OnClickListener()
+		{
+			@Override
+			public void onClick(DialogInterface dialog, int which)
+			{
+				mSavedTeamRepo.deleteSavedTeam(savedTeam);
+			}
+		});
+
+		builder.create().show();
+	}
+
 
 }

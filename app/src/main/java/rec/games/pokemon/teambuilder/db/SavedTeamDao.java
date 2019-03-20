@@ -42,6 +42,10 @@ public abstract class SavedTeamDao
 	@Query("DELETE FROM team_members WHERE team_id = :teamId AND pokemon_id = :pokemonId")
 	public abstract void removePokemonFromTeamById(int teamId, int pokemonId);
 
+
+	@Query("DELETE FROM team_members WHERE team_id = :teamId")
+	public abstract void removeAllPokemonFromTeam(int teamId);
+
 	@Transaction
 	public void createSavedTeam(SavedTeam savedTeam) {
 		SavedTeamEntity savedTeamEntity = new SavedTeamEntity();
@@ -59,5 +63,17 @@ public abstract class SavedTeamDao
 				insertSavedTeamMemberEntity(tm);
 			}
 		}
+	}
+
+	public void deleteSavedTeam(SavedTeam savedTeam) {
+		if (savedTeam.id == 0) {
+			return;
+		}
+		SavedTeamEntity savedTeamEntity = new SavedTeamEntity();
+		savedTeamEntity.id = savedTeam.id;
+		savedTeamEntity.name = savedTeam.name;
+		removeAllPokemonFromTeam(savedTeam.id);
+		deleteSavedTeamEntity(savedTeamEntity);
+
 	}
 }
