@@ -1,5 +1,6 @@
 package rec.games.pokemon.teambuilder.view;
 
+import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.Observer;
@@ -38,6 +39,8 @@ import rec.games.pokemon.teambuilder.db.SavedTeamRepository;
 import rec.games.pokemon.teambuilder.db.TeamUtils;
 import rec.games.pokemon.teambuilder.model.PokeAPIUtils;
 import rec.games.pokemon.teambuilder.model.Pokemon;
+import rec.games.pokemon.teambuilder.model.PokemonMove;
+import rec.games.pokemon.teambuilder.model.PokemonMoveResource;
 import rec.games.pokemon.teambuilder.model.PokemonResource;
 import rec.games.pokemon.teambuilder.model.PokemonType;
 import rec.games.pokemon.teambuilder.model.Team;
@@ -56,7 +59,6 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 	private int numTypes = 1;
 	private PokemonType mType1;
 	private PokemonType mType2;
-	private MediatorLiveData<PokemonType> typesMediator = new MediatorLiveData<>();
 
 	private ImageView mArtwork;
 	private ImageView mFrontSprite;
@@ -76,6 +78,7 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 
 	private SavedTeamRepository mSavedTeamRepo;
 	private RecyclerView mMoveRV;
+	private PokemonMoveAdapter mMoveAdapter;
 
 	private PokeAPIViewModel mPokeViewModel;
 
@@ -119,7 +122,6 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 				@Override
 				public void onChanged(@Nullable Pokemon pokemon)
 				{
-					Log.d(TAG, "Got value");
 					if (pokemon != null)
 					{
 						Log.d(TAG, "mPokemon is loaded is " + pokemon.isLoaded());
@@ -178,8 +180,6 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 					}
 				});
 			}
-			else
-				Log.d(TAG, "Hiding FAB");
 
 			if(intent.hasExtra(TeamFragment.TEAM_MOVE_ENABLE))
 			{
@@ -187,16 +187,8 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 			}
 
 			// Fill in with some fake data
-			final PokemonMoveAdapter adapter = new PokemonMoveAdapter(new ArrayList<String>(), this, mAllowMovesSelected);
-
-			String typeNames[] = {"bug","dark","dragon","electric","fairy",
-				"fighting","fire","flying","ghost","grass","ground","ice",
-				"normal","poison","psychic","rock","shadow","steel","unknown","water",
-			}; //very temporary
-
-			ArrayList<String> moves = new ArrayList<>(Arrays.asList(typeNames));
-			adapter.updatePokemonMoves(moves);
-			mMoveRV.setAdapter(adapter);
+			mMoveAdapter = new PokemonMoveAdapter(new ArrayList<LiveData<PokemonMove>>(), this, mAllowMovesSelected);
+			mMoveRV.setAdapter(mMoveAdapter);
 		}
 	}
 
@@ -230,6 +222,34 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 					}
 				});
 			}
+
+			//complete the move chain
+			final LifecycleOwner owner = this;
+			for(LiveData<PokemonMove> pokemonMove: p.getMoves())
+			{
+				pokemonMove.observe(this, new Observer<PokemonMove>()
+				{
+					@Override
+					public void onChanged(@Nullable PokemonMove move)
+					{
+						if(move instanceof PokemonMoveResource)
+						{
+							//complete the move type chain
+							move.getType().observe(owner, new Observer<PokemonType>()
+							{
+								@Override
+								public void onChanged(@Nullable PokemonType pokemonType)
+								{
+									//maybe do something when the move's type chain completes
+								}
+							});
+						}
+						else
+							mPokeViewModel.loadMove(move.getId());
+					}
+				});
+			}
+			mMoveAdapter.updatePokemonMoves(p.getMoves());
 		}
 		// update the layout
 		fillLayout();
@@ -258,7 +278,7 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 			}
 			else
 			{
-				GlideApp.with(this).load(R.drawable.ic_poke_unknown).into(mArtwork);
+				mArtwork.setImageResource(R.drawable.ic_poke_unknown);
 				//mFrontSprite.setImageResource(android.R.color.transparent);
 				//mBackSprite.setImageResource(android.R.color.transparent);
 			}
