@@ -26,6 +26,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.io.IOException;
@@ -75,6 +76,7 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 	private LiveData<Boolean> mLiveItemAdded;
 	private boolean mAllowMovesSelected;
 	private int mTeamId;
+	private ProgressBar mMoveLoaderPB;
 
 	private SavedTeamRepository mSavedTeamRepo;
 	private RecyclerView mMoveRV;
@@ -97,6 +99,7 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 		mPokemonTypeSeperator = findViewById(R.id.tv_pokemon_type_seperator);
 		mPokemonType2TV = findViewById(R.id.tv_pokemon_type2);
 		mPokemonType2IV = findViewById(R.id.iv_pokemon_type2);
+		mMoveLoaderPB = findViewById(R.id.pb_loading_move);
 
 		mAllowMovesSelected = false; //default to false
 
@@ -108,8 +111,10 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 		mMoveRV.setLayoutManager(new LinearLayoutManager(this));
 		mMoveRV.setItemAnimator(new DefaultItemAnimator());
 
-		Intent intent = getIntent();
+		mMoveLoaderPB.setVisibility(View.VISIBLE);
+		mMoveRV.setVisibility(View.GONE);
 
+		Intent intent = getIntent();
 
 		mPokeViewModel = ViewModelProviders.of(this).get(PokeAPIViewModel.class);
 		if(intent != null && intent.hasExtra(PokeAPIUtils.POKE_ITEM))
@@ -246,6 +251,12 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 						}
 						else
 							mPokeViewModel.loadMove(move.getId());
+
+						if(mMoveLoaderPB.getVisibility() == View.VISIBLE)
+						{
+							mMoveLoaderPB.setVisibility(View.GONE);
+							mMoveRV.setVisibility(View.VISIBLE);
+						}
 					}
 				});
 			}

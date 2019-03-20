@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.Objects;
+
 import rec.games.pokemon.teambuilder.R;
 import rec.games.pokemon.teambuilder.model.PokeAPIUtils;
 import rec.games.pokemon.teambuilder.model.Pokemon;
@@ -54,7 +56,10 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder
 	{
 		if(position >= 0 && team != null && team.members != null)
 		{
-			return team.members.get(position).pokemon.getValue().getId();
+			if (team.members.get(position).pokemon.getValue() != null)
+				return team.members.get(position).pokemon.getValue().getId();
+			else
+				return 0;
 		}
 		return 0;
 	}
@@ -115,7 +120,6 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder
 				public void onClick(View v)
 				{
 					mListener.onTeamMemberClicked(getTeamMemberId(getAdapterPosition()));
-					//Log.d(TAG, "Clicked + " + getTeamMemberId(getAdapterPosition()));
 				}
 			});
 		}
