@@ -483,12 +483,16 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 			Log.d(TAG, "Added");
 			mItemFAB.setImageResource(R.drawable.ic_status_remove); //remove
 			mItemFAB.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.colorNegativeFAB));
+			mItemFAB.hide();
+			mItemFAB.show(); //fix google bug to show image icon
 			mItemAdded = true;
 		} else
 		{
 			Log.d(TAG, "Removed");
 			mItemFAB.setImageResource(R.drawable.ic_action_add); //add to SQL
 			mItemFAB.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.colorPrimary));
+			mItemFAB.hide();
+			mItemFAB.show(); //fix google bug to show image icon
 			mItemAdded = false;
 		}
 	}
