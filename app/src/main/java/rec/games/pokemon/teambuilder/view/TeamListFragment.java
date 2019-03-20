@@ -130,7 +130,6 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 					mAppBar.setVisibility(View.VISIBLE);
 
 					mTeamAdapter.setTeam(team);
-
 				}
 			}
 		});
@@ -192,10 +191,13 @@ public class TeamListFragment extends Fragment implements TeamAdapter.OnTeamClic
 
 	public void onTeamMemberClicked(int pokeId)
 	{
-		Intent intent = new Intent(getContext(), PokemonItemDetailActivity.class);
-		intent.putExtra(PokeAPIUtils.POKE_ITEM, pokeId); //temporary assignment
-		intent.putExtra(Team.TEAM_ID, teamId);
-		intent.putExtra(TeamListFragment.TEAM_MOVE_ENABLE, true); //allow access to change moves
-		startActivity(intent);
+		if (pokeId != 0)
+		{
+			Intent intent = new Intent(getContext(), PokemonItemDetailActivity.class);
+			intent.putExtra(PokeAPIUtils.POKE_ITEM, pokeId); //temporary assignment
+			intent.putExtra(Team.TEAM_ID, teamId);
+			intent.putExtra(TeamListFragment.TEAM_MOVE_ENABLE, true); //allow access to change moves
+			startActivity(intent);
+		}
 	}
 }

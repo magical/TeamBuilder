@@ -165,6 +165,14 @@
             android:clipToPadding="false"
             android:visibility="visible"
             android:id="@+id/rv_moves" />
+
+        <ProgressBar
+            android:id="@+id/pb_loading_move"
+            android:layout_gravity="center"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_margin="32dp"
+            android:visibility="gone"/>
     </LinearLayout>
 
     <!-- force at bottom -->
