@@ -228,6 +228,4 @@ public class TeamListFragment extends Fragment implements OnTeamClickListener
 
 		builder.create().show();
 	}
-
-
 }
