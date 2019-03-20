@@ -188,7 +188,7 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 
 			if(intent.hasExtra(TeamFragment.TEAM_MOVE_ENABLE))
 			{
-				mAllowMovesSelected = true;
+				mAllowMovesSelected = false; //true to enable
 			}
 
 			// Fill in with some fake data
