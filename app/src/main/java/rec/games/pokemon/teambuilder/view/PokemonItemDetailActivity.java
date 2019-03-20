@@ -121,8 +121,7 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 		{
 			pokeId = intent.getIntExtra(PokeAPIUtils.POKE_ITEM, 0);
 
-			final LiveData<Pokemon> livePokemon = mPokeViewModel.getLivePokemon(pokeId);
-			livePokemon.observe(this, new Observer<Pokemon>()
+			mPokeViewModel.getLivePokemon(pokeId).observe(this, new Observer<Pokemon>()
 			{
 				@Override
 				public void onChanged(@Nullable Pokemon pokemon)
@@ -249,7 +248,7 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 								}
 							});
 						}
-						else
+						else if(move != null)
 							mPokeViewModel.loadMove(move.getId());
 
 						if(mMoveLoaderPB.getVisibility() == View.VISIBLE)
@@ -270,7 +269,26 @@ public class PokemonItemDetailActivity extends AppCompatActivity implements Poke
 	{
 		if(mPokemon != null)
 		{
-			mPokemonName.setText(mPokemon.getName());
+			if(mPokemon instanceof PokemonResource)
+			{
+				((PokemonResource) mPokemon).getLocaleName("en").observe(this, new Observer<String>()
+				{
+					@Override
+					public void onChanged(@Nullable String s)
+					{
+						if(s == null)
+							mPokemonName.setText(mPokemon.getName());
+						else
+							mPokemonName.setText(s);
+					}
+				});
+			}
+			else
+			{
+				mPokemonName.setText(mPokemon.getName());
+			}
+
+
 			String pokemonDisplayId = "#" + pokeId;
 			mPokemonId.setText(pokemonDisplayId);
 

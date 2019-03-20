@@ -13,13 +13,14 @@ public class PokemonMoveResource extends PokemonMove
 	protected LiveData<PokemonType> type;
 	protected Integer power;
 
-	public PokemonMoveResource(int id, String resourceName, int power, LiveData<PokemonType> type)
+	public PokemonMoveResource(int id, String resourceName, int power, LiveData<PokemonType> type, HashMap<String, String> localeNames)
 	{
 		super(id);
 
 		this.resourceName = resourceName;
 		this.power = power;
 		this.type = type;
+		this.localeNames = localeNames;
 	}
 
 	@Override
@@ -47,5 +48,10 @@ public class PokemonMoveResource extends PokemonMove
 			return false;
 
 		return !type.getValue().isDeferred();
+	}
+
+	public String getLocaleName(String locale)
+	{
+		return localeNames.get(locale);
 	}
 }

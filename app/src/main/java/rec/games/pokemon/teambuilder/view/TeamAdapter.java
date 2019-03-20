@@ -17,10 +17,14 @@ import android.widget.TextView;
 import java.util.Objects;
 
 import rec.games.pokemon.teambuilder.R;
+import rec.games.pokemon.teambuilder.model.NetworkPriority;
 import rec.games.pokemon.teambuilder.model.PokeAPIUtils;
 import rec.games.pokemon.teambuilder.model.Pokemon;
+import rec.games.pokemon.teambuilder.model.PokemonResource;
 import rec.games.pokemon.teambuilder.model.Team;
 import rec.games.pokemon.teambuilder.model.TeamMember;
+import rec.games.pokemon.teambuilder.model.repository.PokeAPIRepository;
+import rec.games.pokemon.teambuilder.viewmodel.PokeAPIViewModel;
 
 public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder>
 {
@@ -153,6 +157,18 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder
 						else
 						{
 							image.setImageResource(R.drawable.ic_poke_unknown);
+						}
+
+						if(pokemon instanceof PokemonResource)
+						{
+							((PokemonResource) pokemon).getLocaleName("en").observe(lifecycleOwner, new Observer<String>()
+							{
+								@Override
+								public void onChanged(@Nullable String s)
+								{
+									name.setText(s);
+								}
+							});
 						}
 					}
 				}

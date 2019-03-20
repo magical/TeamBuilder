@@ -163,13 +163,12 @@ public class PokemonMoveAdapter extends RecyclerView.Adapter<PokemonMoveAdapter.
 
 		public void bind(PokemonMove pokemonMove)
 		{
-			mName.setText(pokemonMove.getName());
-
 			if(pokemonMove instanceof PokemonMoveResource)
 			{
 				PokemonMoveResource move = (PokemonMoveResource) pokemonMove;
 
 				String typeName = move.getType().getValue().getName();
+				mName.setText(move.getLocaleName("en"));
 				mType.setText(typeName);
 				mPower.setText(String.valueOf(move.getPower()));
 
@@ -189,6 +188,10 @@ public class PokemonMoveAdapter extends RecyclerView.Adapter<PokemonMoveAdapter.
 					mTypeIV.setVisibility(View.GONE);
 					mType.setVisibility(View.VISIBLE);
 				}
+			}
+			else
+			{
+				mName.setText(pokemonMove.getName());
 			}
 		}
 	}
