@@ -7,3 +7,4 @@ Our app will be a Pokémon team builder — a tool to help find analyze a team o
 ## API
 We plan to use PokéAPI for our project. PokéAPI is a RESTful API from which one can retrieve a wide variety of data about Pokémon in JSON format. It is a read-only API.
 
+![Demo](https://user-images.githubusercontent.com/10273995/54655742-470fd500-4a80-11e9-8f91-93e52ef454ff.gif)
